@@ -4,6 +4,9 @@ import 'package:exam_prep/data/models/subject.dart';
 import 'package:exam_prep/data/models/chapter.dart';
 import 'package:exam_prep/data/models/focus_session.dart';
 import 'package:exam_prep/data/models/study_task.dart';
+import 'package:exam_prep/data/models/revision_item.dart';
+import 'package:exam_prep/data/models/revision_review.dart';
+import 'package:exam_prep/data/models/daily_plan_task.dart';
 import 'package:exam_prep/core/extensions/extensions.dart';
 import 'package:exam_prep/data/repositories/exam_repository.dart';
 
@@ -296,10 +299,412 @@ class CalculationService {
 
     return ReadinessScore(
       score: (score * 100).round(),
-      weights: normalizedWeights, // Return normalized weights
+      weights: normalizedWeights,
       hasRevisionData: hasRevisionData,
       hasPracticeData: hasPracticeData,
     );
+  }
+
+  /// Calculates SM-2 next interval based on review rating.
+  /// Intervals: 1, 3, 7, 14, 30 days (configurable)
+  SM2Result calculateSM2Interval({
+    required ReviewRating rating,
+    required int currentIntervalDays,
+    required double currentEaseFactor,
+    required int currentRepetitions,
+    List<int> intervals = const [1, 3, 7, 14, 30],
+  }) {
+    // SM-2 algorithm
+    double newEaseFactor = currentEaseFactor;
+    int newRepetitions = currentRepetitions;
+    int newIntervalDays = currentIntervalDays;
+
+    final quality = rating.quality;
+
+    if (rating == ReviewRating.again) {
+      // Reset to first interval
+      newRepetitions = 0;
+      newIntervalDays = intervals.first;
+    } else {
+      // Update ease factor based on quality (0-5)
+      newEaseFactor = currentEaseFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+      if (newEaseFactor < 1.3) newEaseFactor = 1.3;
+
+      newRepetitions = currentRepetitions + 1;
+
+      if (newRepetitions == 1) {
+        newIntervalDays = intervals[0];
+      } else if (newRepetitions == 2) {
+        newIntervalDays = intervals[1];
+      } else {
+        // For repetitions >= 3, use ease factor to determine interval
+        final baseInterval = intervals[newRepetitions - 1 < intervals.length ? newRepetitions - 1 : intervals.length - 1];
+        newIntervalDays = (baseInterval * newEaseFactor).round();
+        
+        // Cap at maximum interval
+        if (newIntervalDays > intervals.last) {
+          newIntervalDays = intervals.last;
+        }
+      }
+    }
+
+    final nextDueAt = DateTime.now().dateOnly.add(Duration(days: newIntervalDays));
+
+    return SM2Result(
+      newIntervalDays: newIntervalDays,
+      newEaseFactor: newEaseFactor,
+      newRepetitions: newRepetitions,
+      nextDueAt: nextDueAt,
+    );
+  }
+
+  /// Creates a new revision item for a chapter with initial SM-2 parameters.
+  RevisionItem createRevisionItem({
+    required String userId,
+    required String chapterId,
+    required String title,
+    List<int> intervals = const [1, 3, 7, 14, 30],
+  }) {
+    final initialDueAt = DateTime.now().dateOnly.add(Duration(days: intervals.first));
+    return RevisionItem(
+      userId: userId,
+      chapterId: chapterId,
+      title: title,
+      dueAt: initialDueAt,
+      intervalDays: intervals.first,
+      easeFactor: 2.5,
+      repetitions: 0,
+      status: RevisionStatus.pending,
+    );
+  }
+
+  /// Updates a revision item after a review.
+  RevisionItem updateRevisionItemAfterReview({
+    required RevisionItem item,
+    required ReviewRating rating,
+    required List<int> intervals,
+  }) {
+    final result = calculateSM2Interval(
+      rating: rating,
+      currentIntervalDays: item.intervalDays,
+      currentEaseFactor: item.easeFactor,
+      currentRepetitions: item.repetitions,
+      intervals: intervals,
+    );
+
+    return item.copyWith(
+      dueAt: result.nextDueAt,
+      intervalDays: result.newIntervalDays,
+      easeFactor: result.newEaseFactor,
+      repetitions: result.newRepetitions,
+      status: rating == ReviewRating.again ? RevisionStatus.pending : RevisionStatus.completed,
+    );
+  }
+
+  /// Creates a revision review record preserving history.
+  RevisionReview createRevisionReview({
+    required String userId,
+    required RevisionItem item,
+    required ReviewRating rating,
+    Duration? timeSpent,
+    String? notes,
+    List<int> intervals = const [1, 3, 7, 14, 30],
+  }) {
+    final result = calculateSM2Interval(
+      rating: rating,
+      currentIntervalDays: item.intervalDays,
+      currentEaseFactor: item.easeFactor,
+      currentRepetitions: item.repetitions,
+      intervals: intervals,
+    );
+
+    return RevisionReview(
+      userId: userId,
+      revisionItemId: item.id,
+      rating: rating,
+      reviewedAt: DateTime.now(),
+      previousIntervalDays: item.intervalDays,
+      previousEaseFactor: item.easeFactor,
+      previousRepetitions: item.repetitions,
+      newIntervalDays: result.newIntervalDays,
+      newEaseFactor: result.newEaseFactor,
+      newRepetitions: result.newRepetitions,
+      nextDueAt: result.nextDueAt,
+      timeSpent: timeSpent,
+      notes: notes,
+    );
+  }
+
+  /// Calculates revision health (percentage of due/overdue items reviewed on time).
+  double calculateRevisionHealth(String examId) {
+    final items = _repository.getRevisionItemsForExam(examId);
+    if (items.isEmpty) return 0.0;
+
+    final now = DateTime.now().dateOnly;
+    final dueItems = items.where((i) => i.dueAt.dateOnly.compareTo(now) <= 0 && i.status == RevisionStatus.pending).length;
+    final overdueItems = items.where((i) => i.dueAt.dateOnly.compareTo(now) < 0 && i.status == RevisionStatus.pending).length;
+    final completedOnTime = items.where((i) => i.status == RevisionStatus.completed).length;
+
+    final totalDue = dueItems + overdueItems + completedOnTime;
+    if (totalDue == 0) return 1.0;
+
+    // Health is based on how many items are not overdue
+    return ((totalDue - overdueItems) / totalDue).clamp(0.0, 1.0);
+  }
+
+  /// Generates a daily study plan based on available time, priorities, and due revisions.
+  DailyPlanResult generateDailyPlan({
+    required String examId,
+    required String userId,
+    required int availableMinutes,
+    required int dailyGoalMinutes,
+    required int completedTodayMinutes,
+    required List<DailyPlanTask> existingTasks,
+    int maxOverdueRevisions = 3,
+    int maxDueRevisions = 5,
+    int focusBlockMinutes = 25,
+    int shortBreakMinutes = 5,
+    int longBreakMinutes = 15,
+    int sessionsBeforeLongBreak = 4,
+  }) {
+    final now = DateTime.now().dateOnly;
+    final exam = _repository.getExam(examId);
+    if (exam == null) {
+      return DailyPlanResult(
+        tasks: [],
+        totalEstimatedMinutes: 0,
+        availableMinutes: availableMinutes,
+        workloadWarning: 'Exam not found',
+        examDate: null,
+      );
+    }
+
+    final daysUntilExam = now.daysUntil(exam.examDate);
+    if (daysUntilExam < 0) {
+      return DailyPlanResult(
+        tasks: [],
+        totalEstimatedMinutes: 0,
+        availableMinutes: availableMinutes,
+        workloadWarning: 'Exam has passed',
+        examDate: exam.examDate,
+      );
+    }
+
+    // Calculate remaining time budget
+    final remainingMinutes = availableMinutes - completedTodayMinutes;
+    if (remainingMinutes <= 0) {
+      return DailyPlanResult(
+        tasks: existingTasks,
+        totalEstimatedMinutes: existingTasks.fold(0, (sum, t) => sum + t.estimatedMinutes),
+        availableMinutes: availableMinutes,
+        workloadWarning: 'No available time remaining for today',
+        examDate: exam.examDate,
+      );
+    }
+
+    final tasks = <DailyPlanTask>[];
+    var remainingTime = remainingMinutes;
+    int sortOrder = 0;
+
+    // Get existing task IDs to prevent duplicates
+    final existingSourceIds = existingTasks.where((t) => t.sourceId != null).map((t) => t.sourceId!).toSet();
+
+    // 1. Add overdue revisions first (cap at maxOverdueRevisions)
+    final overdueRevisions = _repository.getOverdueRevisionItems(examId)
+        .where((r) => !existingSourceIds.contains(r.id))
+        .take(maxOverdueRevisions)
+        .toList();
+
+    for (final revision in overdueRevisions) {
+      if (remainingTime <= 0) break;
+      final estimatedMinutes = focusBlockMinutes; // Use focus block for revisions
+      if (estimatedMinutes <= remainingTime) {
+        tasks.add(DailyPlanTask(
+          userId: userId,
+          date: now,
+          title: 'Revision: ${revision.title}',
+          description: 'Overdue revision (due ${revision.dueAt.formattedShort})',
+          type: DailyPlanTaskType.revision,
+          sourceId: revision.id,
+          estimatedMinutes: estimatedMinutes,
+          priorityScore: _calculateRevisionPriority(revision, daysUntilExam, isOverdue: true),
+          sortOrder: sortOrder++,
+        ));
+        remainingTime -= estimatedMinutes;
+      }
+    }
+
+    // 2. Add revisions due today (cap at maxDueRevisions)
+    final dueTodayRevisions = _repository.getDueRevisionItems(examId)
+        .where((r) => r.dueAt.dateOnly == now && !existingSourceIds.contains(r.id))
+        .take(maxDueRevisions)
+        .toList();
+
+    for (final revision in dueTodayRevisions) {
+      if (remainingTime <= 0) break;
+      final estimatedMinutes = focusBlockMinutes;
+      if (estimatedMinutes <= remainingTime) {
+        tasks.add(DailyPlanTask(
+          userId: userId,
+          date: now,
+          title: 'Revision: ${revision.title}',
+          description: 'Due today',
+          type: DailyPlanTaskType.revision,
+          sourceId: revision.id,
+          estimatedMinutes: estimatedMinutes,
+          priorityScore: _calculateRevisionPriority(revision, daysUntilExam, isOverdue: false),
+          sortOrder: sortOrder++,
+        ));
+        remainingTime -= estimatedMinutes;
+      }
+    }
+
+    // 3. Rank incomplete chapters by priority
+    final incompleteChapters = _getIncompleteChaptersWithPriority(examId, daysUntilExam, existingSourceIds);
+
+    // 4. Add chapters until time runs out
+    for (final chapter in incompleteChapters) {
+      if (remainingTime <= 0) break;
+      // Estimate minutes based on chapter difficulty or use focus block
+      final estimatedMinutes = (chapter.estimatedMinutes > 0 ? chapter.estimatedMinutes : focusBlockMinutes * 2);
+      if (estimatedMinutes <= remainingTime) {
+        tasks.add(DailyPlanTask(
+          userId: userId,
+          date: now,
+          title: 'Study: ${chapter.name}',
+          description: chapter.description.isNotEmpty ? chapter.description : 'Study chapter',
+          type: DailyPlanTaskType.studyChapter,
+          sourceId: chapter.id,
+          estimatedMinutes: estimatedMinutes,
+          priorityScore: _calculateChapterPriority(chapter, daysUntilExam),
+          sortOrder: sortOrder++,
+        ));
+        remainingTime -= estimatedMinutes;
+      }
+    }
+
+    // 5. Add breaks between focus blocks
+    final tasksWithBreaks = _addBreaks(tasks, focusBlockMinutes, shortBreakMinutes, longBreakMinutes, sessionsBeforeLongBreak);
+
+    // Calculate workload warning
+    final totalEstimatedMinutes = tasksWithBreaks.where((t) => t.type != DailyPlanTaskType.breakTime)
+        .fold(0, (sum, t) => sum + t.estimatedMinutes);
+    final totalRequiredMinutes = _estimateTotalRequiredMinutes(examId, daysUntilExam);
+    String? workloadWarning;
+    if (totalRequiredMinutes > availableMinutes * daysUntilExam) {
+      final deficit = totalRequiredMinutes - (availableMinutes * daysUntilExam);
+      workloadWarning = 'Workload warning: ${deficit} minutes of study cannot fit in remaining ${daysUntilExam} days. Consider increasing daily study time or adjusting goals.';
+    }
+
+    // Sort by priority score (highest first) then by sort order
+    tasksWithBreaks.sort((a, b) {
+      if (a.priorityScore != b.priorityScore) {
+        return b.priorityScore.compareTo(a.priorityScore);
+      }
+      return a.sortOrder.compareTo(b.sortOrder);
+    });
+
+    // Re-assign sort order after sorting
+    for (int i = 0; i < tasksWithBreaks.length; i++) {
+      tasksWithBreaks[i] = tasksWithBreaks[i].copyWith(sortOrder: i);
+    }
+
+    return DailyPlanResult(
+      tasks: tasksWithBreaks,
+      totalEstimatedMinutes: totalEstimatedMinutes,
+      availableMinutes: availableMinutes,
+      workloadWarning: workloadWarning,
+      examDate: exam.examDate,
+    );
+  }
+
+  int _calculateRevisionPriority(RevisionItem revision, int daysUntilExam, {required bool isOverdue}) {
+    int score = 0;
+    if (isOverdue) score += 1000;
+    score += (30 - daysUntilExam).clamp(0, 30) * 10; // Urgency based on exam proximity
+    score += (revision.repetitions * 5); // More repetitions = higher priority to maintain
+    return score;
+  }
+
+  int _calculateChapterPriority(Chapter chapter, int daysUntilExam) {
+    int score = 0;
+    score += (30 - daysUntilExam).clamp(0, 30) * 8; // Urgency
+    score += (chapter.importance * 20); // User-set importance (1-5)
+    score += (chapter.difficulty * 10); // Difficulty (1-5)
+    if (chapter.isInProgress) score += 50; // In progress chapters get priority
+    return score;
+  }
+
+  List<Chapter> _getIncompleteChaptersWithPriority(String examId, int daysUntilExam, Set<String> existingSourceIds) {
+    final chapters = _repository.getAllChaptersForExam(examId)
+        .where((c) => !c.isCompleted && !existingSourceIds.contains(c.id))
+        .toList();
+    
+    // Sort by priority
+    chapters.sort((a, b) => _calculateChapterPriority(b, daysUntilExam).compareTo(_calculateChapterPriority(a, daysUntilExam)));
+    return chapters;
+  }
+
+  List<DailyPlanTask> _addBreaks(
+    List<DailyPlanTask> tasks,
+    int focusBlockMinutes,
+    int shortBreakMinutes,
+    int longBreakMinutes,
+    int sessionsBeforeLongBreak,
+  ) {
+    final result = <DailyPlanTask>[];
+    int focusSessionCount = 0;
+
+    for (final task in tasks) {
+      if (task.type == DailyPlanTaskType.studyChapter || task.type == DailyPlanTaskType.revision || task.type == DailyPlanTaskType.flashcard) {
+        // Check if we need a break before this task
+        if (focusSessionCount > 0) {
+          if (focusSessionCount % sessionsBeforeLongBreak == 0) {
+            result.add(DailyPlanTask(
+              userId: task.userId,
+              date: task.date,
+              title: 'Long Break',
+              description: 'Take a long break',
+              type: DailyPlanTaskType.breakTime,
+              estimatedMinutes: longBreakMinutes,
+              sortOrder: result.length,
+            ));
+          } else {
+            result.add(DailyPlanTask(
+              userId: task.userId,
+              date: task.date,
+              title: 'Short Break',
+              description: 'Take a short break',
+              type: DailyPlanTaskType.breakTime,
+              estimatedMinutes: shortBreakMinutes,
+              sortOrder: result.length,
+            ));
+          }
+        }
+        focusSessionCount++;
+      }
+      result.add(task);
+    }
+
+    return result;
+  }
+
+  int _estimateTotalRequiredMinutes(String examId, int daysUntilExam) {
+    final chapters = _repository.getAllChaptersForExam(examId)
+        .where((c) => !c.isCompleted)
+        .toList();
+    
+    int totalMinutes = 0;
+    for (final chapter in chapters) {
+      totalMinutes += chapter.estimatedMinutes > 0 ? chapter.estimatedMinutes : 50; // Default 50 min per chapter
+    }
+    
+    // Add revision time (estimate 25 min per revision item due in remaining days)
+    final revisionItems = _repository.getRevisionItemsForExam(examId);
+    final upcomingRevisions = revisionItems.where((r) => r.status == RevisionStatus.pending).length;
+    totalMinutes += upcomingRevisions * 25;
+    
+    return totalMinutes;
   }
 
   List<DateTime> _getLast7Days(DateTime refDate) {
@@ -472,4 +877,45 @@ class ReadinessScore {
     required this.hasRevisionData,
     required this.hasPracticeData,
   });
+}
+
+/// SM-2 calculation result
+class SM2Result {
+  final int newIntervalDays;
+  final double newEaseFactor;
+  final int newRepetitions;
+  final DateTime nextDueAt;
+
+  SM2Result({
+    required this.newIntervalDays,
+    required this.newEaseFactor,
+    required this.newRepetitions,
+    required this.nextDueAt,
+  });
+}
+
+/// Daily plan generation result
+class DailyPlanResult {
+  final List<DailyPlanTask> tasks;
+  final int totalEstimatedMinutes;
+  final int availableMinutes;
+  final String? workloadWarning;
+  final DateTime? examDate;
+
+  DailyPlanResult({
+    required this.tasks,
+    required this.totalEstimatedMinutes,
+    required this.availableMinutes,
+    this.workloadWarning,
+    this.examDate,
+  });
+
+  int get breakMinutes => tasks.where((t) => t.type == DailyPlanTaskType.breakTime)
+      .fold(0, (sum, t) => sum + t.estimatedMinutes);
+
+  int get studyMinutes => totalEstimatedMinutes;
+
+  double get utilizationPercent => availableMinutes == 0 ? 0.0 : (totalEstimatedMinutes + breakMinutes) / availableMinutes;
+
+  bool get hasWorkloadWarning => workloadWarning != null;
 }

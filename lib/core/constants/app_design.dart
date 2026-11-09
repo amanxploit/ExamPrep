@@ -23,6 +23,14 @@ class AppColors {
   static const successSoft = Color(0xFFE3F6EE);
   static const successDark = Color(0xFF1E9E70);
   
+  static const warning = Color(0xFFF59E0B);
+  static const warningSoft = Color(0xFFFFF4E6);
+  static const warningDark = Color(0xFFD97706);
+  
+  static const error = Color(0xFFEF4444);
+  static const errorSoft = Color(0xFFFEF2F2);
+  static const errorDark = Color(0xFFDC2626);
+  
   static const indigo = Color(0xFF2E3192);
   static const indigoSoft = Color(0xFFECEBFB);
   
@@ -34,6 +42,11 @@ class AppColors {
   
   static const purple = Color(0xFF8B6CF0);
   static const purpleSoft = Color(0xFFF1ECFE);
+  
+  static const secondary = Color(0xFF6366F1);
+  static const secondarySoft = Color(0xFFEEF2FF);
+  
+  static const border = Color(0xFFE5E5E5);
   
   // Text
   static const textPrimary = Color(0xFF16161A);
@@ -145,6 +158,8 @@ class AppRadius {
   static const playButton = 44.0;
   static const navBar = 32.0;
   static const navItem = 999.0;
+  static const sm = 8.0;
+  static const pill = 999.0;
 }
 
 class AppSpacing {

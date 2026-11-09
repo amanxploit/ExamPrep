@@ -8,6 +8,10 @@ import 'package:exam_prep/data/models/study_task.dart';
 import 'package:exam_prep/data/models/focus_session.dart';
 import 'package:exam_prep/data/models/settings.dart';
 import 'package:exam_prep/data/models/timer_state.dart';
+import 'package:exam_prep/data/models/revision_item.dart';
+import 'package:exam_prep/data/models/revision_review.dart';
+import 'package:exam_prep/data/models/flashcard.dart';
+import 'package:exam_prep/data/models/daily_plan_task.dart';
 import 'package:exam_prep/core/extensions/extensions.dart';
 
 part 'exam_repository.g.dart';
@@ -20,6 +24,11 @@ class ExamRepository {
   final Box<FocusSession> _sessionBox;
   final Box<Settings> _settingsBox;
   final Box<TimerState> _timerStateBox;
+  final Box<RevisionItem> _revisionItemBox;
+  final Box<RevisionReview> _revisionReviewBox;
+  final Box<Flashcard> _flashcardBox;
+  final Box<FlashcardReview> _flashcardReviewBox;
+  final Box<DailyPlanTask> _dailyPlanTaskBox;
   
   ExamRepository({
     required Box<Exam> examBox,
@@ -29,13 +38,23 @@ class ExamRepository {
     required Box<FocusSession> sessionBox,
     required Box<Settings> settingsBox,
     required Box<TimerState> timerStateBox,
+    required Box<RevisionItem> revisionItemBox,
+    required Box<RevisionReview> revisionReviewBox,
+    required Box<Flashcard> flashcardBox,
+    required Box<FlashcardReview> flashcardReviewBox,
+    required Box<DailyPlanTask> dailyPlanTaskBox,
   }) : _examBox = examBox,
        _subjectBox = subjectBox,
        _chapterBox = chapterBox,
        _taskBox = taskBox,
        _sessionBox = sessionBox,
        _settingsBox = settingsBox,
-       _timerStateBox = timerStateBox;
+       _timerStateBox = timerStateBox,
+       _revisionItemBox = revisionItemBox,
+       _revisionReviewBox = revisionReviewBox,
+       _flashcardBox = flashcardBox,
+       _flashcardReviewBox = flashcardReviewBox,
+       _dailyPlanTaskBox = dailyPlanTaskBox;
   
   // Exam operations
   List<Exam> getAllExams() => _examBox.values.toList()..sort((a, b) => a.examDate.compareTo(b.examDate));
@@ -239,6 +258,145 @@ class ExamRepository {
     await _timerStateBox.delete('timer_state');
   }
   
+  // RevisionItem operations
+  List<RevisionItem> getRevisionItemsForExam(String examId) {
+    final chapterIds = _chapterBox.values
+        .where((c) => _subjectBox.values.any((s) => s.examId == examId && s.id == c.subjectId))
+        .map((c) => c.id)
+        .toSet();
+    return _revisionItemBox.values
+        .where((r) => chapterIds.contains(r.chapterId) && r.status != RevisionStatus.archived)
+        .toList()
+      ..sort((a, b) => a.dueAt.compareTo(b.dueAt));
+  }
+  
+  List<RevisionItem> getDueRevisionItems(String examId) {
+    final now = DateTime.now().dateOnly;
+    return getRevisionItemsForExam(examId)
+        .where((r) => r.dueAt.dateOnly.compareTo(now) <= 0 && r.status == RevisionStatus.pending)
+        .toList();
+  }
+  
+  List<RevisionItem> getOverdueRevisionItems(String examId) {
+    final now = DateTime.now().dateOnly;
+    return getRevisionItemsForExam(examId)
+        .where((r) => r.dueAt.dateOnly.compareTo(now) < 0 && r.status == RevisionStatus.pending)
+        .toList();
+  }
+  
+  List<RevisionItem> getUpcomingRevisionItems(String examId) {
+    final now = DateTime.now().dateOnly;
+    return getRevisionItemsForExam(examId)
+        .where((r) => r.dueAt.dateOnly.compareTo(now) > 0 && r.status == RevisionStatus.pending)
+        .toList();
+  }
+  
+  RevisionItem? getRevisionItem(String id) => _revisionItemBox.get(id);
+  
+  Future<void> addRevisionItem(RevisionItem item) async {
+    await _revisionItemBox.put(item.id, item);
+  }
+  
+  Future<void> updateRevisionItem(RevisionItem item) async {
+    await _revisionItemBox.put(item.id, item.copyWith(updatedAt: DateTime.now()));
+  }
+  
+  Future<void> deleteRevisionItem(String id) async {
+    await _revisionItemBox.delete(id);
+  }
+  
+  // RevisionReview operations
+  List<RevisionReview> getReviewsForItem(String revisionItemId) => 
+      _revisionReviewBox.values
+          .where((r) => r.revisionItemId == revisionItemId)
+          .toList()
+        ..sort((a, b) => b.reviewedAt.compareTo(a.reviewedAt));
+  
+  List<RevisionReview> getAllReviewsForExam(String examId) {
+    final itemIds = getRevisionItemsForExam(examId).map((i) => i.id).toSet();
+    return _revisionReviewBox.values
+        .where((r) => itemIds.contains(r.revisionItemId))
+        .toList()
+      ..sort((a, b) => b.reviewedAt.compareTo(a.reviewedAt));
+  }
+  
+  Future<void> addRevisionReview(RevisionReview review) async {
+    await _revisionReviewBox.put(review.id, review);
+  }
+  
+  // Flashcard operations
+  List<Flashcard> getFlashcardsForExam(String examId) {
+    final chapterIds = _chapterBox.values
+        .where((c) => _subjectBox.values.any((s) => s.examId == examId && s.id == c.subjectId))
+        .map((c) => c.id)
+        .toSet();
+    return _flashcardBox.values
+        .where((f) => (f.chapterId != null && chapterIds.contains(f.chapterId!)) || 
+                      (f.revisionItemId != null && _revisionItemBox.values.any((r) => r.id == f.revisionItemId && chapterIds.contains(r.chapterId))))
+        .toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+  
+  List<Flashcard> getFlashcardsForChapter(String chapterId) => 
+      _flashcardBox.values.where((f) => f.chapterId == chapterId).toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  
+  Flashcard? getFlashcard(String id) => _flashcardBox.get(id);
+  
+  Future<void> addFlashcard(Flashcard flashcard) async {
+    await _flashcardBox.put(flashcard.id, flashcard);
+  }
+  
+  Future<void> updateFlashcard(Flashcard flashcard) async {
+    await _flashcardBox.put(flashcard.id, flashcard.copyWith(updatedAt: DateTime.now()));
+  }
+  
+  Future<void> deleteFlashcard(String id) async {
+    await _flashcardBox.delete(id);
+  }
+  
+  // FlashcardReview operations
+  List<FlashcardReview> getFlashcardReviews(String flashcardId) => 
+      _flashcardReviewBox.values.where((r) => r.flashcardId == flashcardId).toList()
+        ..sort((a, b) => b.reviewedAt.compareTo(a.reviewedAt));
+  
+  Future<void> addFlashcardReview(FlashcardReview review) async {
+    await _flashcardReviewBox.put(review.id, review);
+  }
+  
+  // DailyPlanTask operations
+  List<DailyPlanTask> getDailyPlanTasks(String userId, DateTime date) {
+    final dateOnly = date.dateOnly;
+    return _dailyPlanTaskBox.values
+        .where((t) => t.userId == userId && t.date.dateOnly == dateOnly)
+        .toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+  }
+  
+  List<DailyPlanTask> getTodaysTasks(String userId) => getDailyPlanTasks(userId, DateTime.now());
+  
+  DailyPlanTask? getDailyPlanTask(String id) => _dailyPlanTaskBox.get(id);
+  
+  Future<void> addDailyPlanTask(DailyPlanTask task) async {
+    await _dailyPlanTaskBox.put(task.id, task);
+  }
+  
+  Future<void> updateDailyPlanTask(DailyPlanTask task) async {
+    await _dailyPlanTaskBox.put(task.id, task.copyWith(updatedAt: DateTime.now()));
+  }
+  
+  Future<void> deleteDailyPlanTask(String id) async {
+    await _dailyPlanTaskBox.delete(id);
+  }
+  
+  Future<void> reorderDailyPlanTasks(List<DailyPlanTask> tasks) async {
+    for (int i = 0; i < tasks.length; i++) {
+      if (tasks[i].sortOrder != i) {
+        await _dailyPlanTaskBox.put(tasks[i].id, tasks[i].copyWith(sortOrder: i, updatedAt: DateTime.now()));
+      }
+    }
+  }
+  
   // Stream providers
   Stream<List<Exam>> watchExams() => _examBox.watch().map((_) => getAllExams());
   
@@ -253,6 +411,14 @@ class ExamRepository {
   Stream<List<FocusSession>> watchSessions(String? examId) => _sessionBox.watch().map((_) => getCompletedSessions(examId));
   
   Stream<Settings> watchSettings() => _settingsBox.watch().map((_) => getSettings());
+  
+  Stream<List<RevisionItem>> watchRevisionItems(String examId) => _revisionItemBox.watch().map((_) => getRevisionItemsForExam(examId));
+  
+  Stream<List<RevisionReview>> watchRevisionReviews(String revisionItemId) => _revisionReviewBox.watch().map((_) => getReviewsForItem(revisionItemId));
+  
+  Stream<List<Flashcard>> watchFlashcards(String examId) => _flashcardBox.watch().map((_) => getFlashcardsForExam(examId));
+  
+  Stream<List<DailyPlanTask>> watchDailyPlanTasks(String userId, DateTime date) => _dailyPlanTaskBox.watch().map((_) => getDailyPlanTasks(userId, date));
 }
 
 @riverpod
@@ -265,5 +431,10 @@ ExamRepository examRepository(ExamRepositoryRef ref) {
     sessionBox: Hive.box<FocusSession>(focusSessionBoxName),
     settingsBox: Hive.box<Settings>(settingsBoxName),
     timerStateBox: Hive.box<TimerState>(timerStateBoxName),
+    revisionItemBox: Hive.box<RevisionItem>(revisionItemBoxName),
+    revisionReviewBox: Hive.box<RevisionReview>(revisionReviewBoxName),
+    flashcardBox: Hive.box<Flashcard>(flashcardBoxName),
+    flashcardReviewBox: Hive.box<FlashcardReview>(flashcardReviewBoxName),
+    dailyPlanTaskBox: Hive.box<DailyPlanTask>(dailyPlanTaskBoxName),
   );
 }

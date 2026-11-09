@@ -28,6 +28,10 @@ extension DateTimeExtensions on DateTime {
   
   String get weekdayInitial => DateFormat('E').format(this)[0];
   
+  String get formattedShort => DateFormat('MMM d').format(this);
+  
+  String get formattedMedium => DateFormat('MMM d, yyyy').format(this);
+  
   DateTime get startOfDay => DateTime(year, month, day);
   
   DateTime get endOfDay => DateTime(year, month, day, 23, 59, 59);

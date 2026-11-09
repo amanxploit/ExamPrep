@@ -543,6 +543,7 @@ class PrimaryPillButton extends StatelessWidget {
   final bool isLoading;
   final bool isSecondary;
   final double? width;
+  final Color? color;
   
   const PrimaryPillButton({
     super.key,
@@ -552,13 +553,14 @@ class PrimaryPillButton extends StatelessWidget {
     this.isLoading = false,
     this.isSecondary = false,
     this.width,
+    this.color,
   });
   
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = isSecondary ? Colors.white : AppColors.primary;
-    final foregroundColor = isSecondary ? AppColors.primary : Colors.white;
-    final borderColor = isSecondary ? AppColors.primary : Colors.transparent;
+    final backgroundColor = isSecondary ? Colors.white : (color ?? AppColors.primary);
+    final foregroundColor = isSecondary ? (color ?? AppColors.primary) : Colors.white;
+    final borderColor = isSecondary ? (color ?? AppColors.primary) : Colors.transparent;
     
     return AnimatedScale(
       scale: 1.0,
@@ -574,6 +576,77 @@ class PrimaryPillButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.button),
             border: Border.all(color: borderColor, width: 1.5),
             boxShadow: isSecondary ? [] : [AppShadows.buttonShadow],
+          ),
+          child: Center(
+            child: isLoading
+                ? SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
+                    ),
+                  )
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (icon != null) ...[
+                        Icon(icon, color: foregroundColor, size: 20),
+                        const SizedBox(width: 8),
+                      ],
+                      Text(
+                        label,
+                        style: AppTextStyles.buttonText.copyWith(
+                          color: foregroundColor,
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class OutlinedPillButton extends StatelessWidget {
+  final String label;
+  final IconData? icon;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final double? width;
+  final Color? color;
+  final Color? textColor;
+  
+  const OutlinedPillButton({
+    super.key,
+    required this.label,
+    this.icon,
+    this.onPressed,
+    this.isLoading = false,
+    this.width,
+    this.color,
+    this.textColor,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    final borderColor = color ?? AppColors.primary;
+    final foregroundColor = textColor ?? (color ?? AppColors.primary);
+    
+    return AnimatedScale(
+      scale: 1.0,
+      duration: AppDurations.pressScale,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(AppRadius.button),
+        child: Container(
+          width: width,
+          height: 52,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(AppRadius.button),
+            border: Border.all(color: borderColor, width: 1.5),
           ),
           child: Center(
             child: isLoading

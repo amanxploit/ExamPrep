@@ -23,6 +23,21 @@ class Chapter extends HiveObject {
   @HiveField(5)
   DateTime? completedAt;
   
+  @HiveField(6)
+  int estimatedMinutes;
+  
+  @HiveField(7)
+  int importance;
+  
+  @HiveField(8)
+  int difficulty;
+  
+  @HiveField(9)
+  bool isInProgress;
+  
+  @HiveField(10)
+  String description;
+
   Chapter({
     String? id,
     required this.subjectId,
@@ -30,6 +45,11 @@ class Chapter extends HiveObject {
     required this.order,
     this.isCompleted = false,
     this.completedAt,
+    this.estimatedMinutes = 0,
+    this.importance = 3,
+    this.difficulty = 3,
+    this.isInProgress = false,
+    this.description = '',
   }) : id = id ?? const Uuid().v4();
   
   Chapter copyWith({
@@ -39,6 +59,11 @@ class Chapter extends HiveObject {
     int? order,
     bool? isCompleted,
     DateTime? completedAt,
+    int? estimatedMinutes,
+    int? importance,
+    int? difficulty,
+    bool? isInProgress,
+    String? description,
     bool clearCompletedAt = false,
   }) {
     return Chapter(
@@ -48,6 +73,11 @@ class Chapter extends HiveObject {
       order: order ?? this.order,
       isCompleted: isCompleted ?? this.isCompleted,
       completedAt: clearCompletedAt ? null : (completedAt ?? this.completedAt),
+      estimatedMinutes: estimatedMinutes ?? this.estimatedMinutes,
+      importance: importance ?? this.importance,
+      difficulty: difficulty ?? this.difficulty,
+      isInProgress: isInProgress ?? this.isInProgress,
+      description: description ?? this.description,
     );
   }
   
@@ -59,6 +89,14 @@ class Chapter extends HiveObject {
   void markIncomplete() {
     isCompleted = false;
     completedAt = null;
+  }
+  
+  void markInProgress() {
+    isInProgress = true;
+  }
+  
+  void markNotInProgress() {
+    isInProgress = false;
   }
   
   @override

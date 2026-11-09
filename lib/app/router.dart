@@ -8,6 +8,9 @@ import '../features/progress/presentation/progress_screen.dart';
 import '../features/exams/presentation/exams_screen.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
+import '../features/revision/presentation/revision_screen.dart';
+import '../features/revision/presentation/flashcard_screen.dart';
+import '../features/plan/presentation/daily_plan_screen.dart';
 import '../core/widgets/common_widgets.dart';
 import '../core/constants/app_design.dart';
 import '../core/constants/app_text_styles.dart';
@@ -94,6 +97,22 @@ GoRouter router(RouterRef ref) {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/revision',
+        builder: (context, state) => const RevisionScreen(),
+      ),
+      GoRoute(
+        path: '/flashcards',
+        builder: (context, state) => const FlashcardScreen(),
+      ),
+      GoRoute(
+        path: '/plan',
+        builder: (context, state) => const DailyPlanScreen(),
+      ),
+      GoRoute(
+        path: '/flashcards/chapter/:chapterId',
+        builder: (context, state) => FlashcardScreen(chapterId: state.pathParameters['chapterId']),
       ),
     ],
   );

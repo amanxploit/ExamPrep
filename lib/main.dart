@@ -13,6 +13,10 @@ import 'data/models/study_task.dart';
 import 'data/models/focus_session.dart';
 import 'data/models/settings.dart';
 import 'data/models/timer_state.dart';
+import 'data/models/revision_item.dart';
+import 'data/models/revision_review.dart';
+import 'data/models/flashcard.dart';
+import 'data/models/daily_plan_task.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +41,11 @@ void main() async {
   await Hive.openBox<FocusSession>(focusSessionBoxName);
   await Hive.openBox<Settings>(settingsBoxName);
   await Hive.openBox<TimerState>(timerStateBoxName);
+  await Hive.openBox<RevisionItem>(revisionItemBoxName);
+  await Hive.openBox<RevisionReview>(revisionReviewBoxName);
+  await Hive.openBox<Flashcard>(flashcardBoxName);
+  await Hive.openBox<FlashcardReview>(flashcardReviewBoxName);
+  await Hive.openBox<DailyPlanTask>(dailyPlanTaskBoxName);
   
   // Set preferred orientations
   // await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);

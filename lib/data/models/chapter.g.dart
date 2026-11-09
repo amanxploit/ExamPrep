@@ -23,13 +23,18 @@ class ChapterAdapter extends TypeAdapter<Chapter> {
       order: fields[3] as int,
       isCompleted: fields[4] as bool,
       completedAt: fields[5] as DateTime?,
+      estimatedMinutes: fields[6] as int,
+      importance: fields[7] as int,
+      difficulty: fields[8] as int,
+      isInProgress: fields[9] as bool,
+      description: fields[10] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Chapter obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +46,17 @@ class ChapterAdapter extends TypeAdapter<Chapter> {
       ..writeByte(4)
       ..write(obj.isCompleted)
       ..writeByte(5)
-      ..write(obj.completedAt);
+      ..write(obj.completedAt)
+      ..writeByte(6)
+      ..write(obj.estimatedMinutes)
+      ..writeByte(7)
+      ..write(obj.importance)
+      ..writeByte(8)
+      ..write(obj.difficulty)
+      ..writeByte(9)
+      ..write(obj.isInProgress)
+      ..writeByte(10)
+      ..write(obj.description);
   }
 
   @override
