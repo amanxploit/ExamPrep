@@ -8,19 +8,19 @@ part 'subject.g.dart';
 class Subject extends HiveObject {
   @HiveField(0)
   String id;
-  
+
   @HiveField(1)
   String examId;
-  
+
   @HiveField(2)
   String name;
-  
+
   @HiveField(3)
   int order;
-  
+
   @HiveField(4)
   int colorValue;
-  
+
   Subject({
     String? id,
     required this.examId,
@@ -28,7 +28,7 @@ class Subject extends HiveObject {
     required this.order,
     required this.colorValue,
   }) : id = id ?? const Uuid().v4();
-  
+
   Subject copyWith({
     String? id,
     String? examId,
@@ -44,9 +44,9 @@ class Subject extends HiveObject {
       colorValue: colorValue ?? this.colorValue,
     );
   }
-  
+
   Color get color => Color(colorValue);
-  
+
   @override
   String toString() => 'Subject(id: $id, name: $name, order: $order)';
 }

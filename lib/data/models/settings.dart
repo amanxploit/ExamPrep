@@ -7,31 +7,31 @@ part 'settings.g.dart';
 class Settings extends HiveObject {
   @HiveField(0)
   int focusMinutes;
-  
+
   @HiveField(1)
   int shortBreakMinutes;
-  
+
   @HiveField(2)
   int longBreakMinutes;
-  
+
   @HiveField(3)
   int sessionsBeforeLongBreak;
-  
+
   @HiveField(4)
   bool autoStartBreaks;
-  
+
   @HiveField(5)
   bool sound;
-  
+
   @HiveField(6)
   bool vibration;
-  
+
   @HiveField(7)
   String? dailyReminderTime; // HH:mm format
-  
+
   @HiveField(8)
   bool onboardingDone;
-  
+
   Settings({
     this.focusMinutes = 25,
     this.shortBreakMinutes = 5,
@@ -43,7 +43,7 @@ class Settings extends HiveObject {
     this.dailyReminderTime,
     this.onboardingDone = false,
   });
-  
+
   Settings copyWith({
     int? focusMinutes,
     int? shortBreakMinutes,
@@ -60,19 +60,22 @@ class Settings extends HiveObject {
       focusMinutes: focusMinutes ?? this.focusMinutes,
       shortBreakMinutes: shortBreakMinutes ?? this.shortBreakMinutes,
       longBreakMinutes: longBreakMinutes ?? this.longBreakMinutes,
-      sessionsBeforeLongBreak: sessionsBeforeLongBreak ?? this.sessionsBeforeLongBreak,
+      sessionsBeforeLongBreak:
+          sessionsBeforeLongBreak ?? this.sessionsBeforeLongBreak,
       autoStartBreaks: autoStartBreaks ?? this.autoStartBreaks,
       sound: sound ?? this.sound,
       vibration: vibration ?? this.vibration,
-      dailyReminderTime: clearReminderTime ? null : (dailyReminderTime ?? this.dailyReminderTime),
+      dailyReminderTime: clearReminderTime
+          ? null
+          : (dailyReminderTime ?? this.dailyReminderTime),
       onboardingDone: onboardingDone ?? this.onboardingDone,
     );
   }
-  
+
   Duration get focusDuration => Duration(minutes: focusMinutes);
   Duration get shortBreakDuration => Duration(minutes: shortBreakMinutes);
   Duration get longBreakDuration => Duration(minutes: longBreakMinutes);
-  
+
   TimeOfDay? get reminderTimeOfDay {
     if (dailyReminderTime == null) return null;
     final parts = dailyReminderTime!.split(':');

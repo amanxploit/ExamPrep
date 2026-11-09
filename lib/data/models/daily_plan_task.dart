@@ -70,9 +70,9 @@ class DailyPlanTask extends HiveObject {
     this.sortOrder = 0,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : id = id ?? const Uuid().v4(),
-       createdAt = createdAt ?? DateTime.now(),
-       updatedAt = updatedAt ?? DateTime.now();
+  })  : id = id ?? const Uuid().v4(),
+        createdAt = createdAt ?? DateTime.now(),
+        updatedAt = updatedAt ?? DateTime.now();
 
   DailyPlanTask copyWith({
     String? id,
@@ -117,7 +117,8 @@ class DailyPlanTask extends HiveObject {
   bool get isPending => status == DailyPlanTaskStatus.pending;
   bool get isSkipped => status == DailyPlanTaskStatus.skipped;
 
-  int get remainingMinutes => (estimatedMinutes - actualMinutes).clamp(0, estimatedMinutes);
+  int get remainingMinutes =>
+      (estimatedMinutes - actualMinutes).clamp(0, estimatedMinutes);
 }
 
 @HiveType(typeId: 15)

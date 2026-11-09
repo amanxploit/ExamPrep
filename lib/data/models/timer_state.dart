@@ -8,25 +8,25 @@ part 'timer_state.g.dart';
 class TimerState {
   @HiveField(0)
   String? examId;
-  
+
   @HiveField(1)
   SessionType currentType;
-  
+
   @HiveField(2)
   int remainingSeconds;
-  
+
   @HiveField(3)
   bool isRunning;
-  
+
   @HiveField(4)
   int completedFocusSessions;
-  
+
   @HiveField(5)
   DateTime? endTime;
-  
+
   @HiveField(6)
   DateTime? sessionStartTime;
-  
+
   TimerState({
     this.examId,
     required this.currentType,
@@ -36,9 +36,9 @@ class TimerState {
     this.endTime,
     this.sessionStartTime,
   });
-  
+
   Duration get remaining => Duration(seconds: remainingSeconds);
-  
+
   TimerState copyWith({
     String? examId,
     SessionType? currentType,
@@ -53,11 +53,12 @@ class TimerState {
       currentType: currentType ?? this.currentType,
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
       isRunning: isRunning ?? this.isRunning,
-      completedFocusSessions: completedFocusSessions ?? this.completedFocusSessions,
+      completedFocusSessions:
+          completedFocusSessions ?? this.completedFocusSessions,
       endTime: endTime ?? this.endTime,
       sessionStartTime: sessionStartTime ?? this.sessionStartTime,
     );
   }
-  
+
   bool get isTimerActive => isRunning && remainingSeconds > 0;
 }

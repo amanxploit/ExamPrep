@@ -13,7 +13,7 @@ import 'package:exam_prep/core/extensions/extensions.dart';
 
 class FocusScreen extends ConsumerWidget {
   const FocusScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final timerState = ref.watch(focusTimerProvider);
@@ -22,14 +22,14 @@ class FocusScreen extends ConsumerWidget {
     final dailyGoal = ref.watch(dailyGoalMinutesProvider);
     final todayMinutes = ref.watch(todayFocusMinutesProvider);
     final progress = ref.watch(todayFocusProgressProvider);
-    
+
     // Initialize timer if not already
     ref.listen(focusTimerProvider, (prev, next) {
       if (prev == null || prev.currentType != next.currentType) {
         // Timer type changed, will be initialized on first build
       }
     });
-    
+
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
@@ -52,14 +52,15 @@ class FocusScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.sectionVerticalLarge),
               _buildControls(ref, timerState),
               const SizedBox(height: AppSpacing.sectionVerticalLarge),
-              _buildDailyGoalCard(ref, todayMinutes, dailyGoal, progress, completedToday),
+              _buildDailyGoalCard(
+                  ref, todayMinutes, dailyGoal, progress, completedToday),
             ],
           ),
         ),
       ],
     );
   }
-  
+
   Widget _buildHeader(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
@@ -81,17 +82,21 @@ class FocusScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildSegmentedControl(WidgetRef ref, FocusTimerState state) {
     return SegmentedControl<SessionType>(
-      options: const [SessionType.focus, SessionType.shortBreak, SessionType.longBreak],
+      options: const [
+        SessionType.focus,
+        SessionType.shortBreak,
+        SessionType.longBreak
+      ],
       selectedValue: state.currentType,
       onChanged: (type) => ref.read(focusTimerProvider.notifier).setType(type),
       labelBuilder: (type) => type.label,
       trackColor: AppColors.segmentedTrack,
     );
   }
-  
+
   Widget _buildTimerCircle(
     BuildContext context,
     WidgetRef ref,
@@ -103,7 +108,7 @@ class FocusScreen extends ConsumerWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final timerSize = (screenWidth * 0.7).clamp(200.0, 280.0);
     final strokeWidth = (timerSize * 0.03).clamp(6.0, 10.0);
-    
+
     return Center(
       child: SizedBox(
         width: timerSize,
@@ -115,9 +120,11 @@ class FocusScreen extends ConsumerWidget {
               value: progress,
               size: timerSize,
               strokeWidth: strokeWidth,
-              color: state.currentType == SessionType.focus ? AppColors.primary : AppColors.success,
-              trackColor: state.currentType == SessionType.focus 
-                  ? AppColors.primarySoft 
+              color: state.currentType == SessionType.focus
+                  ? AppColors.primary
+                  : AppColors.success,
+              trackColor: state.currentType == SessionType.focus
+                  ? AppColors.primarySoft
                   : AppColors.successSoft,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -125,15 +132,16 @@ class FocusScreen extends ConsumerWidget {
                   Text(
                     state.currentType.label,
                     style: AppTextStyles.timerLabel.copyWith(
-                      color: state.currentType == SessionType.focus 
-                          ? AppColors.primary 
+                      color: state.currentType == SessionType.focus
+                          ? AppColors.primary
                           : AppColors.success,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     state.remaining.formatMMSS(),
-                    style: AppTextStyles.timerNumber.copyWith(fontSize: timerSize * 0.24),
+                    style: AppTextStyles.timerNumber
+                        .copyWith(fontSize: timerSize * 0.24),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -148,10 +156,10 @@ class FocusScreen extends ConsumerWidget {
       ),
     );
   }
-  
+
   Widget _buildSessionDots(WidgetRef ref, int completed, Settings settings) {
     final total = settings.sessionsBeforeLongBreak;
-    
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -175,7 +183,7 @@ class FocusScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildControls(WidgetRef ref, FocusTimerState state) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -209,7 +217,9 @@ class FocusScreen extends ConsumerWidget {
                   child: ScaleTransition(scale: animation, child: child),
                 ),
                 child: Icon(
-                  state.isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                  state.isRunning
+                      ? Icons.pause_rounded
+                      : Icons.play_arrow_rounded,
                   key: ValueKey(state.isRunning),
                   color: Colors.white,
                   size: 32,
@@ -227,7 +237,7 @@ class FocusScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildDailyGoalCard(
     WidgetRef ref,
     int todayMinutes,
@@ -236,7 +246,7 @@ class FocusScreen extends ConsumerWidget {
     int sessions,
   ) {
     final remaining = (dailyGoal - todayMinutes).clamp(0, dailyGoal);
-    
+
     return SoftCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,7 +266,8 @@ class FocusScreen extends ConsumerWidget {
                       '$todayMinutes',
                       style: AppTextStyles.statNumber.copyWith(fontSize: 18),
                     ),
-                    Text('MIN', style: AppTextStyles.caption.copyWith(fontSize: 10)),
+                    Text('MIN',
+                        style: AppTextStyles.caption.copyWith(fontSize: 10)),
                   ],
                 ),
               ),
@@ -303,10 +314,10 @@ class FocusScreen extends ConsumerWidget {
       ),
     );
   }
-  
+
   void _showTimerSettingsSheet(BuildContext context, WidgetRef ref) {
     final settings = ref.read(settingsProvider).value ?? Settings();
-    
+
     int focusMinutes = settings.focusMinutes;
     int shortBreakMinutes = settings.shortBreakMinutes;
     int longBreakMinutes = settings.longBreakMinutes;
@@ -314,13 +325,14 @@ class FocusScreen extends ConsumerWidget {
     bool autoStartBreaks = settings.autoStartBreaks;
     bool sound = settings.sound;
     bool vibration = settings.vibration;
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
       ),
       builder: (context) {
         return StatefulBuilder(
@@ -430,7 +442,7 @@ class FocusScreen extends ConsumerWidget {
       },
     );
   }
-  
+
   Widget _buildDurationRow(
     String label,
     int minutes,
@@ -459,7 +471,7 @@ class FocusScreen extends ConsumerWidget {
       ),
     );
   }
-  
+
   Widget _buildStepperRow(
     String label,
     int value,
@@ -474,8 +486,9 @@ class FocusScreen extends ConsumerWidget {
       ],
     );
   }
-  
-  Widget _buildStepper(int value, ValueChanged<int> onChanged, int min, int max) {
+
+  Widget _buildStepper(
+      int value, ValueChanged<int> onChanged, int min, int max) {
     return Row(
       children: [
         InkWell(

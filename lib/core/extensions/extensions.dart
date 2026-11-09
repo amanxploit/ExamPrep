@@ -4,40 +4,39 @@ import 'package:intl/intl.dart';
 
 extension DateTimeExtensions on DateTime {
   DateTime get dateOnly => DateTime(year, month, day);
-  
-  bool isSameDay(DateTime other) => 
-    year == other.year && month == other.month && day == other.day;
-  
+
+  bool isSameDay(DateTime other) =>
+      year == other.year && month == other.month && day == other.day;
+
   bool isToday() => isSameDay(DateTime.now().dateOnly);
-  
-  bool isYesterday() => isSameDay(DateTime.now().dateOnly.subtract(const Duration(days: 1)));
-  
-  int daysBetween(DateTime other) => 
-    dateOnly.difference(other.dateOnly).inDays;
-  
-  int daysUntil(DateTime future) => 
-    future.dateOnly.difference(dateOnly).inDays;
-  
+
+  bool isYesterday() =>
+      isSameDay(DateTime.now().dateOnly.subtract(const Duration(days: 1)));
+
+  int daysBetween(DateTime other) => dateOnly.difference(other.dateOnly).inDays;
+
+  int daysUntil(DateTime future) => future.dateOnly.difference(dateOnly).inDays;
+
   String formatMMMd() => DateFormat('MMM d, yyyy').format(this);
-  
+
   String formatMMMdYYYY() => DateFormat('MMM d, yyyy').format(this);
-  
+
   String formatTime() => DateFormat('h:mm a').format(this);
-  
+
   String formatShortTime() => DateFormat('HH:mm').format(this);
-  
+
   String get weekdayInitial => DateFormat('E').format(this)[0];
-  
+
   String get formattedShort => DateFormat('MMM d').format(this);
-  
+
   String get formattedMedium => DateFormat('MMM d, yyyy').format(this);
-  
+
   DateTime get startOfDay => DateTime(year, month, day);
-  
+
   DateTime get endOfDay => DateTime(year, month, day, 23, 59, 59);
-  
+
   bool get isInFuture => isAfter(DateTime.now());
-  
+
   bool get isInPast => isBefore(DateTime.now());
 }
 
@@ -53,13 +52,13 @@ extension DurationExtensions on Duration {
       return '${minutes}m';
     }
   }
-  
+
   String formatMinutesSeconds() {
     final minutes = inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = inSeconds.remainder(60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
   }
-  
+
   String formatMMSS() {
     final minutes = inMinutes.toString().padLeft(2, '0');
     final seconds = inSeconds.remainder(60).toString().padLeft(2, '0');
@@ -68,9 +67,9 @@ extension DurationExtensions on Duration {
 }
 
 extension StringExtensions on String {
-  String capitalize() => 
-    isEmpty ? this : '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
-  
+  String capitalize() =>
+      isEmpty ? this : '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
+
   String sentenceCase() {
     if (isEmpty) return this;
     return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';

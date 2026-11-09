@@ -6,7 +6,7 @@ import '../core/constants/app_text_styles.dart';
 class AppTheme {
   static ThemeData get light {
     final base = ThemeData.light(useMaterial3: true);
-    
+
     return base.copyWith(
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
@@ -99,7 +99,8 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.inputFill,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.input),
           borderSide: const BorderSide(color: AppColors.inputBorder),
@@ -118,13 +119,15 @@ class AppTheme {
         ),
         labelStyle: AppTextStyles.fieldLabel,
         hintStyle: AppTextStyles.inputHint,
-        floatingLabelStyle: AppTextStyles.fieldLabel.copyWith(color: AppColors.primary),
+        floatingLabelStyle:
+            AppTextStyles.fieldLabel.copyWith(color: AppColors.primary),
       ),
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
+          borderRadius:
+              BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
         ),
         elevation: 8,
         shadowColor: Colors.black26,
@@ -155,7 +158,8 @@ class AppTheme {
         backgroundColor: AppColors.primarySoft,
         selectedColor: AppColors.primary,
         labelStyle: AppTextStyles.chipText,
-        secondaryLabelStyle: AppTextStyles.chipText.copyWith(color: Colors.white),
+        secondaryLabelStyle:
+            AppTextStyles.chipText.copyWith(color: Colors.white),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.chip),
@@ -173,7 +177,8 @@ class AppTheme {
         thumbColor: AppColors.primary,
         overlayColor: AppColors.primary.withOpacity(0.2),
         valueIndicatorColor: AppColors.primary,
-        valueIndicatorTextStyle: AppTextStyles.caption.copyWith(color: Colors.white),
+        valueIndicatorTextStyle:
+            AppTextStyles.caption.copyWith(color: Colors.white),
         trackHeight: 4,
       ),
       tabBarTheme: TabBarThemeData(

@@ -36,9 +36,10 @@ void main() {
       final mockRepo = MockExamRepository();
       when(() => mockRepo.getAllExams()).thenReturn([]);
       when(() => mockRepo.getActiveExam()).thenReturn(null);
-      when(() => mockRepo.watchActiveExam()).thenAnswer((_) => Stream.value(null));
+      when(() => mockRepo.watchActiveExam())
+          .thenAnswer((_) => Stream.value(null));
       when(() => mockRepo.watchExams()).thenAnswer((_) => Stream.value([]));
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -49,20 +50,22 @@ void main() {
           ),
         ),
       );
-      
+
       await tester.pumpAndSettle();
-      
+
       expect(find.text('No exams yet'), findsOneWidget);
       expect(find.text('Create your first exam'), findsOneWidget);
     });
-    
-    testWidgets('shows greeting and settings button', (WidgetTester tester) async {
+
+    testWidgets('shows greeting and settings button',
+        (WidgetTester tester) async {
       final mockRepo = MockExamRepository();
       when(() => mockRepo.getAllExams()).thenReturn([]);
       when(() => mockRepo.getActiveExam()).thenReturn(null);
-      when(() => mockRepo.watchActiveExam()).thenAnswer((_) => Stream.value(null));
+      when(() => mockRepo.watchActiveExam())
+          .thenAnswer((_) => Stream.value(null));
       when(() => mockRepo.watchExams()).thenAnswer((_) => Stream.value([]));
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -73,20 +76,20 @@ void main() {
           ),
         ),
       );
-      
+
       await tester.pumpAndSettle();
-      
+
       expect(find.text("Let's get ready"), findsOneWidget);
       expect(find.byIcon(Icons.tune_rounded), findsOneWidget);
     });
   });
-  
+
   group('NewExamSheet', () {
     testWidgets('validates required fields', (WidgetTester tester) async {
       final mockRepo = MockExamRepository();
       when(() => mockRepo.addExam(any())).thenAnswer((_) async {});
       when(() => mockRepo.getAllExams()).thenReturn([]);
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -104,32 +107,32 @@ void main() {
           ),
         ),
       );
-      
+
       await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
-      
+
       // Try to submit without name
       final createButton = find.widgetWithText(FilledButton, 'Create exam');
       expect(createButton, findsOneWidget);
-      
+
       // Button should be disabled when name is empty
       final button = tester.widget<FilledButton>(createButton);
       expect(button.onPressed, isNull);
-      
+
       // Enter name
       await tester.enterText(find.byType(TextField).first, 'Test Exam');
       await tester.pump();
-      
+
       // Button should now be enabled
       final button2 = tester.widget<FilledButton>(createButton);
       expect(button2.onPressed, isNotNull);
     });
-    
+
     testWidgets('validates date is in future', (WidgetTester tester) async {
       final mockRepo = MockExamRepository();
       when(() => mockRepo.addExam(any())).thenAnswer((_) async {});
       when(() => mockRepo.getAllExams()).thenReturn([]);
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -147,31 +150,35 @@ void main() {
           ),
         ),
       );
-      
+
       await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
-      
+
       // Enter name
       await tester.enterText(find.byType(TextField).first, 'Test Exam');
       await tester.pump();
-      
+
       // Select past date (this would require date picker interaction)
       // For now, just verify the validation logic exists
       expect(true, isTrue);
     });
   });
-  
+
   group('Navigation', () {
     testWidgets('bottom nav switches tabs', (WidgetTester tester) async {
       final mockRepo = MockExamRepository();
       when(() => mockRepo.getAllExams()).thenReturn([]);
       when(() => mockRepo.getActiveExam()).thenReturn(null);
-      when(() => mockRepo.watchActiveExam()).thenAnswer((_) => Stream.value(null));
+      when(() => mockRepo.watchActiveExam())
+          .thenAnswer((_) => Stream.value(null));
       when(() => mockRepo.watchExams()).thenAnswer((_) => Stream.value([]));
-      when(() => mockRepo.watchSettings()).thenAnswer((_) => Stream.value(Settings(onboardingDone: false)));
-      when(() => mockRepo.watchSubjects(any())).thenAnswer((_) => Stream.value([]));
-      when(() => mockRepo.getSettings()).thenReturn(Settings(onboardingDone: false));
-      
+      when(() => mockRepo.watchSettings())
+          .thenAnswer((_) => Stream.value(Settings(onboardingDone: false)));
+      when(() => mockRepo.watchSubjects(any()))
+          .thenAnswer((_) => Stream.value([]));
+      when(() => mockRepo.getSettings())
+          .thenReturn(Settings(onboardingDone: false));
+
       // Simple test router that goes directly to onboarding
       final router = GoRouter(
         initialLocation: '/onboarding',
@@ -182,7 +189,7 @@ void main() {
           ),
         ],
       );
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -193,10 +200,10 @@ void main() {
           ),
         ),
       );
-      
+
       // Use pump instead of pumpAndSettle to avoid timeout from infinite animation
       await tester.pump(const Duration(seconds: 1));
-      
+
       // Should start at onboarding
       expect(find.byType(OnboardingScreen), findsOneWidget);
     });

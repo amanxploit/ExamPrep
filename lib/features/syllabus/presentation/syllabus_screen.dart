@@ -15,12 +15,12 @@ import 'package:exam_prep/core/extensions/extensions.dart';
 
 class SyllabusScreen extends ConsumerWidget {
   const SyllabusScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeExam = ref.watch(activeExamProvider).value;
     final subjectsAsync = ref.watch(subjectsProvider);
-    
+
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
@@ -37,8 +37,10 @@ class SyllabusScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.sectionVertical),
               if (activeExam != null) ...[
                 subjectsAsync.when(
-                  data: (subjects) => _buildSubjectsList(context, ref, subjects),
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  data: (subjects) =>
+                      _buildSubjectsList(context, ref, subjects),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (_, __) => _buildErrorState(),
                 ),
               ] else ...[
@@ -50,10 +52,10 @@ class SyllabusScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildHeader(BuildContext context, WidgetRef ref) {
     final activeExam = ref.watch(activeExamProvider).value;
-    
+
     return Row(
       children: [
         Expanded(
@@ -80,16 +82,17 @@ class SyllabusScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   void _showExamSelectorSheet(WidgetRef ref) {
     final exams = ref.read(examRepositoryProvider).getAllExams();
     final activeExam = ref.read(activeExamProvider).value;
-    
+
     showModalBottomSheet(
       context: ref.context,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
       ),
       builder: (context) {
         return SafeArea(
@@ -132,7 +135,9 @@ class SyllabusScreen extends ConsumerWidget {
                     return InkWell(
                       onTap: () async {
                         if (!isActive) {
-                          await ref.read(examRepositoryProvider).setActiveExam(exam.id);
+                          await ref
+                              .read(examRepositoryProvider)
+                              .setActiveExam(exam.id);
                         }
                         if (context.mounted) Navigator.pop(context);
                       },
@@ -140,7 +145,8 @@ class SyllabusScreen extends ConsumerWidget {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: isActive ? AppColors.primarySoft : Colors.white,
+                          color:
+                              isActive ? AppColors.primarySoft : Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           border: isActive
                               ? Border.all(color: AppColors.primary, width: 1.5)
@@ -162,12 +168,15 @@ class SyllabusScreen extends ConsumerWidget {
                                 exam.name,
                                 style: AppTextStyles.body.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: isActive ? AppColors.primary : AppColors.textPrimary,
+                                  color: isActive
+                                      ? AppColors.primary
+                                      : AppColors.textPrimary,
                                 ),
                               ),
                             ),
                             if (isActive)
-                              Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 24),
+                              Icon(Icons.check_circle_rounded,
+                                  color: AppColors.primary, size: 24),
                           ],
                         ),
                       ),
@@ -182,19 +191,20 @@ class SyllabusScreen extends ConsumerWidget {
       },
     );
   }
-  
-  Widget _buildSubjectsList(BuildContext context, WidgetRef ref, List<Subject> subjects) {
+
+  Widget _buildSubjectsList(
+      BuildContext context, WidgetRef ref, List<Subject> subjects) {
     if (subjects.isEmpty) {
       return _buildEmptySubjectsState(context, ref);
     }
-    
+
     return Column(
       children: subjects.map((subject) {
         return _buildSubjectCard(context, ref, subject);
       }).toList(),
     );
   }
-  
+
   Widget _buildEmptySubjectsState(BuildContext context, WidgetRef ref) {
     return EmptyStateCard(
       icon: Icons.layers_rounded,
@@ -209,7 +219,7 @@ class SyllabusScreen extends ConsumerWidget {
       ),
     );
   }
-  
+
   Widget _buildNoExamState(BuildContext context) {
     return EmptyStateCard(
       icon: Icons.school_rounded,
@@ -222,18 +232,19 @@ class SyllabusScreen extends ConsumerWidget {
       ),
     );
   }
-  
-  Widget _buildSubjectCard(BuildContext context, WidgetRef ref, Subject subject) {
+
+  Widget _buildSubjectCard(
+      BuildContext context, WidgetRef ref, Subject subject) {
     final chaptersProvider = ref.watch(chaptersForSubjectProvider(subject.id));
     final status = ref.watch(subjectStatusesProvider)[subject.id] ?? 'on track';
     final isOnTrack = status == 'on track';
-    
+
     return chaptersProvider.when(
       data: (chapters) {
         final total = chapters.length;
         final completed = chapters.where((c) => c.isCompleted).length;
         final progress = total > 0 ? completed / total : 0.0;
-        
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: _ExpandableSubjectCard(
@@ -243,9 +254,11 @@ class SyllabusScreen extends ConsumerWidget {
             completed: completed,
             progress: progress,
             isOnTrack: isOnTrack,
-            onToggleChapter: (chapter) => ref.read(toggleChapterProvider(chapter).future),
+            onToggleChapter: (chapter) =>
+                ref.read(toggleChapterProvider(chapter).future),
             onAddChapter: () => _showAddChapterSheet(context, ref, subject),
-            onReorder: (newChapters) => ref.read(reorderChaptersProvider(newChapters).future),
+            onReorder: (newChapters) =>
+                ref.read(reorderChaptersProvider(newChapters).future),
             onDeleteSubject: () => _confirmDeleteSubject(context, ref, subject),
           ),
         );
@@ -257,15 +270,15 @@ class SyllabusScreen extends ConsumerWidget {
       error: (_, __) => const SizedBox(),
     );
   }
-  
+
   void _showAddSubjectSheet(BuildContext context, WidgetRef ref) {
     final exam = ref.read(activeExamProvider).value;
     if (exam == null) return;
-    
+
     final TextEditingController nameController = TextEditingController();
     int selectedColorIndex = 0;
     final TextEditingController bulkController = TextEditingController();
-    
+
     final colors = [
       AppColors.primary,
       AppColors.success,
@@ -274,13 +287,14 @@ class SyllabusScreen extends ConsumerWidget {
       AppColors.purple,
       AppColors.indigo,
     ];
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
       ),
       builder: (context) {
         return StatefulBuilder(
@@ -342,18 +356,25 @@ class SyllabusScreen extends ConsumerWidget {
                                 ? Border.all(color: Colors.white, width: 3)
                                 : null,
                             boxShadow: isSelected
-                                ? [BoxShadow(color: color.withOpacity(0.4), blurRadius: 8, offset: Offset(0, 4))]
+                                ? [
+                                    BoxShadow(
+                                        color: color.withOpacity(0.4),
+                                        blurRadius: 8,
+                                        offset: Offset(0, 4))
+                                  ]
                                 : [],
                           ),
                           child: isSelected
-                              ? Icon(Icons.check_rounded, color: Colors.white, size: 24)
+                              ? Icon(Icons.check_rounded,
+                                  color: Colors.white, size: 24)
                               : null,
                         ),
                       );
                     }),
                   ),
                   const SizedBox(height: 20),
-                  Text('BULK CHAPTERS (OPTIONAL)', style: AppTextStyles.fieldLabel),
+                  Text('BULK CHAPTERS (OPTIONAL)',
+                      style: AppTextStyles.fieldLabel),
                   const SizedBox(height: 8),
                   TextField(
                     controller: bulkController,
@@ -372,22 +393,24 @@ class SyllabusScreen extends ConsumerWidget {
                       onPressed: () {
                         final name = nameController.text.trim();
                         if (name.isEmpty) return;
-                        
+
                         final bulkChapters = bulkController.text
                             .split('\n')
                             .map((e) => e.trim())
                             .where((e) => e.isNotEmpty)
                             .toList();
-                        
+
                         ref.read(addSubjectProvider(
                           examId: exam.id,
                           subjectName: name,
                           colorValue: colors[selectedColorIndex].value,
-                          bulkChapters: bulkChapters.isEmpty ? null : bulkChapters,
+                          bulkChapters:
+                              bulkChapters.isEmpty ? null : bulkChapters,
                         ));
                         Navigator.pop(context);
                       },
-                      child: Text('Add Subject', style: AppTextStyles.buttonText),
+                      child:
+                          Text('Add Subject', style: AppTextStyles.buttonText),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -399,16 +422,18 @@ class SyllabusScreen extends ConsumerWidget {
       },
     );
   }
-  
-  void _showAddChapterSheet(BuildContext context, WidgetRef ref, Subject subject) {
+
+  void _showAddChapterSheet(
+      BuildContext context, WidgetRef ref, Subject subject) {
     final TextEditingController nameController = TextEditingController();
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
       ),
       builder: (context) {
         return Padding(
@@ -470,8 +495,9 @@ class SyllabusScreen extends ConsumerWidget {
       },
     );
   }
-  
-  void _confirmDeleteSubject(BuildContext context, WidgetRef ref, Subject subject) {
+
+  void _confirmDeleteSubject(
+      BuildContext context, WidgetRef ref, Subject subject) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -483,14 +509,17 @@ class SyllabusScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: AppTextStyles.buttonText.copyWith(color: AppColors.textSecondary)),
+            child: Text('Cancel',
+                style: AppTextStyles.buttonText
+                    .copyWith(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () {
               ref.read(deleteSubjectProvider(subject.id).future);
               Navigator.pop(context);
             },
-            child: Text('Delete', style: AppTextStyles.buttonText.copyWith(color: Colors.red)),
+            child: Text('Delete',
+                style: AppTextStyles.buttonText.copyWith(color: Colors.red)),
           ),
         ],
       ),
@@ -518,7 +547,7 @@ class _ExpandableSubjectCard extends StatefulWidget {
   final VoidCallback onAddChapter;
   final Future<void> Function(List<Chapter>) onReorder;
   final VoidCallback onDeleteSubject;
-  
+
   const _ExpandableSubjectCard({
     required this.subject,
     required this.chapters,
@@ -531,14 +560,14 @@ class _ExpandableSubjectCard extends StatefulWidget {
     required this.onReorder,
     required this.onDeleteSubject,
   });
-  
+
   @override
   State<_ExpandableSubjectCard> createState() => _ExpandableSubjectCardState();
 }
 
 class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
   bool _expanded = false;
-  
+
   @override
   Widget build(BuildContext context) {
     return SoftCard(
@@ -577,23 +606,30 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
                   ),
                   Text(
                     '${widget.completed}/${widget.total}',
-                    style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
+                    style: AppTextStyles.caption
+                        .copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(width: 12),
                   Container(
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: widget.isOnTrack ? AppColors.successSoft : AppColors.primarySoft,
+                      color: widget.isOnTrack
+                          ? AppColors.successSoft
+                          : AppColors.primarySoft,
                       shape: BoxShape.circle,
                     ),
                     child: widget.isOnTrack
-                        ? Icon(Icons.check_rounded, color: AppColors.success, size: 16)
-                        : Icon(Icons.radio_button_unchecked_rounded, color: AppColors.primary, size: 16),
+                        ? Icon(Icons.check_rounded,
+                            color: AppColors.success, size: 16)
+                        : Icon(Icons.radio_button_unchecked_rounded,
+                            color: AppColors.primary, size: 16),
                   ),
                   const SizedBox(width: 8),
                   Icon(
-                    _expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                    _expanded
+                        ? Icons.expand_less_rounded
+                        : Icons.expand_more_rounded,
                     color: AppColors.textSecondary,
                     size: 24,
                   ),
@@ -609,7 +645,9 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
           AnimatedCrossFade(
             firstChild: const SizedBox.shrink(),
             secondChild: _buildExpandedContent(),
-            crossFadeState: _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: _expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             duration: const Duration(milliseconds: 250),
             sizeCurve: Curves.easeOutCubic,
           ),
@@ -617,7 +655,7 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
       ),
     );
   }
-  
+
   Widget _buildExpandedContent() {
     return Column(
       children: [
@@ -627,7 +665,8 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: widget.chapters.length + 1,
           onReorder: (oldIndex, newIndex) {
-            if (oldIndex == widget.chapters.length || newIndex == widget.chapters.length) return;
+            if (oldIndex == widget.chapters.length ||
+                newIndex == widget.chapters.length) return;
             final newChapters = List<Chapter>.from(widget.chapters);
             final item = newChapters.removeAt(oldIndex);
             newChapters.insert(newIndex, item);
@@ -643,7 +682,7 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
       ],
     );
   }
-  
+
   Widget _buildChapterRow(Chapter chapter, int index) {
     return Padding(
       key: ValueKey(chapter.id),
@@ -651,7 +690,8 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
       child: Row(
         children: [
           // Drag handle
-          Icon(Icons.drag_indicator_rounded, color: AppColors.textMuted, size: 20),
+          Icon(Icons.drag_indicator_rounded,
+              color: AppColors.textMuted, size: 20),
           const SizedBox(width: 12),
           // Checkbox
           InkWell(
@@ -664,9 +704,13 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: chapter.isCompleted ? AppColors.success : Colors.transparent,
+                  color: chapter.isCompleted
+                      ? AppColors.success
+                      : Colors.transparent,
                   border: Border.all(
-                    color: chapter.isCompleted ? AppColors.success : AppColors.track,
+                    color: chapter.isCompleted
+                        ? AppColors.success
+                        : AppColors.track,
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(6),
@@ -683,14 +727,18 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
             child: Text(
               chapter.name,
               style: AppTextStyles.chapterName.copyWith(
-                decoration: chapter.isCompleted ? TextDecoration.lineThrough : null,
-                color: chapter.isCompleted ? AppColors.textMuted : AppColors.textPrimary,
+                decoration:
+                    chapter.isCompleted ? TextDecoration.lineThrough : null,
+                color: chapter.isCompleted
+                    ? AppColors.textMuted
+                    : AppColors.textPrimary,
               ),
             ),
           ),
           // Menu
           PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert_rounded, color: AppColors.textMuted, size: 20),
+            icon: Icon(Icons.more_vert_rounded,
+                color: AppColors.textMuted, size: 20),
             onSelected: (value) {
               if (value == 'rename') _showRenameChapterDialog(chapter);
               if (value == 'delete') _confirmDeleteChapter(chapter);
@@ -704,7 +752,7 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
       ),
     );
   }
-  
+
   Widget _buildAddChapterRow() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -714,7 +762,8 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
         child: Row(
           children: [
             const SizedBox(width: 32),
-            Icon(Icons.add_circle_outline_rounded, color: AppColors.primary, size: 22),
+            Icon(Icons.add_circle_outline_rounded,
+                color: AppColors.primary, size: 22),
             const SizedBox(width: 12),
             Text('Add chapter', style: AppTextStyles.linkText),
           ],
@@ -722,7 +771,7 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
       ),
     );
   }
-  
+
   void _showRenameChapterDialog(Chapter chapter) {
     final controller = TextEditingController(text: chapter.name);
     showDialog(
@@ -741,7 +790,9 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: AppTextStyles.buttonText.copyWith(color: AppColors.textSecondary)),
+            child: Text('Cancel',
+                style: AppTextStyles.buttonText
+                    .copyWith(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () {
@@ -757,24 +808,29 @@ class _ExpandableSubjectCardState extends State<_ExpandableSubjectCard> {
       ),
     );
   }
-  
+
   void _confirmDeleteChapter(Chapter chapter) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Delete chapter?', style: AppTextStyles.sheetTitle),
-        content: Text('This action cannot be undone.', style: AppTextStyles.body),
+        content:
+            Text('This action cannot be undone.', style: AppTextStyles.body),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: AppTextStyles.buttonText.copyWith(color: AppColors.textSecondary)),
+            child: Text('Cancel',
+                style: AppTextStyles.buttonText
+                    .copyWith(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () {
-              widget.onToggleChapter(chapter); // This should be deleteChapterProvider
+              widget.onToggleChapter(
+                  chapter); // This should be deleteChapterProvider
               Navigator.pop(context);
             },
-            child: Text('Delete', style: AppTextStyles.buttonText.copyWith(color: Colors.red)),
+            child: Text('Delete',
+                style: AppTextStyles.buttonText.copyWith(color: Colors.red)),
           ),
         ],
       ),

@@ -11,7 +11,7 @@ import 'dart:math' as math;
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
-  
+
   @override
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
@@ -21,7 +21,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   late final PageController _pageController;
   late final AnimationController _bobController;
   int _currentPage = 0;
-  
+
   final List<OnboardingPageData> _pages = [
     OnboardingPageData(
       headline: 'Track Your Exams',
@@ -48,7 +48,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       emojis: ['📅', '✏️', '✨'],
     ),
   ];
-  
+
   @override
   void initState() {
     super.initState();
@@ -58,14 +58,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       vsync: this,
     )..repeat(reverse: true);
   }
-  
+
   @override
   void dispose() {
     _pageController.dispose();
     _bobController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +89,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                       children: [
                         TextButton(
                           onPressed: _completeOnboarding,
-                          child: Text('Skip', style: AppTextStyles.body.copyWith(color: Colors.white)),
+                          child: Text('Skip',
+                              style: AppTextStyles.body
+                                  .copyWith(color: Colors.white)),
                         ),
                       ],
                     ),
@@ -99,8 +101,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                     child: PageView.builder(
                       controller: _pageController,
                       itemCount: _pages.length,
-                      onPageChanged: (index) => setState(() => _currentPage = index),
-                      itemBuilder: (context, index) => _buildPage(_pages[index]),
+                      onPageChanged: (index) =>
+                          setState(() => _currentPage = index),
+                      itemBuilder: (context, index) =>
+                          _buildPage(_pages[index]),
                     ),
                   ),
                   // Dots and next button
@@ -118,7 +122,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                               width: _currentPage == index ? 24 : 8,
                               height: 8,
                               decoration: BoxDecoration(
-                                color: _currentPage == index ? Colors.white : Colors.white.withOpacity(0.4),
+                                color: _currentPage == index
+                                    ? Colors.white
+                                    : Colors.white.withOpacity(0.4),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                             );
@@ -133,18 +139,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                             onPressed: _currentPage == _pages.length - 1
                                 ? _completeOnboarding
                                 : () => _pageController.nextPage(
-                                      duration: const Duration(milliseconds: 300),
+                                      duration:
+                                          const Duration(milliseconds: 300),
                                       curve: Curves.easeOutCubic,
                                     ),
                             style: FilledButton.styleFrom(
                               backgroundColor: Colors.white,
                               foregroundColor: AppColors.primary,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(AppRadius.button),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.button),
                               ),
                             ),
                             child: Text(
-                              _currentPage == _pages.length - 1 ? 'Get started' : 'Next',
+                              _currentPage == _pages.length - 1
+                                  ? 'Get started'
+                                  : 'Next',
                               style: AppTextStyles.buttonText.copyWith(
                                 color: AppColors.primary,
                                 fontSize: 16,
@@ -163,30 +173,32 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       ),
     );
   }
-  
+
   List<Widget> _buildFloatingEmojis() {
     final allEmojis = ['🎯', '📖', '📊', '🏆', '🧠', '⏱', '🎓', '📚'];
     final random = List<int>.generate(8, (i) => i)..shuffle();
-    
+
     return List.generate(8, (index) {
       final emoji = allEmojis[random[index]];
       final left = (index % 4) * 0.25 + 0.05;
       final top = (index / 4).floor() * 0.4 + 0.1;
-      
+
       return AnimatedBuilder(
         animation: _bobController,
         builder: (context, child) {
-          final offset = math.sin(_bobController.value * 2 * math.pi + index) * 15;
+          final offset =
+              math.sin(_bobController.value * 2 * math.pi + index) * 15;
           return Positioned(
             left: MediaQuery.of(context).size.width * left,
             top: MediaQuery.of(context).size.height * top + offset,
-            child: Text(emoji, style: TextStyle(fontSize: 40 + (index % 3) * 10)),
+            child:
+                Text(emoji, style: TextStyle(fontSize: 40 + (index % 3) * 10)),
           );
         },
       );
     });
   }
-  
+
   Widget _buildPage(OnboardingPageData page) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -198,31 +210,36 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
             alignment: WrapAlignment.center,
             spacing: 16,
             runSpacing: 16,
-            children: page.emojis.map((e) => Text(e, style: TextStyle(fontSize: 60))).toList(),
+            children: page.emojis
+                .map((e) => Text(e, style: TextStyle(fontSize: 60)))
+                .toList(),
           ),
           const SizedBox(height: 48),
           Text(
             page.headline,
-            style: AppTextStyles.onboardingHeadline.copyWith(color: Colors.white),
+            style:
+                AppTextStyles.onboardingHeadline.copyWith(color: Colors.white),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
           Text(
             page.subheadline,
-            style: AppTextStyles.onboardingSubheadline.copyWith(color: Colors.white),
+            style: AppTextStyles.onboardingSubheadline
+                .copyWith(color: Colors.white),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           Text(
             page.body,
-            style: AppTextStyles.onboardingBody.copyWith(color: Colors.white.withOpacity(0.9)),
+            style: AppTextStyles.onboardingBody
+                .copyWith(color: Colors.white.withOpacity(0.9)),
             textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
-  
+
   void _completeOnboarding() async {
     await ref.read(completeOnboardingProvider.future);
     if (mounted) {
@@ -236,7 +253,7 @@ class OnboardingPageData {
   final String subheadline;
   final String body;
   final List<String> emojis;
-  
+
   OnboardingPageData({
     required this.headline,
     required this.subheadline,

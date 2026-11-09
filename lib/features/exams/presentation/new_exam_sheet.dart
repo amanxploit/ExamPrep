@@ -12,19 +12,20 @@ import 'package:exam_prep/core/extensions/extensions.dart';
 
 class NewExamSheet extends ConsumerWidget {
   const NewExamSheet._();
-  
+
   static void show(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
       ),
       builder: (context) => const NewExamSheet._(),
     );
   }
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
@@ -41,7 +42,7 @@ class NewExamSheet extends ConsumerWidget {
 
 class _NewExamForm extends ConsumerStatefulWidget {
   const _NewExamForm();
-  
+
   @override
   ConsumerState<_NewExamForm> createState() => _NewExamFormState();
 }
@@ -52,7 +53,7 @@ class _NewExamFormState extends ConsumerState<_NewExamForm> {
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 60));
   int _selectedColorIndex = 0;
   String? _errorMessage;
-  
+
   final List<Color> _colors = [
     const Color(0xFFE9547B), // Pink
     const Color(0xFF34B98A), // Green
@@ -61,22 +62,22 @@ class _NewExamFormState extends ConsumerState<_NewExamForm> {
     const Color(0xFF8B6CF0), // Purple
     const Color(0xFF2E3192), // Indigo
   ];
-  
+
   @override
   void dispose() {
     _nameController.dispose();
     _dailyGoalController.dispose();
     super.dispose();
   }
-  
+
   bool get _isNameValid => _nameController.text.trim().isNotEmpty;
   bool get _isDateValid => _selectedDate.isAfter(DateTime.now());
   bool get _isValid => _isNameValid && _isDateValid;
-  
+
   @override
   Widget build(BuildContext context) {
     final daysFromToday = _selectedDate.daysUntil(DateTime.now());
-    
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,10 +134,11 @@ class _NewExamFormState extends ConsumerState<_NewExamForm> {
             ),
             child: Row(
               children: [
-                Icon(Icons.calendar_today_rounded, color: AppColors.textSecondary, size: 20),
+                Icon(Icons.calendar_today_rounded,
+                    color: AppColors.textSecondary, size: 20),
                 const SizedBox(width: 12),
                 Text(
-                  _selectedDate.formatMMMd(), 
+                  _selectedDate.formatMMMd(),
                   style: AppTextStyles.inputText.copyWith(
                     color: _isDateValid ? AppColors.textPrimary : Colors.red,
                   ),
@@ -150,8 +152,8 @@ class _NewExamFormState extends ConsumerState<_NewExamForm> {
           children: [
             Text(
               '$daysFromToday days from today',
-              style: _isDateValid 
-                  ? AppTextStyles.helperText 
+              style: _isDateValid
+                  ? AppTextStyles.helperText
                   : AppTextStyles.helperText.copyWith(color: Colors.red),
             ),
           ],
@@ -197,7 +199,12 @@ class _NewExamFormState extends ConsumerState<_NewExamForm> {
                       ? Border.all(color: Colors.white, width: 3)
                       : null,
                   boxShadow: isSelected
-                      ? [BoxShadow(color: color.withOpacity(0.4), blurRadius: 8, offset: Offset(0, 4))]
+                      ? [
+                          BoxShadow(
+                              color: color.withOpacity(0.4),
+                              blurRadius: 8,
+                              offset: Offset(0, 4))
+                        ]
                       : [],
                 ),
                 child: isSelected
@@ -223,7 +230,8 @@ class _NewExamFormState extends ConsumerState<_NewExamForm> {
                 ? () async {
                     setState(() => _errorMessage = null);
                     try {
-                      final dailyGoal = int.tryParse(_dailyGoalController.text.trim()) ?? 120;
+                      final dailyGoal =
+                          int.tryParse(_dailyGoalController.text.trim()) ?? 120;
                       await ref.read(createExamProvider(
                         examName: _nameController.text.trim(),
                         examDate: _selectedDate,
@@ -241,7 +249,8 @@ class _NewExamFormState extends ConsumerState<_NewExamForm> {
                         context.go('/home');
                       }
                     } catch (e) {
-                      setState(() => _errorMessage = 'Failed to create exam: $e');
+                      setState(
+                          () => _errorMessage = 'Failed to create exam: $e');
                     }
                   }
                 : null,
@@ -252,7 +261,7 @@ class _NewExamFormState extends ConsumerState<_NewExamForm> {
       ],
     );
   }
-  
+
   void _pickDate() async {
     final date = await showDatePicker(
       context: context,

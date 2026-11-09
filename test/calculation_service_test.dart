@@ -82,12 +82,28 @@ void main() {
         );
 
         final chapters = [
-          Chapter(id: 'ch1', subjectId: 'sub1', name: 'Ch1', order: 0, isCompleted: true),
-          Chapter(id: 'ch2', subjectId: 'sub1', name: 'Ch2', order: 1, isCompleted: false),
-          Chapter(id: 'ch3', subjectId: 'sub1', name: 'Ch3', order: 2, isCompleted: true),
+          Chapter(
+              id: 'ch1',
+              subjectId: 'sub1',
+              name: 'Ch1',
+              order: 0,
+              isCompleted: true),
+          Chapter(
+              id: 'ch2',
+              subjectId: 'sub1',
+              name: 'Ch2',
+              order: 1,
+              isCompleted: false),
+          Chapter(
+              id: 'ch3',
+              subjectId: 'sub1',
+              name: 'Ch3',
+              order: 2,
+              isCompleted: true),
         ];
 
-        when(() => mockRepo.getAllChaptersForExam('exam1')).thenReturn(chapters);
+        when(() => mockRepo.getAllChaptersForExam('exam1'))
+            .thenReturn(chapters);
 
         final coverage = service.calculateChapterCoverage(exam);
 
@@ -107,11 +123,22 @@ void main() {
         );
 
         final chapters = [
-          Chapter(id: 'ch1', subjectId: 'sub1', name: 'Ch1', order: 0, isCompleted: true),
-          Chapter(id: 'ch2', subjectId: 'sub1', name: 'Ch2', order: 1, isCompleted: true),
+          Chapter(
+              id: 'ch1',
+              subjectId: 'sub1',
+              name: 'Ch1',
+              order: 0,
+              isCompleted: true),
+          Chapter(
+              id: 'ch2',
+              subjectId: 'sub1',
+              name: 'Ch2',
+              order: 1,
+              isCompleted: true),
         ];
 
-        when(() => mockRepo.getAllChaptersForExam('exam1')).thenReturn(chapters);
+        when(() => mockRepo.getAllChaptersForExam('exam1'))
+            .thenReturn(chapters);
 
         final coverage = service.calculateChapterCoverage(exam);
 
@@ -130,9 +157,24 @@ void main() {
         );
 
         final chapters = [
-          Chapter(id: 'ch1', subjectId: 'sub1', name: 'Ch1', order: 0, isCompleted: true),
-          Chapter(id: 'ch2', subjectId: 'sub1', name: 'Ch2', order: 1, isCompleted: false),
-          Chapter(id: 'ch3', subjectId: 'sub1', name: 'Ch3', order: 2, isCompleted: true),
+          Chapter(
+              id: 'ch1',
+              subjectId: 'sub1',
+              name: 'Ch1',
+              order: 0,
+              isCompleted: true),
+          Chapter(
+              id: 'ch2',
+              subjectId: 'sub1',
+              name: 'Ch2',
+              order: 1,
+              isCompleted: false),
+          Chapter(
+              id: 'ch3',
+              subjectId: 'sub1',
+              name: 'Ch3',
+              order: 2,
+              isCompleted: true),
         ];
 
         when(() => mockRepo.getChaptersForSubject('sub1')).thenReturn(chapters);
@@ -334,9 +376,26 @@ void main() {
         final refDate = today;
 
         final chapters = [
-          Chapter(id: 'ch1', subjectId: 'sub1', name: 'Ch1', order: 0, isCompleted: true, completedAt: today),
-          Chapter(id: 'ch2', subjectId: 'sub1', name: 'Ch2', order: 1, isCompleted: true, completedAt: today.subtract(const Duration(days: 1))),
-          Chapter(id: 'ch3', subjectId: 'sub1', name: 'Ch3', order: 2, isCompleted: false),
+          Chapter(
+              id: 'ch1',
+              subjectId: 'sub1',
+              name: 'Ch1',
+              order: 0,
+              isCompleted: true,
+              completedAt: today),
+          Chapter(
+              id: 'ch2',
+              subjectId: 'sub1',
+              name: 'Ch2',
+              order: 1,
+              isCompleted: true,
+              completedAt: today.subtract(const Duration(days: 1))),
+          Chapter(
+              id: 'ch3',
+              subjectId: 'sub1',
+              name: 'Ch3',
+              order: 2,
+              isCompleted: false),
         ];
 
         final sessions = [
@@ -358,7 +417,8 @@ void main() {
           ),
         ];
 
-        when(() => mockRepo.getAllChaptersForExam('exam1')).thenReturn(chapters);
+        when(() => mockRepo.getAllChaptersForExam('exam1'))
+            .thenReturn(chapters);
         when(() => mockRepo.getCompletedSessions('exam1')).thenReturn(sessions);
 
         final totals = service.calculateWeeklyTotals(
@@ -404,7 +464,8 @@ void main() {
           ),
         ];
 
-        final streak = service.calculateStreaks(sessions: sessions, chapters: []);
+        final streak =
+            service.calculateStreaks(sessions: sessions, chapters: []);
 
         expect(streak.current, equals(2));
         expect(streak.longest, equals(2));
@@ -431,7 +492,8 @@ void main() {
           ),
         ];
 
-        final streak = service.calculateStreaks(sessions: sessions, chapters: []);
+        final streak =
+            service.calculateStreaks(sessions: sessions, chapters: []);
 
         expect(streak.current, equals(2));
       });
@@ -457,21 +519,53 @@ void main() {
           ),
         ];
 
-        final streak = service.calculateStreaks(sessions: sessions, chapters: []);
+        final streak =
+            service.calculateStreaks(sessions: sessions, chapters: []);
 
         expect(streak.current, equals(1));
       });
 
       test('calculates longest streak correctly', () {
         final sessions = [
-          FocusSession(id: 'fs1', examId: 'e1', type: SessionType.focus, startedAt: DateTime(2024, 1, 1), durationMinutes: 25, completed: true),
-          FocusSession(id: 'fs2', examId: 'e1', type: SessionType.focus, startedAt: DateTime(2024, 1, 2), durationMinutes: 25, completed: true),
-          FocusSession(id: 'fs3', examId: 'e1', type: SessionType.focus, startedAt: DateTime(2024, 1, 3), durationMinutes: 25, completed: true),
-          FocusSession(id: 'fs4', examId: 'e1', type: SessionType.focus, startedAt: DateTime(2024, 1, 5), durationMinutes: 25, completed: true),
-          FocusSession(id: 'fs5', examId: 'e1', type: SessionType.focus, startedAt: DateTime(2024, 1, 6), durationMinutes: 25, completed: true),
+          FocusSession(
+              id: 'fs1',
+              examId: 'e1',
+              type: SessionType.focus,
+              startedAt: DateTime(2024, 1, 1),
+              durationMinutes: 25,
+              completed: true),
+          FocusSession(
+              id: 'fs2',
+              examId: 'e1',
+              type: SessionType.focus,
+              startedAt: DateTime(2024, 1, 2),
+              durationMinutes: 25,
+              completed: true),
+          FocusSession(
+              id: 'fs3',
+              examId: 'e1',
+              type: SessionType.focus,
+              startedAt: DateTime(2024, 1, 3),
+              durationMinutes: 25,
+              completed: true),
+          FocusSession(
+              id: 'fs4',
+              examId: 'e1',
+              type: SessionType.focus,
+              startedAt: DateTime(2024, 1, 5),
+              durationMinutes: 25,
+              completed: true),
+          FocusSession(
+              id: 'fs5',
+              examId: 'e1',
+              type: SessionType.focus,
+              startedAt: DateTime(2024, 1, 6),
+              durationMinutes: 25,
+              completed: true),
         ];
 
-        final streak = service.calculateStreaks(sessions: sessions, chapters: []);
+        final streak =
+            service.calculateStreaks(sessions: sessions, chapters: []);
 
         expect(streak.longest, equals(3)); // Jan 1-3 is 3 days
       });
@@ -479,11 +573,24 @@ void main() {
       test('counts chapter completions as activity days', () {
         final today = DateTime.now().dateOnly;
         final chapters = [
-          Chapter(id: 'ch1', subjectId: 'sub1', name: 'Ch1', order: 0, isCompleted: true, completedAt: today.subtract(const Duration(days: 1))),
-          Chapter(id: 'ch2', subjectId: 'sub1', name: 'Ch2', order: 1, isCompleted: true, completedAt: today.subtract(const Duration(days: 2))),
+          Chapter(
+              id: 'ch1',
+              subjectId: 'sub1',
+              name: 'Ch1',
+              order: 0,
+              isCompleted: true,
+              completedAt: today.subtract(const Duration(days: 1))),
+          Chapter(
+              id: 'ch2',
+              subjectId: 'sub1',
+              name: 'Ch2',
+              order: 1,
+              isCompleted: true,
+              completedAt: today.subtract(const Duration(days: 2))),
         ];
 
-        final streak = service.calculateStreaks(sessions: [], chapters: chapters);
+        final streak =
+            service.calculateStreaks(sessions: [], chapters: chapters);
 
         expect(streak.current, equals(2));
       });
@@ -501,8 +608,10 @@ void main() {
           ),
         ];
 
-        final streakWithDefault = service.calculateStreaks(sessions: sessions, chapters: [], minimumQualifyingMinutes: 1);
-        final streakWithHigh = service.calculateStreaks(sessions: sessions, chapters: [], minimumQualifyingMinutes: 5);
+        final streakWithDefault = service.calculateStreaks(
+            sessions: sessions, chapters: [], minimumQualifyingMinutes: 1);
+        final streakWithHigh = service.calculateStreaks(
+            sessions: sessions, chapters: [], minimumQualifyingMinutes: 5);
 
         expect(streakWithDefault.current, equals(1));
         expect(streakWithHigh.current, equals(0)); // 1 min < 5 min threshold
@@ -563,12 +672,30 @@ void main() {
       test('calculates percentage of active days in last 14 days', () {
         final today = DateTime.now().dateOnly;
         final sessions = [
-          FocusSession(id: 'fs1', examId: 'e1', type: SessionType.focus, startedAt: today, durationMinutes: 25, completed: true),
-          FocusSession(id: 'fs2', examId: 'e1', type: SessionType.focus, startedAt: today.subtract(const Duration(days: 3)), durationMinutes: 25, completed: true),
+          FocusSession(
+              id: 'fs1',
+              examId: 'e1',
+              type: SessionType.focus,
+              startedAt: today,
+              durationMinutes: 25,
+              completed: true),
+          FocusSession(
+              id: 'fs2',
+              examId: 'e1',
+              type: SessionType.focus,
+              startedAt: today.subtract(const Duration(days: 3)),
+              durationMinutes: 25,
+              completed: true),
         ];
 
         final chapters = [
-          Chapter(id: 'ch1', subjectId: 'sub1', name: 'Ch1', order: 0, isCompleted: true, completedAt: today.subtract(const Duration(days: 5))),
+          Chapter(
+              id: 'ch1',
+              subjectId: 'sub1',
+              name: 'Ch1',
+              order: 0,
+              isCompleted: true,
+              completedAt: today.subtract(const Duration(days: 5))),
         ];
 
         final score = service.calculateConsistencyScore(sessions, chapters);
@@ -594,16 +721,19 @@ void main() {
 
         expect(milestones.length, equals(3));
 
-        final focusMilestone = milestones.firstWhere((m) => m.id == 'focus_600');
+        final focusMilestone =
+            milestones.firstWhere((m) => m.id == 'focus_600');
         expect(focusMilestone.currentValue, equals(400));
         expect(focusMilestone.targetValue, equals(600));
         expect(focusMilestone.percent, equals(400 / 600));
 
-        final streakMilestone = milestones.firstWhere((m) => m.id == 'streak_7');
+        final streakMilestone =
+            milestones.firstWhere((m) => m.id == 'streak_7');
         expect(streakMilestone.currentValue, equals(5));
         expect(streakMilestone.targetValue, equals(7));
 
-        final chapterMilestone = milestones.firstWhere((m) => m.id == 'chapters_50');
+        final chapterMilestone =
+            milestones.firstWhere((m) => m.id == 'chapters_50');
         expect(chapterMilestone.currentValue, equals(30));
         expect(chapterMilestone.targetValue, equals(50));
       });
@@ -616,7 +746,8 @@ void main() {
           completedChapters: 60,
         );
 
-        final focusMilestone = milestones.firstWhere((m) => m.id == 'focus_600');
+        final focusMilestone =
+            milestones.firstWhere((m) => m.id == 'focus_600');
         expect(focusMilestone.isCompleted, isTrue);
         expect(focusMilestone.percent, equals(1.0));
       });
@@ -624,7 +755,8 @@ void main() {
 
     group('calculateReadinessScore', () {
       test('returns null when no data', () {
-        final coverage = ChapterCoverage(total: 0, completed: 0, remaining: 0, percent: 0.0);
+        final coverage =
+            ChapterCoverage(total: 0, completed: 0, remaining: 0, percent: 0.0);
         final score = service.calculateReadinessScore(
           coverage: coverage,
           revisionHealth: 0.0,
@@ -635,7 +767,8 @@ void main() {
       });
 
       test('calculates weighted score with all components', () {
-        final coverage = ChapterCoverage(total: 10, completed: 7, remaining: 3, percent: 0.7);
+        final coverage = ChapterCoverage(
+            total: 10, completed: 7, remaining: 3, percent: 0.7);
         final score = service.calculateReadinessScore(
           coverage: coverage,
           revisionHealth: 0.8,
@@ -651,7 +784,8 @@ void main() {
       });
 
       test('renormalizes weights when revision data missing', () {
-        final coverage = ChapterCoverage(total: 10, completed: 7, remaining: 3, percent: 0.7);
+        final coverage = ChapterCoverage(
+            total: 10, completed: 7, remaining: 3, percent: 0.7);
         final score = service.calculateReadinessScore(
           coverage: coverage,
           revisionHealth: 0.0,
@@ -667,7 +801,8 @@ void main() {
       });
 
       test('renormalizes weights when practice data missing', () {
-        final coverage = ChapterCoverage(total: 10, completed: 7, remaining: 3, percent: 0.7);
+        final coverage = ChapterCoverage(
+            total: 10, completed: 7, remaining: 3, percent: 0.7);
         final score = service.calculateReadinessScore(
           coverage: coverage,
           revisionHealth: 0.8,

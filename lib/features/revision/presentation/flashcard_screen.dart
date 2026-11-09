@@ -34,7 +34,9 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
     final activeExam = ref.watch(activeExamProvider).value;
     final flashcards = widget.chapterId != null
         ? ref.watch(chapterFlashcardsProvider(widget.chapterId!))
-        : (activeExam != null ? ref.watch(flashcardsProvider(activeExam.id)) : []);
+        : (activeExam != null
+            ? ref.watch(flashcardsProvider(activeExam.id))
+            : []);
 
     if (activeExam == null && widget.chapterId == null) {
       return _buildNoExamState(context);
@@ -55,7 +57,8 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
                 children: [
                   Text('Flashcards', style: AppTextStyles.sectionTitle),
                   const Spacer(),
-                  Text('${_currentIndex + 1} / ${flashcards.length}', style: AppTextStyles.caption),
+                  Text('${_currentIndex + 1} / ${flashcards.length}',
+                      style: AppTextStyles.caption),
                 ],
               ),
               const SizedBox(height: 8),
@@ -95,7 +98,8 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
                 child: OutlinedPillButton(
                   label: 'Again',
                   icon: Icons.refresh_rounded,
-                  onPressed: () => _rateCard(ref, flashcards[_currentIndex], ReviewRating.again),
+                  onPressed: () => _rateCard(
+                      ref, flashcards[_currentIndex], ReviewRating.again),
                   color: AppColors.error,
                 ),
               ),
@@ -104,7 +108,8 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
                 child: OutlinedPillButton(
                   label: 'Hard',
                   icon: Icons.remove_rounded,
-                  onPressed: () => _rateCard(ref, flashcards[_currentIndex], ReviewRating.hard),
+                  onPressed: () => _rateCard(
+                      ref, flashcards[_currentIndex], ReviewRating.hard),
                   color: AppColors.warning,
                 ),
               ),
@@ -113,7 +118,8 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
                 child: PrimaryPillButton(
                   label: 'Good',
                   icon: Icons.check_rounded,
-                  onPressed: () => _rateCard(ref, flashcards[_currentIndex], ReviewRating.good),
+                  onPressed: () => _rateCard(
+                      ref, flashcards[_currentIndex], ReviewRating.good),
                 ),
               ),
               const SizedBox(width: 8),
@@ -121,7 +127,8 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
                 child: PrimaryPillButton(
                   label: 'Easy',
                   icon: Icons.bolt_rounded,
-                  onPressed: () => _rateCard(ref, flashcards[_currentIndex], ReviewRating.easy),
+                  onPressed: () => _rateCard(
+                      ref, flashcards[_currentIndex], ReviewRating.easy),
                   color: AppColors.success,
                 ),
               ),
@@ -186,14 +193,18 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
                 return Transform(
                   transform: Matrix4.identity()
                     ..setEntry(3, 2, 0.001)
-                    ..rotateY(isUnder ? rotate.value * 3.14159 : (rotate.value - 1) * 3.14159),
+                    ..rotateY(isUnder
+                        ? rotate.value * 3.14159
+                        : (rotate.value - 1) * 3.14159),
                   alignment: Alignment.center,
                   child: child,
                 );
               },
             );
           },
-          child: _showBack ? _buildCardBack(context, card) : _buildCardFront(context, card),
+          child: _showBack
+              ? _buildCardBack(context, card)
+              : _buildCardFront(context, card),
         ),
       ),
     );
@@ -212,7 +223,9 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
               color: AppColors.primarySoft,
               borderRadius: BorderRadius.circular(AppRadius.pill),
             ),
-            child: Text('Question', style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600)),
+            child: Text('Question',
+                style: AppTextStyles.caption.copyWith(
+                    color: AppColors.primary, fontWeight: FontWeight.w600)),
           ),
           const SizedBox(height: 20),
           Text(
@@ -226,21 +239,25 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
               spacing: 8,
               runSpacing: 8,
               alignment: WrapAlignment.center,
-              children: card.tags.map((tag) => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.track,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                ),
-                child: Text(tag, style: AppTextStyles.caption),
-              )).toList(),
+              children: card.tags
+                  .map((tag) => Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.track,
+                          borderRadius: BorderRadius.circular(AppRadius.pill),
+                        ),
+                        child: Text(tag, style: AppTextStyles.caption),
+                      ))
+                  .toList(),
             ),
             const SizedBox(height: 20),
           ],
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.touch_app_rounded, size: 20, color: AppColors.textSecondary),
+              Icon(Icons.touch_app_rounded,
+                  size: 20, color: AppColors.textSecondary),
               const SizedBox(width: 8),
               Text('Tap to reveal', style: AppTextStyles.caption),
             ],
@@ -263,7 +280,9 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
               color: AppColors.successSoft,
               borderRadius: BorderRadius.circular(AppRadius.pill),
             ),
-            child: Text('Answer', style: AppTextStyles.caption.copyWith(color: AppColors.success, fontWeight: FontWeight.w600)),
+            child: Text('Answer',
+                style: AppTextStyles.caption.copyWith(
+                    color: AppColors.success, fontWeight: FontWeight.w600)),
           ),
           const SizedBox(height: 20),
           Text(
@@ -273,7 +292,8 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
           ),
           const SizedBox(height: 30),
           if (card.confidence > 0) ...[
-            Text('Confidence: ${(card.confidence * 100).round()}%', style: AppTextStyles.caption),
+            Text('Confidence: ${(card.confidence * 100).round()}%',
+                style: AppTextStyles.caption),
             const SizedBox(height: 8),
             LinearProgressIndicator(
               value: card.confidence,
@@ -286,7 +306,8 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.touch_app_rounded, size: 20, color: AppColors.textSecondary),
+              Icon(Icons.touch_app_rounded,
+                  size: 20, color: AppColors.textSecondary),
               const SizedBox(width: 8),
               Text('Tap to continue', style: AppTextStyles.caption),
             ],
@@ -337,7 +358,8 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
     ref.invalidate(flashcardsProvider(ref.read(activeExamProvider).value!.id));
 
     // Move to next card
-    if (_currentIndex < 3) { // Will be updated with actual count
+    if (_currentIndex < 3) {
+      // Will be updated with actual count
       setState(() {
         _showBack = false;
         _currentIndex++;
@@ -363,7 +385,8 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
       ),
       builder: (context) => Padding(
         padding: EdgeInsets.fromLTRB(
@@ -428,13 +451,14 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
                   child: PrimaryPillButton(
                     label: 'Add',
                     onPressed: () {
-                      if (frontController.text.isNotEmpty && backController.text.isNotEmpty) {
+                      if (frontController.text.isNotEmpty &&
+                          backController.text.isNotEmpty) {
                         final tags = tagsController.text
                             .split(',')
                             .map((t) => t.trim())
                             .where((t) => t.isNotEmpty)
                             .toList();
-                        
+
                         final exam = ref.read(activeExamProvider).value;
                         if (exam != null) {
                           final flashcard = Flashcard(
@@ -447,7 +471,8 @@ class _FlashcardScreenState extends ConsumerState<FlashcardScreen> {
                           repo.addFlashcard(flashcard);
                           ref.invalidate(flashcardsProvider(exam.id));
                           if (widget.chapterId != null) {
-                            ref.invalidate(chapterFlashcardsProvider(widget.chapterId!));
+                            ref.invalidate(
+                                chapterFlashcardsProvider(widget.chapterId!));
                           }
                         }
                         Navigator.pop(context);

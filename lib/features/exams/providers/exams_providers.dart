@@ -17,7 +17,8 @@ Stream<List<Exam>> allExams(AllExamsRef ref) {
 }
 
 @riverpod
-Future<void> createExam(CreateExamRef ref, {
+Future<void> createExam(
+  CreateExamRef ref, {
   required String examName,
   required DateTime examDate,
   required int colorValue,
@@ -26,7 +27,7 @@ Future<void> createExam(CreateExamRef ref, {
   final repo = ref.watch(examRepositoryProvider);
   final exams = repo.getAllExams();
   final isFirst = exams.isEmpty;
-  
+
   final exam = Exam(
     name: examName,
     examDate: examDate,
@@ -35,7 +36,7 @@ Future<void> createExam(CreateExamRef ref, {
     colorValue: colorValue,
     dailyGoalMinutes: dailyGoalMinutes,
   );
-  
+
   await repo.addExam(exam);
 }
 
@@ -67,7 +68,7 @@ List<Subject> subjectsForExam(SubjectsForExamRef ref, String examId) {
 Map<String, int> examStats(ExamStatsRef ref, String examId) {
   final repo = ref.watch(examRepositoryProvider);
   final exam = repo.getExam(examId);
-  
+
   if (exam == null) {
     return {
       'totalChapters': 0,
@@ -77,25 +78,26 @@ Map<String, int> examStats(ExamStatsRef ref, String examId) {
       'syllabusPercent': 0,
     };
   }
-  
+
   final chapters = repo.getAllChaptersForExam(examId);
   final totalChapters = chapters.length;
   final completedChapters = chapters.where((c) => c.isCompleted).length;
-  
+
   final sessions = repo.getCompletedSessions(examId);
   final focusMinutes = sessions
       .where((s) => s.type == SessionType.focus)
       .fold(0, (sum, s) => sum + s.durationMinutes);
-  
+
   // Calculate streak for this exam
   final activityDates = <DateTime>{};
   for (final session in sessions.where((s) => s.type == SessionType.focus)) {
     activityDates.add(session.startedAt.dateOnly);
   }
-  for (final chapter in chapters.where((c) => c.isCompleted && c.completedAt != null)) {
+  for (final chapter
+      in chapters.where((c) => c.isCompleted && c.completedAt != null)) {
     activityDates.add(chapter.completedAt!.dateOnly);
   }
-  
+
   var streak = 0;
   if (activityDates.isNotEmpty) {
     var currentDate = DateTime.now().dateOnly;
@@ -107,9 +109,10 @@ Map<String, int> examStats(ExamStatsRef ref, String examId) {
       currentDate = currentDate.subtract(const Duration(days: 1));
     }
   }
-  
-  final syllabusPercent = totalChapters > 0 ? (completedChapters / totalChapters * 100).round() : 0;
-  
+
+  final syllabusPercent =
+      totalChapters > 0 ? (completedChapters / totalChapters * 100).round() : 0;
+
   return {
     'totalChapters': totalChapters,
     'completedChapters': completedChapters,

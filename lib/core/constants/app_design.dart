@@ -6,75 +6,75 @@ class AppColors {
   static const primaryDark = Color(0xFF00876A);
   static const primaryLight = Color(0xFF4DD4B8);
   static const primarySoft = Color(0xFFE8F8F4);
-  
+
   // Gradient
   static const gradientCardStart = Color(0xFF00B894);
   static const gradientCardEnd = Color(0xFF00A885);
-  
+
   // Background - neutral light
   static const bgTop = Color(0xFFF5F9F8);
   static const bgBottom = Color(0xFFFFFFFF);
-  
+
   // Surface
   static const surface = Color(0xFFFFFFFF);
-  
+
   // Semantic colors
   static const success = Color(0xFF10B981); // Emerald
   static const successSoft = Color(0xFFECFDF5);
   static const successDark = Color(0xFF059669);
-  
+
   static const warning = Color(0xFFF59E0B); // Amber
   static const warningSoft = Color(0xFFFFF4E6);
   static const warningDark = Color(0xFFD97706);
-  
+
   static const error = Color(0xFFEF4444); // Red
   static const errorSoft = Color(0xFFFEF2F2);
   static const errorDark = Color(0xFFDC2626);
-  
+
   static const indigo = Color(0xFF4F46E5);
   static const indigoSoft = Color(0xFFEEF2FF);
-  
+
   static const blue = Color(0xFF3B82F6);
   static const blueSoft = Color(0xFFEFF6FF);
-  
+
   static const orange = Color(0xFFF97316);
   static const orangeSoft = Color(0xFFFFF0E6);
-  
+
   static const purple = Color(0xFF8B5CF6);
   static const purpleSoft = Color(0xFFF5F3FF);
-  
+
   static const secondary = Color(0xFF6366F1);
   static const secondarySoft = Color(0xFFEEF2FF);
-  
+
   static const border = Color(0xFFE5E7EB);
-  
+
   // Text
   static const textPrimary = Color(0xFF111827); // Gray-900
   static const textSecondary = Color(0xFF6B7280); // Gray-500
   static const textMuted = Color(0xFF9CA3AF); // Gray-400
-  
+
   // Progress track
   static const track = Color(0xFFE5E7EB); // Gray-200
-  
+
   // Navigation
   static const navBar = Color(0xFF111827); // Gray-900
-  
+
   // Segmented control track
   static const segmentedTrack = Color(0xFFF3F4F6); // Gray-100
-  
+
   // Input fill
   static const inputFill = Color(0xFFF9FAFB); // Gray-50
   static const inputBorder = Color(0xFFE5E7EB); // Gray-200
-  
+
   // White with opacity
   static const white85 = Color(0xD9FFFFFF); // 85%
   static const white70 = Color(0xB3FFFFFF); // 70%
   static const white30 = Color(0x4DFFFFFF); // 30%
-  
+
   // Teal glow
   static const tealGlow = Color(0x5900A885); // 35%
   static const tealShadow = Color(0x1400A885); // 8%
-  
+
   // Onboarding background
   static const onboardingStart = Color(0xFF00B894);
   static const onboardingEnd = Color(0xFF00A885);
@@ -86,19 +86,19 @@ class AppGradients {
     end: Alignment.bottomRight,
     colors: [AppColors.gradientCardStart, AppColors.gradientCardEnd],
   );
-  
+
   static const scaffoldBackground = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [AppColors.bgTop, AppColors.bgBottom],
   );
-  
+
   static const onboardingBackground = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [AppColors.onboardingStart, AppColors.onboardingEnd],
   );
-  
+
   static const tealGlow = RadialGradient(
     center: Alignment.center,
     radius: 1.0,
@@ -112,25 +112,25 @@ class AppShadows {
     blurRadius: 24,
     offset: Offset(0, 8),
   );
-  
+
   static const tealGlowShadow = BoxShadow(
     color: AppColors.tealGlow,
     blurRadius: 20,
     offset: Offset(0, 10),
   );
-  
+
   static const navBarShadow = BoxShadow(
     color: Colors.black26,
     blurRadius: 20,
     offset: Offset(0, -4),
   );
-  
+
   static const buttonShadow = BoxShadow(
     color: AppColors.tealGlow,
     blurRadius: 16,
     offset: Offset(0, 6),
   );
-  
+
   static const smallShadow = BoxShadow(
     color: Colors.black12,
     blurRadius: 8,

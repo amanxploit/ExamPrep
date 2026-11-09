@@ -20,19 +20,19 @@ import 'data/models/daily_plan_task.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize timezone for notifications
   tz.initializeTimeZones();
-  
+
   // Initialize date formatting
   await initializeDateFormatting();
-  
+
   // Initialize Hive
   await Hive.initFlutter();
-  
+
   // Register adapters
   registerHiveAdapters();
-  
+
   // Open boxes
   await Hive.openBox<Exam>(examBoxName);
   await Hive.openBox<Subject>(subjectBoxName);
@@ -46,27 +46,27 @@ void main() async {
   await Hive.openBox<Flashcard>(flashcardBoxName);
   await Hive.openBox<FlashcardReview>(flashcardReviewBoxName);
   await Hive.openBox<DailyPlanTask>(dailyPlanTaskBoxName);
-  
+
   // Set preferred orientations
   // await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  
+
   // System UI overlay style for light status bar on pink background
   // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
   //   statusBarColor: Colors.transparent,
   //   statusBarIconBrightness: Brightness.dark,
   //   statusBarBrightness: Brightness.light,
   // ));
-  
+
   runApp(const ProviderScope(child: ExamPrepApp()));
 }
 
 class ExamPrepApp extends ConsumerWidget {
   const ExamPrepApp({super.key});
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
-    
+
     return MaterialApp.router(
       title: 'ExamPrep',
       debugShowCheckedModeBanner: false,

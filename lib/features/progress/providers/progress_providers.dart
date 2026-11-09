@@ -15,11 +15,11 @@ part 'progress_providers.g.dart';
 ChapterCoverage overallProgress(OverallProgressRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final calc = ref.watch(calculationServiceProvider);
-  
+
   if (exam == null) {
     return ChapterCoverage(total: 0, completed: 0, remaining: 0, percent: 0.0);
   }
-  
+
   return calc.calculateChapterCoverage(exam);
 }
 
@@ -28,40 +28,45 @@ ChapterCoverage overallProgress(OverallProgressRef ref) {
 Map<DateTime, int> weeklyChaptersProgress(WeeklyChaptersProgressRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final calc = ref.watch(calculationServiceProvider);
-  
+
   if (exam == null) {
     return {};
   }
-  
-  final chapters = ref.watch(examRepositoryProvider).getAllChaptersForExam(exam.id);
-  final sessions = ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
-  
+
+  final chapters =
+      ref.watch(examRepositoryProvider).getAllChaptersForExam(exam.id);
+  final sessions =
+      ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
+
   final totals = calc.calculateWeeklyTotals(
     sessions: sessions,
     chapters: chapters,
   );
-  
+
   return totals.dailyChapters;
 }
 
 /// Weekly focus minutes from CalculationService
 @riverpod
-Map<DateTime, int> weeklyFocusMinutesProgress(WeeklyFocusMinutesProgressRef ref) {
+Map<DateTime, int> weeklyFocusMinutesProgress(
+    WeeklyFocusMinutesProgressRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final calc = ref.watch(calculationServiceProvider);
-  
+
   if (exam == null) {
     return {};
   }
-  
-  final chapters = ref.watch(examRepositoryProvider).getAllChaptersForExam(exam.id);
-  final sessions = ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
-  
+
+  final chapters =
+      ref.watch(examRepositoryProvider).getAllChaptersForExam(exam.id);
+  final sessions =
+      ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
+
   final totals = calc.calculateWeeklyTotals(
     sessions: sessions,
     chapters: chapters,
   );
-  
+
   return totals.dailyMinutes;
 }
 
@@ -76,7 +81,7 @@ List<String> weeklyLabelsProgress(WeeklyLabelsProgressRef ref) {
 SummaryStats summaryStats(SummaryStatsRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final calc = ref.watch(calculationServiceProvider);
-  
+
   if (exam == null) {
     return SummaryStats(
       totalFocusMinutes: 0,
@@ -87,15 +92,17 @@ SummaryStats summaryStats(SummaryStatsRef ref) {
       consistencyScore: 0.0,
     );
   }
-  
-  final sessions = ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
-  final chapters = ref.watch(examRepositoryProvider).getAllChaptersForExam(exam.id);
-  
+
+  final sessions =
+      ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
+  final chapters =
+      ref.watch(examRepositoryProvider).getAllChaptersForExam(exam.id);
+
   final duration = calc.calculateStudyDuration(sessions);
   final streak = calc.calculateStreaks(sessions: sessions, chapters: chapters);
   final consistency = calc.calculateConsistencyScore(sessions, chapters);
   final totalChaptersCompleted = chapters.where((c) => c.isCompleted).length;
-  
+
   return SummaryStats(
     totalFocusMinutes: duration.totalMinutes,
     totalSessions: sessions.where((s) => s.type == SessionType.focus).length,
@@ -111,9 +118,9 @@ SummaryStats summaryStats(SummaryStatsRef ref) {
 List<SubjectProgress> subjectProgressList(SubjectProgressListRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final calc = ref.watch(calculationServiceProvider);
-  
+
   if (exam == null) return [];
-  
+
   return calc.calculateAllSubjectProgress(exam);
 }
 
@@ -122,7 +129,7 @@ List<SubjectProgress> subjectProgressList(SubjectProgressListRef ref) {
 ExamCountdown examCountdown(ExamCountdownRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final calc = ref.watch(calculationServiceProvider);
-  
+
   if (exam == null) {
     return ExamCountdown(
       examId: '',
@@ -132,7 +139,7 @@ ExamCountdown examCountdown(ExamCountdownRef ref) {
       isPast: false,
     );
   }
-  
+
   return calc.calculateExamCountdown(exam);
 }
 
@@ -141,16 +148,18 @@ ExamCountdown examCountdown(ExamCountdownRef ref) {
 List<MilestoneProgress> milestones(MilestonesRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final calc = ref.watch(calculationServiceProvider);
-  
+
   if (exam == null) return [];
-  
-  final sessions = ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
-  final chapters = ref.watch(examRepositoryProvider).getAllChaptersForExam(exam.id);
-  
+
+  final sessions =
+      ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
+  final chapters =
+      ref.watch(examRepositoryProvider).getAllChaptersForExam(exam.id);
+
   final duration = calc.calculateStudyDuration(sessions);
   final streak = calc.calculateStreaks(sessions: sessions, chapters: chapters);
   final totalChaptersCompleted = chapters.where((c) => c.isCompleted).length;
-  
+
   return calc.calculateMilestones(
     totalFocusMinutes: duration.totalMinutes,
     totalSessions: sessions.where((s) => s.type == SessionType.focus).length,
@@ -164,16 +173,16 @@ List<MilestoneProgress> milestones(MilestonesRef ref) {
 ReadinessScore? readinessScore(ReadinessScoreRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final calc = ref.watch(calculationServiceProvider);
-  
+
   if (exam == null) return null;
-  
+
   final coverage = calc.calculateChapterCoverage(exam);
   final revisionHealth = calc.calculateRevisionHealth(exam.id);
   final consistency = calc.calculateConsistencyScore(
     ref.watch(examRepositoryProvider).getCompletedSessions(exam.id),
     ref.watch(examRepositoryProvider).getAllChaptersForExam(exam.id),
   );
-  
+
   return calc.calculateReadinessScore(
     coverage: coverage,
     revisionHealth: revisionHealth,
@@ -187,11 +196,12 @@ ReadinessScore? readinessScore(ReadinessScoreRef ref) {
 int todayFocusMinutes(TodayFocusMinutesRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final calc = ref.watch(calculationServiceProvider);
-  
+
   if (exam == null) return 0;
-  
-  final sessions = ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
-  
+
+  final sessions =
+      ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
+
   return calc.calculateTodayFocusMinutes(sessions);
 }
 
@@ -200,17 +210,20 @@ int todayFocusMinutes(TodayFocusMinutesRef ref) {
 double todayFocusProgress(TodayFocusProgressRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final calc = ref.watch(calculationServiceProvider);
-  
+
   if (exam == null) return 0.0;
-  
-  final sessions = ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
+
+  final sessions =
+      ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
   final goal = exam.dailyGoalMinutes;
-  
+
   final minutes = calc.calculateTodayFocusMinutes(sessions);
-  return calc.calculateDailyGoalProgress(
-    actualMinutes: minutes,
-    targetMinutes: goal,
-  ).percent;
+  return calc
+      .calculateDailyGoalProgress(
+        actualMinutes: minutes,
+        targetMinutes: goal,
+      )
+      .percent;
 }
 
 /// Daily goal minutes
@@ -224,26 +237,30 @@ int dailyGoalMinutes(DailyGoalMinutesRef ref) {
 @riverpod
 Map<String, int> timePerSubject(TimePerSubjectRef ref) {
   final exam = ref.watch(activeExamProvider).value;
-  
+
   if (exam == null) return {};
-  
-  final sessions = ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
-  final subjects = ref.watch(examRepositoryProvider).getSubjectsForExam(exam.id);
-  
+
+  final sessions =
+      ref.watch(examRepositoryProvider).getCompletedSessions(exam.id);
+  final subjects =
+      ref.watch(examRepositoryProvider).getSubjectsForExam(exam.id);
+
   final subjectMap = <String, int>{};
-  
+
   for (final subject in subjects) {
-    final subjectChapters = ref.watch(examRepositoryProvider).getChaptersForSubject(subject.id);
+    final subjectChapters =
+        ref.watch(examRepositoryProvider).getChaptersForSubject(subject.id);
     final subjectChapterIds = subjectChapters.map((c) => c.id).toSet();
-    
+
     // Note: This assumes sessions are linked to chapters somehow
     // For now, we'll compute based on chapters completed per subject
     // A more accurate implementation would link sessions to subjects
-    final completedInSubject = subjectChapters.where((c) => c.isCompleted).length;
+    final completedInSubject =
+        subjectChapters.where((c) => c.isCompleted).length;
     // Estimate 50 min per chapter
     subjectMap[subject.name] = completedInSubject * 50;
   }
-  
+
   return subjectMap;
 }
 
@@ -251,14 +268,17 @@ Map<String, int> timePerSubject(TimePerSubjectRef ref) {
 @riverpod
 int dueRevisionsCount(DueRevisionsCountRef ref) {
   final exam = ref.watch(activeExamProvider).value;
-  
+
   if (exam == null) return 0;
-  
+
   final repo = ref.watch(examRepositoryProvider);
   final now = DateTime.now().dateOnly;
-  
-  return repo.getRevisionItemsForExam(exam.id)
-      .where((r) => r.dueAt.dateOnly.compareTo(now) <= 0 && r.status == RevisionStatus.pending)
+
+  return repo
+      .getRevisionItemsForExam(exam.id)
+      .where((r) =>
+          r.dueAt.dateOnly.compareTo(now) <= 0 &&
+          r.status == RevisionStatus.pending)
       .length;
 }
 
@@ -266,14 +286,17 @@ int dueRevisionsCount(DueRevisionsCountRef ref) {
 @riverpod
 int overdueRevisionsCount(OverdueRevisionsCountRef ref) {
   final exam = ref.watch(activeExamProvider).value;
-  
+
   if (exam == null) return 0;
-  
+
   final repo = ref.watch(examRepositoryProvider);
   final now = DateTime.now().dateOnly;
-  
-  return repo.getRevisionItemsForExam(exam.id)
-      .where((r) => r.dueAt.dateOnly.compareTo(now) < 0 && r.status == RevisionStatus.pending)
+
+  return repo
+      .getRevisionItemsForExam(exam.id)
+      .where((r) =>
+          r.dueAt.dateOnly.compareTo(now) < 0 &&
+          r.status == RevisionStatus.pending)
       .length;
 }
 
@@ -282,9 +305,9 @@ int overdueRevisionsCount(OverdueRevisionsCountRef ref) {
 double revisionHealthProgress(RevisionHealthProgressRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final calc = ref.watch(calculationServiceProvider);
-  
+
   if (exam == null) return 0.0;
-  
+
   return calc.calculateRevisionHealth(exam.id);
 }
 
@@ -292,30 +315,35 @@ double revisionHealthProgress(RevisionHealthProgressRef ref) {
 @riverpod
 Map<String, SubjectStatus> subjectStatusMap(SubjectStatusMapRef ref) {
   final exam = ref.watch(activeExamProvider).value;
-  
+
   if (exam == null) return {};
-  
-  final subjects = ref.watch(examRepositoryProvider).getSubjectsForExam(exam.id);
+
+  final subjects =
+      ref.watch(examRepositoryProvider).getSubjectsForExam(exam.id);
   final status = <String, SubjectStatus>{};
-  
+
   for (final subject in subjects) {
-    final chapters = ref.watch(examRepositoryProvider).getChaptersForSubject(subject.id);
+    final chapters =
+        ref.watch(examRepositoryProvider).getChaptersForSubject(subject.id);
     if (chapters.isEmpty) {
       status[subject.id] = SubjectStatus.onTrack;
       continue;
     }
-    
+
     final completed = chapters.where((c) => c.isCompleted).length;
     final total = chapters.length;
     final completedRatio = completed / total;
-    
-    final daysSinceCreated = DateTime.now().dateOnly.difference(exam.createdAt.dateOnly).inDays;
+
+    final daysSinceCreated =
+        DateTime.now().dateOnly.difference(exam.createdAt.dateOnly).inDays;
     final totalDays = exam.daysLeft + daysSinceCreated;
     final expectedRatio = totalDays > 0 ? daysSinceCreated / totalDays : 1.0;
-    
-    status[subject.id] = completedRatio >= expectedRatio ? SubjectStatus.onTrack : SubjectStatus.behind;
+
+    status[subject.id] = completedRatio >= expectedRatio
+        ? SubjectStatus.onTrack
+        : SubjectStatus.behind;
   }
-  
+
   return status;
 }
 

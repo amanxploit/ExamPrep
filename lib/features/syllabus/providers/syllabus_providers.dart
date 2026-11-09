@@ -17,7 +17,8 @@ Stream<List<Subject>> subjects(SubjectsRef ref) {
 }
 
 @riverpod
-Stream<List<Chapter>> chaptersForSubject(ChaptersForSubjectRef ref, String subjectId) {
+Stream<List<Chapter>> chaptersForSubject(
+    ChaptersForSubjectRef ref, String subjectId) {
   final repo = ref.watch(examRepositoryProvider);
   return repo.watchChapters(subjectId);
 }
@@ -28,7 +29,8 @@ Map<String, String> subjectStatuses(SubjectStatusesRef ref) {
 }
 
 @riverpod
-Future<void> addSubject(AddSubjectRef ref, {
+Future<void> addSubject(
+  AddSubjectRef ref, {
   required String examId,
   required String subjectName,
   required int colorValue,
@@ -37,16 +39,16 @@ Future<void> addSubject(AddSubjectRef ref, {
   final repo = ref.watch(examRepositoryProvider);
   final subjects = repo.getSubjectsForExam(examId);
   final order = subjects.length;
-  
+
   final subject = Subject(
     examId: examId,
     name: subjectName,
     order: order,
     colorValue: colorValue,
   );
-  
+
   await repo.addSubject(subject);
-  
+
   if (bulkChapters != null && bulkChapters.isNotEmpty) {
     for (int i = 0; i < bulkChapters.length; i++) {
       final chapterName = bulkChapters[i].trim();
@@ -75,26 +77,28 @@ Future<void> deleteSubject(DeleteSubjectRef ref, String subjectId) async {
 }
 
 @riverpod
-Future<void> reorderSubjects(ReorderSubjectsRef ref, List<Subject> subjects) async {
+Future<void> reorderSubjects(
+    ReorderSubjectsRef ref, List<Subject> subjects) async {
   final repo = ref.watch(examRepositoryProvider);
   await repo.reorderSubjects(subjects);
 }
 
 @riverpod
-Future<void> addChapter(AddChapterRef ref, {
+Future<void> addChapter(
+  AddChapterRef ref, {
   required String subjectId,
   required String chapterName,
 }) async {
   final repo = ref.watch(examRepositoryProvider);
   final chapters = repo.getChaptersForSubject(subjectId);
   final order = chapters.length;
-  
+
   final chapter = Chapter(
     subjectId: subjectId,
     name: chapterName,
     order: order,
   );
-  
+
   await repo.addChapter(chapter);
 }
 
@@ -108,7 +112,8 @@ Future<void> updateChapter(UpdateChapterRef ref, Chapter chapter) async {
 Future<void> toggleChapter(ToggleChapterRef ref, Chapter chapter) async {
   final repo = ref.watch(examRepositoryProvider);
   if (chapter.isCompleted) {
-    await repo.updateChapter(chapter.copyWith(isCompleted: false, clearCompletedAt: true));
+    await repo.updateChapter(
+        chapter.copyWith(isCompleted: false, clearCompletedAt: true));
   } else {
     await repo.updateChapter(chapter.copyWith(isCompleted: true));
   }
@@ -121,7 +126,8 @@ Future<void> deleteChapter(DeleteChapterRef ref, String chapterId) async {
 }
 
 @riverpod
-Future<void> reorderChapters(ReorderChaptersRef ref, List<Chapter> chapters) async {
+Future<void> reorderChapters(
+    ReorderChaptersRef ref, List<Chapter> chapters) async {
   final repo = ref.watch(examRepositoryProvider);
   await repo.reorderChapters(chapters);
 }

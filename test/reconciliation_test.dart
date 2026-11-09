@@ -32,7 +32,7 @@ void main() {
       tempDir = await Directory.systemTemp.createTemp('exam_prep_test_');
       Hive.init(tempDir.path);
       registerHiveAdapters();
-      
+
       await Hive.openBox<Exam>('exams');
       await Hive.openBox<Subject>('subjects');
       await Hive.openBox<Chapter>('chapters');
@@ -107,7 +107,8 @@ void main() {
         Chapter(id: 'ch_1', subjectId: subject1.id, name: 'Algebra', order: 0),
         Chapter(id: 'ch_2', subjectId: subject1.id, name: 'Geometry', order: 1),
         Chapter(id: 'ch_3', subjectId: subject2.id, name: 'Physics', order: 0),
-        Chapter(id: 'ch_4', subjectId: subject2.id, name: 'Chemistry', order: 1),
+        Chapter(
+            id: 'ch_4', subjectId: subject2.id, name: 'Chemistry', order: 1),
       ];
       for (final c in chapters) {
         await repo.addChapter(c);
@@ -157,44 +158,64 @@ void main() {
       }
 
       // Complete some chapters
-      await repo.updateChapter(chapters[0].copyWith(isCompleted: true, completedAt: DateTime.now().subtract(const Duration(days: 2))));
-      await repo.updateChapter(chapters[1].copyWith(isCompleted: true, completedAt: DateTime.now().subtract(const Duration(days: 1))));
+      await repo.updateChapter(chapters[0].copyWith(
+          isCompleted: true,
+          completedAt: DateTime.now().subtract(const Duration(days: 2))));
+      await repo.updateChapter(chapters[1].copyWith(
+          isCompleted: true,
+          completedAt: DateTime.now().subtract(const Duration(days: 1))));
     });
 
-    test('Chapter coverage: CalculationService, subject progress, and overall progress agree', () {
+    test(
+        'Chapter coverage: CalculationService, subject progress, and overall progress agree',
+        () {
       final overall = calc.calculateChapterCoverage(exam);
-      
+
       final subjectProgress = calc.calculateAllSubjectProgress(exam);
-      final sumCompleted = subjectProgress.fold(0, (a, b) => a + b.completedChapters);
+      final sumCompleted =
+          subjectProgress.fold(0, (a, b) => a + b.completedChapters);
       final sumTotal = subjectProgress.fold(0, (a, b) => a + b.totalChapters);
-      
-      expect(overall.completed, sumCompleted, reason: 'Overall completed should equal sum of subject completed');
-      expect(overall.total, sumTotal, reason: 'Overall total should equal sum of subject totals');
-      expect(overall.percent, sumCompleted / sumTotal, reason: 'Overall percent should equal sum ratio');
+
+      expect(overall.completed, sumCompleted,
+          reason: 'Overall completed should equal sum of subject completed');
+      expect(overall.total, sumTotal,
+          reason: 'Overall total should equal sum of subject totals');
+      expect(overall.percent, sumCompleted / sumTotal,
+          reason: 'Overall percent should equal sum ratio');
     });
 
-    test('Study duration: CalculationService matches manual sum of focus sessions', () {
+    test(
+        'Study duration: CalculationService matches manual sum of focus sessions',
+        () {
       final duration = calc.calculateStudyDuration(sessions);
-      
+
       final manualSum = sessions
           .where((s) => s.type == SessionType.focus && s.completed)
           .fold(0, (a, b) => a + b.durationMinutes);
-      
-      expect(duration.totalMinutes, manualSum, reason: 'CalculationService duration should equal manual sum');
+
+      expect(duration.totalMinutes, manualSum,
+          reason: 'CalculationService duration should equal manual sum');
     });
 
-    test('Today focus minutes: CalculationService filters by date correctly', () {
+    test('Today focus minutes: CalculationService filters by date correctly',
+        () {
       final today = DateTime.now().dateOnly;
       final todayMinutes = calc.calculateTodayFocusMinutes(sessions);
-      
+
       final manualToday = sessions
-          .where((s) => s.type == SessionType.focus && s.completed && s.startedAt.dateOnly == today)
+          .where((s) =>
+              s.type == SessionType.focus &&
+              s.completed &&
+              s.startedAt.dateOnly == today)
           .fold(0, (a, b) => a + b.durationMinutes);
-      
-      expect(todayMinutes, manualToday, reason: 'Today focus minutes should match manual filter');
+
+      expect(todayMinutes, manualToday,
+          reason: 'Today focus minutes should match manual filter');
     });
 
-    test('Weekly totals: dailyChapters + dailyMinutes match underlying records for each day', () {
+    test(
+        'Weekly totals: dailyChapters + dailyMinutes match underlying records for each day',
+        () {
       final totals = calc.calculateWeeklyTotals(
         sessions: sessions,
         chapters: chapters,
@@ -205,28 +226,39 @@ void main() {
         final day = entry.key;
         final count = entry.value;
         final manualCount = chapters
-            .where((c) => c.isCompleted && c.completedAt != null && c.completedAt!.dateOnly == day)
+            .where((c) =>
+                c.isCompleted &&
+                c.completedAt != null &&
+                c.completedAt!.dateOnly == day)
             .length;
-        expect(count, manualCount, reason: 'Daily chapters for ${day} should match');
+        expect(count, manualCount,
+            reason: 'Daily chapters for ${day} should match');
       }
 
       // Verify dailyMinutes matches focus session dates
-      final focusSessions = sessions.where((s) => s.type == SessionType.focus && s.completed).toList();
+      final focusSessions = sessions
+          .where((s) => s.type == SessionType.focus && s.completed)
+          .toList();
       for (final entry in totals.dailyMinutes.entries) {
         final day = entry.key;
         final minutes = entry.value;
         final manualMinutes = focusSessions
             .where((s) => s.startedAt.dateOnly == day)
             .fold(0, (a, b) => a + b.durationMinutes);
-        expect(minutes, manualMinutes, reason: 'Daily minutes for ${day} should match');
+        expect(minutes, manualMinutes,
+            reason: 'Daily minutes for ${day} should match');
       }
 
       // Verify totals
-      expect(totals.totalChapters, totals.dailyChapters.values.fold(0, (a, b) => a + b));
-      expect(totals.totalMinutes, totals.dailyMinutes.values.fold(0, (a, b) => a + b));
+      expect(totals.totalChapters,
+          totals.dailyChapters.values.fold(0, (a, b) => a + b));
+      expect(totals.totalMinutes,
+          totals.dailyMinutes.values.fold(0, (a, b) => a + b));
     });
 
-    test('Streaks: CalculationService streak matches manual calculation from activity dates', () {
+    test(
+        'Streaks: CalculationService streak matches manual calculation from activity dates',
+        () {
       final streak = calc.calculateStreaks(
         sessions: sessions,
         chapters: chapters,
@@ -234,10 +266,12 @@ void main() {
 
       // Build activity dates manually
       final activityDates = <DateTime>{};
-      for (final s in sessions.where((s) => s.type == SessionType.focus && s.completed)) {
+      for (final s in sessions
+          .where((s) => s.type == SessionType.focus && s.completed)) {
         activityDates.add(s.startedAt.dateOnly);
       }
-      for (final c in chapters.where((c) => c.isCompleted && c.completedAt != null)) {
+      for (final c
+          in chapters.where((c) => c.isCompleted && c.completedAt != null)) {
         activityDates.add(c.completedAt!.dateOnly);
       }
 
@@ -265,62 +299,91 @@ void main() {
         }
       }
 
-      expect(streak.current, manualCurrent, reason: 'Current streak should match manual');
-      expect(streak.longest, manualLongest, reason: 'Longest streak should match manual');
+      expect(streak.current, manualCurrent,
+          reason: 'Current streak should match manual');
+      expect(streak.longest, manualLongest,
+          reason: 'Longest streak should match manual');
     });
 
-    test('Exam countdown: CalculationService uses same date boundaries as manual', () {
+    test(
+        'Exam countdown: CalculationService uses same date boundaries as manual',
+        () {
       final countdown = calc.calculateExamCountdown(exam);
-      
+
       final now = DateTime.now();
       final examDate = exam.examDate;
       final isPast = examDate.isBefore(now.dateOnly);
       final manualDaysLeft = isPast ? 0 : now.daysUntil(examDate);
-      
+
       expect(countdown.daysLeft, manualDaysLeft);
       expect(countdown.isPast, isPast);
-      expect(countdown.displayText, isPast ? 'Exam passed' : (manualDaysLeft == 0 ? 'Today' : (manualDaysLeft == 1 ? '1 day left' : '$manualDaysLeft days left')));
+      expect(
+          countdown.displayText,
+          isPast
+              ? 'Exam passed'
+              : (manualDaysLeft == 0
+                  ? 'Today'
+                  : (manualDaysLeft == 1
+                      ? '1 day left'
+                      : '$manualDaysLeft days left')));
     });
 
-    test('Consistency score: CalculationService matches manual active days / 14', () {
+    test(
+        'Consistency score: CalculationService matches manual active days / 14',
+        () {
       final consistency = calc.calculateConsistencyScore(sessions, chapters);
-      
-      final last14Days = List.generate(14, (i) => DateTime.now().dateOnly.subtract(Duration(days: 13 - i)));
+
+      final last14Days = List.generate(
+          14, (i) => DateTime.now().dateOnly.subtract(Duration(days: 13 - i)));
       final activityDates = <DateTime>{};
-      
-      for (final s in sessions.where((s) => s.type == SessionType.focus && s.completed)) {
+
+      for (final s in sessions
+          .where((s) => s.type == SessionType.focus && s.completed)) {
         if (last14Days.contains(s.startedAt.dateOnly)) {
           activityDates.add(s.startedAt.dateOnly);
         }
       }
-      for (final c in chapters.where((c) => c.isCompleted && c.completedAt != null)) {
+      for (final c
+          in chapters.where((c) => c.isCompleted && c.completedAt != null)) {
         if (last14Days.contains(c.completedAt!.dateOnly)) {
           activityDates.add(c.completedAt!.dateOnly);
         }
       }
-      
-      final manualConsistency = (activityDates.length / 14 * 100).roundToDouble();
+
+      final manualConsistency =
+          (activityDates.length / 14 * 100).roundToDouble();
       expect(consistency, manualConsistency);
     });
 
-    test('Subject progress: each subject progress matches its chapters directly', () {
+    test(
+        'Subject progress: each subject progress matches its chapters directly',
+        () {
       for (final subject in [subject1, subject2]) {
         final progress = calc.calculateSubjectProgress(subject);
         final chaptersForSubject = repo.getChaptersForSubject(subject.id);
-        
+
         expect(progress.subjectId, subject.id);
         expect(progress.subjectName, subject.name);
         expect(progress.totalChapters, chaptersForSubject.length);
-        expect(progress.completedChapters, chaptersForSubject.where((c) => c.isCompleted).length);
-        expect(progress.percent, progress.totalChapters == 0 ? 0.0 : progress.completedChapters / progress.totalChapters);
+        expect(progress.completedChapters,
+            chaptersForSubject.where((c) => c.isCompleted).length);
+        expect(
+            progress.percent,
+            progress.totalChapters == 0
+                ? 0.0
+                : progress.completedChapters / progress.totalChapters);
       }
     });
 
     test('Milestones: values derive from same underlying records', () {
       final milestones = calc.calculateMilestones(
         totalFocusMinutes: calc.calculateStudyDuration(sessions).totalMinutes,
-        totalSessions: sessions.where((s) => s.type == SessionType.focus && s.completed).length,
-        longestStreak: calc.calculateStreaks(sessions: sessions, chapters: chapters).longest,
+        totalSessions: sessions
+            .where((s) => s.type == SessionType.focus && s.completed)
+            .length,
+        longestStreak: calc
+            .calculateStreaks(sessions: sessions, chapters: chapters)
+            .longest,
         completedChapters: chapters.where((c) => c.isCompleted).length,
       );
 
@@ -332,11 +395,13 @@ void main() {
       }
     });
 
-    test('Readiness score: weights sum to 1.0 and components match CalculationService', () {
+    test(
+        'Readiness score: weights sum to 1.0 and components match CalculationService',
+        () {
       final coverage = calc.calculateChapterCoverage(exam);
       final revisionHealth = 0.0; // No revisions yet
       final consistency = calc.calculateConsistencyScore(sessions, chapters);
-      
+
       final score = calc.calculateReadinessScore(
         coverage: coverage,
         revisionHealth: revisionHealth,
@@ -346,20 +411,23 @@ void main() {
 
       if (score != null) {
         final weightSum = score.weights.values.fold(0.0, (a, b) => a + b);
-        expect(weightSum, closeTo(1.0, 0.001), reason: 'Weights should sum to 1.0');
-        
+        expect(weightSum, closeTo(1.0, 0.001),
+            reason: 'Weights should sum to 1.0');
+
         // Verify score formula
-        final manualScore = (coverage.percent * (score.weights['coverage'] ?? 0)) +
-            (revisionHealth * (score.weights['revision'] ?? 0)) +
-            (consistency / 100 * (score.weights['consistency'] ?? 0));
-        
+        final manualScore =
+            (coverage.percent * (score.weights['coverage'] ?? 0)) +
+                (revisionHealth * (score.weights['revision'] ?? 0)) +
+                (consistency / 100 * (score.weights['consistency'] ?? 0));
+
         expect(score.score, (manualScore * 100).round());
       }
     });
 
     test('Daily goal progress: edge cases handled correctly', () {
       // Normal case
-      var progress = calc.calculateDailyGoalProgress(actualMinutes: 60, targetMinutes: 120);
+      var progress = calc.calculateDailyGoalProgress(
+          actualMinutes: 60, targetMinutes: 120);
       expect(progress.actualMinutes, 60);
       expect(progress.targetMinutes, 120);
       expect(progress.percent, 0.5);
@@ -367,19 +435,22 @@ void main() {
       expect(progress.isGoalMet, false);
 
       // Goal met
-      progress = calc.calculateDailyGoalProgress(actualMinutes: 120, targetMinutes: 120);
+      progress = calc.calculateDailyGoalProgress(
+          actualMinutes: 120, targetMinutes: 120);
       expect(progress.percent, 1.0);
       expect(progress.remainingMinutes, 0);
       expect(progress.isGoalMet, true);
 
       // Exceeded
-      progress = calc.calculateDailyGoalProgress(actualMinutes: 150, targetMinutes: 120);
+      progress = calc.calculateDailyGoalProgress(
+          actualMinutes: 150, targetMinutes: 120);
       expect(progress.percent, 1.0, reason: 'Should cap at 1.0');
       expect(progress.remainingMinutes, 0);
       expect(progress.isGoalMet, true);
 
       // Zero target
-      progress = calc.calculateDailyGoalProgress(actualMinutes: 60, targetMinutes: 0);
+      progress =
+          calc.calculateDailyGoalProgress(actualMinutes: 60, targetMinutes: 0);
       expect(progress.percent, 0.0);
       expect(progress.remainingMinutes, 0);
       expect(progress.isGoalMet, false);
@@ -413,7 +484,8 @@ void main() {
         currentEaseFactor: result.newEaseFactor,
         currentRepetitions: 2,
       );
-      expect(result.newIntervalDays, 18, reason: 'Third good -> interval 7 * ease(2.5) = 18');
+      expect(result.newIntervalDays, 18,
+          reason: 'Third good -> interval 7 * ease(2.5) = 18');
       expect(result.newRepetitions, 3);
 
       // Again resets to 1
@@ -423,7 +495,8 @@ void main() {
         currentEaseFactor: 2.5,
         currentRepetitions: 5,
       );
-      expect(result.newIntervalDays, 1, reason: 'Again resets to first interval');
+      expect(result.newIntervalDays, 1,
+          reason: 'Again resets to first interval');
       expect(result.newRepetitions, 0);
     });
 

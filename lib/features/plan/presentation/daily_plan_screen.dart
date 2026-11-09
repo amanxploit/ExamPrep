@@ -27,7 +27,7 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
     final activeExam = ref.watch(activeExamProvider).value;
     final settings = ref.watch(settingsProvider).value ?? const Settings();
     final userId = 'user_1'; // TODO: Get from auth
-    
+
     final tasks = ref.watch(dailyPlanTasksProvider(userId, _selectedDate));
     final completedToday = ref.watch(completedFocusSessionsTodayProvider);
     final dailyGoalMinutes = settings.dailyGoalMinutes;
@@ -68,7 +68,7 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
             final planResult = _selectedDate == DateTime.now().dateOnly
                 ? ref.watch(dailyPlanResultProvider)
                 : null;
-            
+
             if (planResult?.hasWorkloadWarning == true) {
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -76,7 +76,8 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.warning.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppRadius.card),
-                  border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
+                  border: Border.all(
+                      color: AppColors.warning.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -85,7 +86,8 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
                     Expanded(
                       child: Text(
                         planResult!.workloadWarning!,
-                        style: AppTextStyles.body.copyWith(color: AppColors.warning),
+                        style: AppTextStyles.body
+                            .copyWith(color: AppColors.warning),
                       ),
                     ),
                   ],
@@ -99,7 +101,8 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
         // Progress summary
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          child: _buildProgressSummary(context, tasks, completedToday, dailyGoalMinutes),
+          child: _buildProgressSummary(
+              context, tasks, completedToday, dailyGoalMinutes),
         ),
 
         // Task list
@@ -107,7 +110,8 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
           child: tasks.isEmpty
               ? _buildEmptyState(context)
               : ReorderableListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   itemCount: tasks.length,
                   onReorder: _onReorder,
                   itemBuilder: (context, index) {
@@ -139,7 +143,9 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
     return Center(
       child: EmptyStateCard(
         icon: Icons.calendar_today_rounded,
-        title: _selectedDate == DateTime.now().dateOnly ? 'No plan for today' : 'No plan for this day',
+        title: _selectedDate == DateTime.now().dateOnly
+            ? 'No plan for today'
+            : 'No plan for this day',
         subtitle: 'Generate a study plan based on your goals and due revisions',
         action: PrimaryPillButton(
           label: 'Generate Plan',
@@ -174,27 +180,36 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.calendar_today_rounded, size: 20, color: AppColors.primary),
+            Icon(Icons.calendar_today_rounded,
+                size: 20, color: AppColors.primary),
             const SizedBox(width: 8),
             Text(
-              _selectedDate == DateTime.now().dateOnly ? 'Today' : _selectedDate.formattedMedium,
+              _selectedDate == DateTime.now().dateOnly
+                  ? 'Today'
+                  : _selectedDate.formattedMedium,
               style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w500),
             ),
             const SizedBox(width: 4),
-            Icon(Icons.chevron_right_rounded, size: 20, color: AppColors.textSecondary),
+            Icon(Icons.chevron_right_rounded,
+                size: 20, color: AppColors.textSecondary),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProgressSummary(BuildContext context, List<DailyPlanTask> tasks, int completedToday, int dailyGoal) {
-    final studyTasks = tasks.where((t) => t.type != DailyPlanTaskType.breakTime).toList();
-    final totalEstimated = studyTasks.fold(0, (sum, t) => sum + t.estimatedMinutes);
+  Widget _buildProgressSummary(BuildContext context, List<DailyPlanTask> tasks,
+      int completedToday, int dailyGoal) {
+    final studyTasks =
+        tasks.where((t) => t.type != DailyPlanTaskType.breakTime).toList();
+    final totalEstimated =
+        studyTasks.fold(0, (sum, t) => sum + t.estimatedMinutes);
     final completedTasks = studyTasks.where((t) => t.isCompleted).toList();
-    final completedMinutes = completedTasks.fold(0, (sum, t) => sum + t.actualMinutes);
+    final completedMinutes =
+        completedTasks.fold(0, (sum, t) => sum + t.actualMinutes);
     final inProgressTasks = studyTasks.where((t) => t.isInProgress).length;
-    final remainingMinutes = (totalEstimated - completedMinutes).clamp(0, totalEstimated);
+    final remainingMinutes =
+        (totalEstimated - completedMinutes).clamp(0, totalEstimated);
 
     return Row(
       children: [
@@ -228,9 +243,10 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
     );
   }
 
-  Widget _buildTaskCard(BuildContext context, WidgetRef ref, DailyPlanTask task, int index) {
+  Widget _buildTaskCard(
+      BuildContext context, WidgetRef ref, DailyPlanTask task, int index) {
     final isBreak = task.type == DailyPlanTaskType.breakTime;
-    
+
     return Card(
       key: ValueKey(task.id),
       margin: const EdgeInsets.only(bottom: 8),
@@ -238,7 +254,9 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.card),
         side: BorderSide(
-          color: task.isCompleted ? AppColors.success : (task.isInProgress ? AppColors.primary : AppColors.border),
+          color: task.isCompleted
+              ? AppColors.success
+              : (task.isInProgress ? AppColors.primary : AppColors.border),
           width: task.isCompleted || task.isInProgress ? 2 : 1,
         ),
       ),
@@ -250,7 +268,8 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
             Row(
               children: [
                 // Drag handle
-                Icon(Icons.drag_indicator_rounded, color: AppColors.textSecondary, size: 20),
+                Icon(Icons.drag_indicator_rounded,
+                    color: AppColors.textSecondary, size: 20),
                 const SizedBox(width: 12),
                 // Task type icon
                 Container(
@@ -259,7 +278,8 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
                     color: _getTaskTypeColor(task.type).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
-                  child: Icon(_getTaskTypeIcon(task.type), color: _getTaskTypeColor(task.type), size: 20),
+                  child: Icon(_getTaskTypeIcon(task.type),
+                      color: _getTaskTypeColor(task.type), size: 20),
                 ),
                 const SizedBox(width: 12),
                 // Task info
@@ -267,19 +287,28 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(task.title, style: AppTextStyles.body.copyWith(
-                        fontWeight: FontWeight.w600,
-                        decoration: task.isCompleted ? TextDecoration.lineThrough : null,
-                        color: task.isCompleted ? AppColors.textSecondary : AppColors.textPrimary,
-                      )),
+                      Text(task.title,
+                          style: AppTextStyles.body.copyWith(
+                            fontWeight: FontWeight.w600,
+                            decoration: task.isCompleted
+                                ? TextDecoration.lineThrough
+                                : null,
+                            color: task.isCompleted
+                                ? AppColors.textSecondary
+                                : AppColors.textPrimary,
+                          )),
                       if (task.description.isNotEmpty)
-                        Text(task.description, style: AppTextStyles.caption, maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(task.description,
+                            style: AppTextStyles.caption,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis),
                     ],
                   ),
                 ),
                 // Status badge
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: _getStatusColor(task.status).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -296,15 +325,19 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
                 // Time
                 Text(
                   '${task.estimatedMinutes}m',
-                  style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                  style: AppTextStyles.body.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary),
                 ),
                 const SizedBox(width: 8),
                 // Priority score
                 if (!isBreak)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: _getPriorityColor(task.priorityScore).withValues(alpha: 0.15),
+                      color: _getPriorityColor(task.priorityScore)
+                          .withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                     child: Text(
@@ -326,7 +359,8 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
                     child: OutlinedPillButton(
                       label: 'Start',
                       icon: Icons.play_arrow_rounded,
-                      onPressed: () => _updateTaskStatus(ref, task, DailyPlanTaskStatus.inProgress),
+                      onPressed: () => _updateTaskStatus(
+                          ref, task, DailyPlanTaskStatus.inProgress),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -344,7 +378,8 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
                     child: OutlinedPillButton(
                       label: 'Pause',
                       icon: Icons.pause_rounded,
-                      onPressed: () => _updateTaskStatus(ref, task, DailyPlanTaskStatus.pending),
+                      onPressed: () => _updateTaskStatus(
+                          ref, task, DailyPlanTaskStatus.pending),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -354,7 +389,8 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
                     child: OutlinedPillButton(
                       label: 'Reopen',
                       icon: Icons.refresh_rounded,
-                      onPressed: () => _updateTaskStatus(ref, task, DailyPlanTaskStatus.pending),
+                      onPressed: () => _updateTaskStatus(
+                          ref, task, DailyPlanTaskStatus.pending),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -364,14 +400,16 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
                     child: OutlinedPillButton(
                       label: 'Skip',
                       icon: Icons.skip_next_rounded,
-                      onPressed: () => _updateTaskStatus(ref, task, DailyPlanTaskStatus.skipped),
+                      onPressed: () => _updateTaskStatus(
+                          ref, task, DailyPlanTaskStatus.skipped),
                       color: AppColors.warning,
                     ),
                   ),
                   const SizedBox(width: 8),
                 ],
                 IconButton(
-                  icon: Icon(Icons.more_vert_rounded, color: AppColors.textSecondary),
+                  icon: Icon(Icons.more_vert_rounded,
+                      color: AppColors.textSecondary),
                   onPressed: () => _showTaskOptions(context, ref, task),
                 ),
               ],
@@ -439,14 +477,16 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
     final reorderedTasks = List<DailyPlanTask>.from(tasks);
     final task = reorderedTasks.removeAt(oldIndex);
     reorderedTasks.insert(newIndex, task);
-    ref.read(dailyPlanTasksProvider(userId, _selectedDate).notifier).reorderTasks(reorderedTasks);
+    ref
+        .read(dailyPlanTasksProvider(userId, _selectedDate).notifier)
+        .reorderTasks(reorderedTasks);
   }
 
   Future<void> _generatePlan() async {
     if (_isGenerating) return;
-    
+
     setState(() => _isGenerating = true);
-    
+
     final activeExam = ref.read(activeExamProvider).value;
     if (activeExam == null) {
       setState(() => _isGenerating = false);
@@ -455,7 +495,8 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
 
     final settings = ref.read(settingsProvider).value ?? const Settings();
     final userId = 'user_1';
-    final existingTasks = ref.read(dailyPlanTasksProvider(userId, _selectedDate));
+    final existingTasks =
+        ref.read(dailyPlanTasksProvider(userId, _selectedDate));
     final completedToday = ref.read(completedFocusSessionsTodayProvider);
 
     try {
@@ -485,7 +526,8 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Generated ${result.tasks.length} tasks (${result.studyMinutes}m study, ${result.breakMinutes}m breaks)'),
+            content: Text(
+                'Generated ${result.tasks.length} tasks (${result.studyMinutes}m study, ${result.breakMinutes}m breaks)'),
             action: result.hasWorkloadWarning
                 ? SnackBarAction(
                     label: 'View Warning',
@@ -502,12 +544,17 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
     }
   }
 
-  void _updateTaskStatus(WidgetRef ref, DailyPlanTask task, DailyPlanTaskStatus status) {
+  void _updateTaskStatus(
+      WidgetRef ref, DailyPlanTask task, DailyPlanTaskStatus status) {
     final updated = task.copyWith(
       status: status,
-      startedAt: status == DailyPlanTaskStatus.inProgress ? DateTime.now() : task.startedAt,
+      startedAt: status == DailyPlanTaskStatus.inProgress
+          ? DateTime.now()
+          : task.startedAt,
     );
-    ref.read(dailyPlanTasksProvider('user_1', _selectedDate).notifier).updateTask(updated);
+    ref
+        .read(dailyPlanTasksProvider('user_1', _selectedDate).notifier)
+        .updateTask(updated);
   }
 
   void _completeTask(WidgetRef ref, DailyPlanTask task) {
@@ -516,8 +563,10 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
       completedAt: DateTime.now(),
       actualMinutes: task.estimatedMinutes,
     );
-    ref.read(dailyPlanTasksProvider('user_1', _selectedDate).notifier).updateTask(updated);
-    
+    ref
+        .read(dailyPlanTasksProvider('user_1', _selectedDate).notifier)
+        .updateTask(updated);
+
     // If it's a revision task, mark the revision item as completed
     if (task.type == DailyPlanTaskType.revision && task.sourceId != null) {
       // This would need a provider to get the revision item
@@ -525,12 +574,14 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
     }
   }
 
-  void _showTaskOptions(BuildContext context, WidgetRef ref, DailyPlanTask task) {
+  void _showTaskOptions(
+      BuildContext context, WidgetRef ref, DailyPlanTask task) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
       ),
       builder: (context) => Padding(
         padding: const EdgeInsets.all(20),
@@ -573,10 +624,12 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
     );
   }
 
-  void _showEditTaskDialog(BuildContext context, WidgetRef ref, DailyPlanTask task) {
+  void _showEditTaskDialog(
+      BuildContext context, WidgetRef ref, DailyPlanTask task) {
     final titleController = TextEditingController(text: task.title);
     final descriptionController = TextEditingController(text: task.description);
-    final minutesController = TextEditingController(text: task.estimatedMinutes.toString());
+    final minutesController =
+        TextEditingController(text: task.estimatedMinutes.toString());
 
     showDialog(
       context: context,
@@ -611,13 +664,17 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
           PrimaryPillButton(
             label: 'Save',
             onPressed: () {
-              final minutes = int.tryParse(minutesController.text) ?? task.estimatedMinutes;
+              final minutes =
+                  int.tryParse(minutesController.text) ?? task.estimatedMinutes;
               final updated = task.copyWith(
                 title: titleController.text,
                 description: descriptionController.text,
                 estimatedMinutes: minutes,
               );
-              ref.read(dailyPlanTasksProvider('user_1', _selectedDate).notifier).updateTask(updated);
+              ref
+                  .read(
+                      dailyPlanTasksProvider('user_1', _selectedDate).notifier)
+                  .updateTask(updated);
               Navigator.pop(context);
             },
           ),
@@ -626,7 +683,8 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
     );
   }
 
-  void _confirmDeleteTask(BuildContext context, WidgetRef ref, DailyPlanTask task) {
+  void _confirmDeleteTask(
+      BuildContext context, WidgetRef ref, DailyPlanTask task) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -639,7 +697,10 @@ class _DailyPlanScreenState extends ConsumerState<DailyPlanScreen> {
           ),
           TextButton(
             onPressed: () {
-              ref.read(dailyPlanTasksProvider('user_1', _selectedDate).notifier).deleteTask(task.id);
+              ref
+                  .read(
+                      dailyPlanTasksProvider('user_1', _selectedDate).notifier)
+                  .deleteTask(task.id);
               Navigator.pop(context);
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
@@ -677,7 +738,9 @@ class _ProgressCard extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 24),
           const SizedBox(height: 8),
-          Text(value, style: AppTextStyles.title.copyWith(color: color, fontWeight: FontWeight.bold)),
+          Text(value,
+              style: AppTextStyles.title
+                  .copyWith(color: color, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           Text(label, style: AppTextStyles.caption.copyWith(color: color)),
         ],

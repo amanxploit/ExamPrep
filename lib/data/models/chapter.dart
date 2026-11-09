@@ -7,34 +7,34 @@ part 'chapter.g.dart';
 class Chapter extends HiveObject {
   @HiveField(0)
   String id;
-  
+
   @HiveField(1)
   String subjectId;
-  
+
   @HiveField(2)
   String name;
-  
+
   @HiveField(3)
   int order;
-  
+
   @HiveField(4)
   bool isCompleted;
-  
+
   @HiveField(5)
   DateTime? completedAt;
-  
+
   @HiveField(6)
   int estimatedMinutes;
-  
+
   @HiveField(7)
   int importance;
-  
+
   @HiveField(8)
   int difficulty;
-  
+
   @HiveField(9)
   bool isInProgress;
-  
+
   @HiveField(10)
   String description;
 
@@ -51,7 +51,7 @@ class Chapter extends HiveObject {
     this.isInProgress = false,
     this.description = '',
   }) : id = id ?? const Uuid().v4();
-  
+
   Chapter copyWith({
     String? id,
     String? subjectId,
@@ -80,25 +80,26 @@ class Chapter extends HiveObject {
       description: description ?? this.description,
     );
   }
-  
+
   void markCompleted() {
     isCompleted = true;
     completedAt = DateTime.now();
   }
-  
+
   void markIncomplete() {
     isCompleted = false;
     completedAt = null;
   }
-  
+
   void markInProgress() {
     isInProgress = true;
   }
-  
+
   void markNotInProgress() {
     isInProgress = false;
   }
-  
+
   @override
-  String toString() => 'Chapter(id: $id, name: $name, isCompleted: $isCompleted)';
+  String toString() =>
+      'Chapter(id: $id, name: $name, isCompleted: $isCompleted)';
 }

@@ -7,28 +7,28 @@ part 'study_task.g.dart';
 class StudyTask extends HiveObject {
   @HiveField(0)
   String id;
-  
+
   @HiveField(1)
   String examId;
-  
+
   @HiveField(2)
   String title;
-  
+
   @HiveField(3)
   String? subjectId;
-  
+
   @HiveField(4)
   String? chapterId;
-  
+
   @HiveField(5)
   DateTime dueDate;
-  
+
   @HiveField(6)
   bool isDone;
-  
+
   @HiveField(7)
   DateTime createdAt;
-  
+
   StudyTask({
     String? id,
     required this.examId,
@@ -39,7 +39,7 @@ class StudyTask extends HiveObject {
     this.isDone = false,
     required this.createdAt,
   }) : id = id ?? const Uuid().v4();
-  
+
   StudyTask copyWith({
     String? id,
     String? examId,
@@ -63,7 +63,7 @@ class StudyTask extends HiveObject {
       createdAt: createdAt ?? this.createdAt,
     );
   }
-  
+
   @override
   String toString() => 'StudyTask(id: $id, title: $title, isDone: $isDone)';
 }

@@ -8,25 +8,25 @@ part 'focus_session.g.dart';
 class FocusSession extends HiveObject {
   @HiveField(0)
   String id;
-  
+
   @HiveField(1)
   String? examId;
-  
+
   @HiveField(2)
   SessionType type;
-  
+
   @HiveField(3)
   DateTime startedAt;
-  
+
   @HiveField(4)
   int durationMinutes;
-  
+
   @HiveField(5)
   bool completed;
-  
+
   @HiveField(6)
   DateTime? completedAt;
-  
+
   FocusSession({
     String? id,
     this.examId,
@@ -36,7 +36,7 @@ class FocusSession extends HiveObject {
     this.completed = false,
     this.completedAt,
   }) : id = id ?? const Uuid().v4();
-  
+
   FocusSession copyWith({
     String? id,
     String? examId,
@@ -57,16 +57,17 @@ class FocusSession extends HiveObject {
       completedAt: clearCompletedAt ? null : (completedAt ?? this.completedAt),
     );
   }
-  
+
   void markCompleted() {
     completed = true;
     completedAt = DateTime.now();
   }
-  
+
   Duration get duration => Duration(minutes: durationMinutes);
-  
+
   @override
-  String toString() => 'FocusSession(id: $id, type: $type, completed: $completed)';
+  String toString() =>
+      'FocusSession(id: $id, type: $type, completed: $completed)';
 }
 
 @HiveType(typeId: 5)
@@ -90,7 +91,7 @@ extension SessionTypeExtensions on SessionType {
         return 'LONG BREAK';
     }
   }
-  
+
   String get subtitle {
     switch (this) {
       case SessionType.focus:
@@ -101,7 +102,7 @@ extension SessionTypeExtensions on SessionType {
         return 'Recharge';
     }
   }
-  
+
   Color get color {
     switch (this) {
       case SessionType.focus:

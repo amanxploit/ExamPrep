@@ -20,14 +20,14 @@ enum AppTab { home, focus, syllabus, exams }
 GoRouter router(RouterRef ref) {
   // Watch onboardingDone to make router reactive to changes
   final onboardingDone = ref.watch(onboardingDoneProvider);
-  
+
   return GoRouter(
     initialLocation: onboardingDone ? '/home' : '/onboarding',
     redirect: (context, state) {
       // Use watch to make redirect reactive to onboardingDone changes
       final isOnboardingDone = ref.watch(onboardingDoneProvider);
       final isOnboardingRoute = state.matchedLocation == '/onboarding';
-      
+
       // If onboarding is done but user is on onboarding page, redirect to home
       if (isOnboardingDone && isOnboardingRoute) {
         return '/home';
@@ -92,12 +92,12 @@ GoRouter router(RouterRef ref) {
 
 class ScaffoldWithNavBar extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
-  
+
   const ScaffoldWithNavBar({
     super.key,
     required this.navigationShell,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -117,19 +117,31 @@ class ScaffoldWithNavBar extends StatelessWidget {
 class _CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
-  
+
   const _CustomBottomNavBar({
     required this.currentIndex,
     required this.onTap,
   });
-  
+
   static const List<_NavItem> _items = [
-    _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home'),
-    _NavItem(icon: Icons.timer_outlined, activeIcon: Icons.timer_rounded, label: 'Focus'),
-    _NavItem(icon: Icons.layers_outlined, activeIcon: Icons.layers_rounded, label: 'Syllabus'),
-    _NavItem(icon: Icons.calendar_month_outlined, activeIcon: Icons.calendar_month_rounded, label: 'Exams'),
+    _NavItem(
+        icon: Icons.home_outlined,
+        activeIcon: Icons.home_rounded,
+        label: 'Home'),
+    _NavItem(
+        icon: Icons.timer_outlined,
+        activeIcon: Icons.timer_rounded,
+        label: 'Focus'),
+    _NavItem(
+        icon: Icons.layers_outlined,
+        activeIcon: Icons.layers_rounded,
+        label: 'Syllabus'),
+    _NavItem(
+        icon: Icons.calendar_month_outlined,
+        activeIcon: Icons.calendar_month_rounded,
+        label: 'Exams'),
   ];
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -195,7 +207,8 @@ class _CustomBottomNavBar extends StatelessWidget {
             Row(
               children: List.generate(_items.length, (index) {
                 if (index == currentIndex) {
-                  return Expanded(child: Container()); // Empty space for active item
+                  return Expanded(
+                      child: Container()); // Empty space for active item
                 }
                 return Expanded(
                   child: InkWell(
@@ -223,7 +236,7 @@ class _NavItem {
   final IconData icon;
   final IconData activeIcon;
   final String label;
-  
+
   const _NavItem({
     required this.icon,
     required this.activeIcon,

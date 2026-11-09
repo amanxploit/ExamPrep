@@ -60,8 +60,10 @@ class CalculationService {
 
   /// Calculates study duration from completed focus sessions.
   StudyDuration calculateStudyDuration(List<FocusSession> sessions) {
-    final focusSessions = sessions.where((s) => s.type == SessionType.focus && s.completed);
-    final totalMinutes = focusSessions.fold(0, (sum, s) => sum + s.durationMinutes);
+    final focusSessions =
+        sessions.where((s) => s.type == SessionType.focus && s.completed);
+    final totalMinutes =
+        focusSessions.fold(0, (sum, s) => sum + s.durationMinutes);
     return StudyDuration.fromMinutes(totalMinutes);
   }
 
@@ -69,7 +71,10 @@ class CalculationService {
   int calculateTodayFocusMinutes(List<FocusSession> sessions) {
     final today = DateTime.now().dateOnly;
     return sessions
-        .where((s) => s.type == SessionType.focus && s.completed && s.startedAt.dateOnly == today)
+        .where((s) =>
+            s.type == SessionType.focus &&
+            s.completed &&
+            s.startedAt.dateOnly == today)
         .fold(0, (sum, s) => sum + s.durationMinutes);
   }
 
@@ -109,14 +114,19 @@ class CalculationService {
   }) {
     final refDate = referenceDate ?? DateTime.now();
     final last7Days = _getLast7Days(refDate);
-    final focusSessions = sessions.where((s) => s.type == SessionType.focus && s.completed).toList();
+    final focusSessions = sessions
+        .where((s) => s.type == SessionType.focus && s.completed)
+        .toList();
 
     final dailyChapters = <DateTime, int>{};
     final dailyMinutes = <DateTime, int>{};
 
     for (final day in last7Days) {
       dailyChapters[day] = chapters
-          .where((c) => c.isCompleted && c.completedAt != null && c.completedAt!.dateOnly == day)
+          .where((c) =>
+              c.isCompleted &&
+              c.completedAt != null &&
+              c.completedAt!.dateOnly == day)
           .length;
       dailyMinutes[day] = focusSessions
           .where((s) => s.startedAt.dateOnly == day)
@@ -141,8 +151,14 @@ class CalculationService {
     required List<Chapter> chapters,
     int minimumQualifyingMinutes = 1,
   }) {
-    final focusSessions = sessions.where((s) => s.type == SessionType.focus && s.completed && s.durationMinutes >= minimumQualifyingMinutes).toList();
-    final completedChapters = chapters.where((c) => c.isCompleted && c.completedAt != null).toList();
+    final focusSessions = sessions
+        .where((s) =>
+            s.type == SessionType.focus &&
+            s.completed &&
+            s.durationMinutes >= minimumQualifyingMinutes)
+        .toList();
+    final completedChapters =
+        chapters.where((c) => c.isCompleted && c.completedAt != null).toList();
 
     final activityDates = <DateTime>{};
     for (final session in focusSessions) {
@@ -205,16 +221,19 @@ class CalculationService {
   }
 
   /// Calculates consistency score (active study days in last 14 days / 14).
-  double calculateConsistencyScore(List<FocusSession> sessions, List<Chapter> chapters) {
+  double calculateConsistencyScore(
+      List<FocusSession> sessions, List<Chapter> chapters) {
     final last14Days = _getLast14Days(DateTime.now());
     final activityDates = <DateTime>{};
 
-    for (final session in sessions.where((s) => s.type == SessionType.focus && s.completed)) {
+    for (final session
+        in sessions.where((s) => s.type == SessionType.focus && s.completed)) {
       if (last14Days.contains(session.startedAt.dateOnly)) {
         activityDates.add(session.startedAt.dateOnly);
       }
     }
-    for (final chapter in chapters.where((c) => c.isCompleted && c.completedAt != null)) {
+    for (final chapter
+        in chapters.where((c) => c.isCompleted && c.completedAt != null)) {
       if (last14Days.contains(chapter.completedAt!.dateOnly)) {
         activityDates.add(chapter.completedAt!.dateOnly);
       }
@@ -275,9 +294,12 @@ class CalculationService {
   }) {
     final hasRevisionData = revisionHealth > 0;
     final hasPracticeData = practiceScore != null && practiceScore > 0;
-    
+
     // Return null if no meaningful data
-    if (coverage.percent == 0 && revisionHealth == 0 && consistency == 0 && !hasPracticeData) {
+    if (coverage.percent == 0 &&
+        revisionHealth == 0 &&
+        consistency == 0 &&
+        !hasPracticeData) {
       return null;
     }
 
@@ -290,7 +312,8 @@ class CalculationService {
     final totalWeight = weights.values.fold(0.0, (a, b) => a + b);
     if (totalWeight == 0) return null;
 
-    final normalizedWeights = weights.map((k, v) => MapEntry(k, v / totalWeight));
+    final normalizedWeights =
+        weights.map((k, v) => MapEntry(k, v / totalWeight));
 
     final score = (coverage.percent * (normalizedWeights['coverage'] ?? 0)) +
         (revisionHealth * (normalizedWeights['revision'] ?? 0)) +
@@ -327,7 +350,8 @@ class CalculationService {
       newIntervalDays = intervals.first;
     } else {
       // Update ease factor based on quality (0-5)
-      newEaseFactor = currentEaseFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+      newEaseFactor = currentEaseFactor +
+          (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
       if (newEaseFactor < 1.3) newEaseFactor = 1.3;
 
       newRepetitions = currentRepetitions + 1;
@@ -338,9 +362,11 @@ class CalculationService {
         newIntervalDays = intervals[1];
       } else {
         // For repetitions >= 3, use ease factor to determine interval
-        final baseInterval = intervals[newRepetitions - 1 < intervals.length ? newRepetitions - 1 : intervals.length - 1];
+        final baseInterval = intervals[newRepetitions - 1 < intervals.length
+            ? newRepetitions - 1
+            : intervals.length - 1];
         newIntervalDays = (baseInterval * newEaseFactor).round();
-        
+
         // Cap at maximum interval
         if (newIntervalDays > intervals.last) {
           newIntervalDays = intervals.last;
@@ -348,7 +374,8 @@ class CalculationService {
       }
     }
 
-    final nextDueAt = DateTime.now().dateOnly.add(Duration(days: newIntervalDays));
+    final nextDueAt =
+        DateTime.now().dateOnly.add(Duration(days: newIntervalDays));
 
     return SM2Result(
       newIntervalDays: newIntervalDays,
@@ -365,7 +392,8 @@ class CalculationService {
     required String title,
     List<int> intervals = const [1, 3, 7, 14, 30],
   }) {
-    final initialDueAt = DateTime.now().dateOnly.add(Duration(days: intervals.first));
+    final initialDueAt =
+        DateTime.now().dateOnly.add(Duration(days: intervals.first));
     return RevisionItem(
       userId: userId,
       chapterId: chapterId,
@@ -397,7 +425,9 @@ class CalculationService {
       intervalDays: result.newIntervalDays,
       easeFactor: result.newEaseFactor,
       repetitions: result.newRepetitions,
-      status: rating == ReviewRating.again ? RevisionStatus.pending : RevisionStatus.completed,
+      status: rating == ReviewRating.again
+          ? RevisionStatus.pending
+          : RevisionStatus.completed,
     );
   }
 
@@ -441,9 +471,18 @@ class CalculationService {
     if (items.isEmpty) return 0.0;
 
     final now = DateTime.now().dateOnly;
-    final dueItems = items.where((i) => i.dueAt.dateOnly.compareTo(now) <= 0 && i.status == RevisionStatus.pending).length;
-    final overdueItems = items.where((i) => i.dueAt.dateOnly.compareTo(now) < 0 && i.status == RevisionStatus.pending).length;
-    final completedOnTime = items.where((i) => i.status == RevisionStatus.completed).length;
+    final dueItems = items
+        .where((i) =>
+            i.dueAt.dateOnly.compareTo(now) <= 0 &&
+            i.status == RevisionStatus.pending)
+        .length;
+    final overdueItems = items
+        .where((i) =>
+            i.dueAt.dateOnly.compareTo(now) < 0 &&
+            i.status == RevisionStatus.pending)
+        .length;
+    final completedOnTime =
+        items.where((i) => i.status == RevisionStatus.completed).length;
 
     final totalDue = dueItems + overdueItems + completedOnTime;
     if (totalDue == 0) return 1.0;
@@ -495,7 +534,8 @@ class CalculationService {
     if (remainingMinutes <= 0) {
       return DailyPlanResult(
         tasks: existingTasks,
-        totalEstimatedMinutes: existingTasks.fold(0, (sum, t) => sum + t.estimatedMinutes),
+        totalEstimatedMinutes:
+            existingTasks.fold(0, (sum, t) => sum + t.estimatedMinutes),
         availableMinutes: availableMinutes,
         workloadWarning: 'No available time remaining for today',
         examDate: exam.examDate,
@@ -507,27 +547,34 @@ class CalculationService {
     int sortOrder = 0;
 
     // Get existing task IDs to prevent duplicates
-    final existingSourceIds = existingTasks.where((t) => t.sourceId != null).map((t) => t.sourceId!).toSet();
+    final existingSourceIds = existingTasks
+        .where((t) => t.sourceId != null)
+        .map((t) => t.sourceId!)
+        .toSet();
 
     // 1. Add overdue revisions first (cap at maxOverdueRevisions)
-    final overdueRevisions = _repository.getOverdueRevisionItems(examId)
+    final overdueRevisions = _repository
+        .getOverdueRevisionItems(examId)
         .where((r) => !existingSourceIds.contains(r.id))
         .take(maxOverdueRevisions)
         .toList();
 
     for (final revision in overdueRevisions) {
       if (remainingTime <= 0) break;
-      final estimatedMinutes = focusBlockMinutes; // Use focus block for revisions
+      final estimatedMinutes =
+          focusBlockMinutes; // Use focus block for revisions
       if (estimatedMinutes <= remainingTime) {
         tasks.add(DailyPlanTask(
           userId: userId,
           date: now,
           title: 'Revision: ${revision.title}',
-          description: 'Overdue revision (due ${revision.dueAt.formattedShort})',
+          description:
+              'Overdue revision (due ${revision.dueAt.formattedShort})',
           type: DailyPlanTaskType.revision,
           sourceId: revision.id,
           estimatedMinutes: estimatedMinutes,
-          priorityScore: _calculateRevisionPriority(revision, daysUntilExam, isOverdue: true),
+          priorityScore: _calculateRevisionPriority(revision, daysUntilExam,
+              isOverdue: true),
           sortOrder: sortOrder++,
         ));
         remainingTime -= estimatedMinutes;
@@ -535,8 +582,10 @@ class CalculationService {
     }
 
     // 2. Add revisions due today (cap at maxDueRevisions)
-    final dueTodayRevisions = _repository.getDueRevisionItems(examId)
-        .where((r) => r.dueAt.dateOnly == now && !existingSourceIds.contains(r.id))
+    final dueTodayRevisions = _repository
+        .getDueRevisionItems(examId)
+        .where(
+            (r) => r.dueAt.dateOnly == now && !existingSourceIds.contains(r.id))
         .take(maxDueRevisions)
         .toList();
 
@@ -552,7 +601,8 @@ class CalculationService {
           type: DailyPlanTaskType.revision,
           sourceId: revision.id,
           estimatedMinutes: estimatedMinutes,
-          priorityScore: _calculateRevisionPriority(revision, daysUntilExam, isOverdue: false),
+          priorityScore: _calculateRevisionPriority(revision, daysUntilExam,
+              isOverdue: false),
           sortOrder: sortOrder++,
         ));
         remainingTime -= estimatedMinutes;
@@ -560,19 +610,24 @@ class CalculationService {
     }
 
     // 3. Rank incomplete chapters by priority
-    final incompleteChapters = _getIncompleteChaptersWithPriority(examId, daysUntilExam, existingSourceIds);
+    final incompleteChapters = _getIncompleteChaptersWithPriority(
+        examId, daysUntilExam, existingSourceIds);
 
     // 4. Add chapters until time runs out
     for (final chapter in incompleteChapters) {
       if (remainingTime <= 0) break;
       // Estimate minutes based on chapter difficulty or use focus block
-      final estimatedMinutes = (chapter.estimatedMinutes > 0 ? chapter.estimatedMinutes : focusBlockMinutes * 2);
+      final estimatedMinutes = (chapter.estimatedMinutes > 0
+          ? chapter.estimatedMinutes
+          : focusBlockMinutes * 2);
       if (estimatedMinutes <= remainingTime) {
         tasks.add(DailyPlanTask(
           userId: userId,
           date: now,
           title: 'Study: ${chapter.name}',
-          description: chapter.description.isNotEmpty ? chapter.description : 'Study chapter',
+          description: chapter.description.isNotEmpty
+              ? chapter.description
+              : 'Study chapter',
           type: DailyPlanTaskType.studyChapter,
           sourceId: chapter.id,
           estimatedMinutes: estimatedMinutes,
@@ -584,16 +639,20 @@ class CalculationService {
     }
 
     // 5. Add breaks between focus blocks
-    final tasksWithBreaks = _addBreaks(tasks, focusBlockMinutes, shortBreakMinutes, longBreakMinutes, sessionsBeforeLongBreak);
+    final tasksWithBreaks = _addBreaks(tasks, focusBlockMinutes,
+        shortBreakMinutes, longBreakMinutes, sessionsBeforeLongBreak);
 
     // Calculate workload warning
-    final totalEstimatedMinutes = tasksWithBreaks.where((t) => t.type != DailyPlanTaskType.breakTime)
+    final totalEstimatedMinutes = tasksWithBreaks
+        .where((t) => t.type != DailyPlanTaskType.breakTime)
         .fold(0, (sum, t) => sum + t.estimatedMinutes);
-    final totalRequiredMinutes = _estimateTotalRequiredMinutes(examId, daysUntilExam);
+    final totalRequiredMinutes =
+        _estimateTotalRequiredMinutes(examId, daysUntilExam);
     String? workloadWarning;
     if (totalRequiredMinutes > availableMinutes * daysUntilExam) {
       final deficit = totalRequiredMinutes - (availableMinutes * daysUntilExam);
-      workloadWarning = 'Workload warning: ${deficit} minutes of study cannot fit in remaining ${daysUntilExam} days. Consider increasing daily study time or adjusting goals.';
+      workloadWarning =
+          'Workload warning: ${deficit} minutes of study cannot fit in remaining ${daysUntilExam} days. Consider increasing daily study time or adjusting goals.';
     }
 
     // Sort by priority score (highest first) then by sort order
@@ -618,11 +677,14 @@ class CalculationService {
     );
   }
 
-  int _calculateRevisionPriority(RevisionItem revision, int daysUntilExam, {required bool isOverdue}) {
+  int _calculateRevisionPriority(RevisionItem revision, int daysUntilExam,
+      {required bool isOverdue}) {
     int score = 0;
     if (isOverdue) score += 1000;
-    score += (30 - daysUntilExam).clamp(0, 30) * 10; // Urgency based on exam proximity
-    score += (revision.repetitions * 5); // More repetitions = higher priority to maintain
+    score += (30 - daysUntilExam).clamp(0, 30) *
+        10; // Urgency based on exam proximity
+    score += (revision.repetitions *
+        5); // More repetitions = higher priority to maintain
     return score;
   }
 
@@ -635,13 +697,16 @@ class CalculationService {
     return score;
   }
 
-  List<Chapter> _getIncompleteChaptersWithPriority(String examId, int daysUntilExam, Set<String> existingSourceIds) {
-    final chapters = _repository.getAllChaptersForExam(examId)
+  List<Chapter> _getIncompleteChaptersWithPriority(
+      String examId, int daysUntilExam, Set<String> existingSourceIds) {
+    final chapters = _repository
+        .getAllChaptersForExam(examId)
         .where((c) => !c.isCompleted && !existingSourceIds.contains(c.id))
         .toList();
-    
+
     // Sort by priority
-    chapters.sort((a, b) => _calculateChapterPriority(b, daysUntilExam).compareTo(_calculateChapterPriority(a, daysUntilExam)));
+    chapters.sort((a, b) => _calculateChapterPriority(b, daysUntilExam)
+        .compareTo(_calculateChapterPriority(a, daysUntilExam)));
     return chapters;
   }
 
@@ -656,7 +721,9 @@ class CalculationService {
     int focusSessionCount = 0;
 
     for (final task in tasks) {
-      if (task.type == DailyPlanTaskType.studyChapter || task.type == DailyPlanTaskType.revision || task.type == DailyPlanTaskType.flashcard) {
+      if (task.type == DailyPlanTaskType.studyChapter ||
+          task.type == DailyPlanTaskType.revision ||
+          task.type == DailyPlanTaskType.flashcard) {
         // Check if we need a break before this task
         if (focusSessionCount > 0) {
           if (focusSessionCount % sessionsBeforeLongBreak == 0) {
@@ -690,20 +757,24 @@ class CalculationService {
   }
 
   int _estimateTotalRequiredMinutes(String examId, int daysUntilExam) {
-    final chapters = _repository.getAllChaptersForExam(examId)
+    final chapters = _repository
+        .getAllChaptersForExam(examId)
         .where((c) => !c.isCompleted)
         .toList();
-    
+
     int totalMinutes = 0;
     for (final chapter in chapters) {
-      totalMinutes += chapter.estimatedMinutes > 0 ? chapter.estimatedMinutes : 50; // Default 50 min per chapter
+      totalMinutes += chapter.estimatedMinutes > 0
+          ? chapter.estimatedMinutes
+          : 50; // Default 50 min per chapter
     }
-    
+
     // Add revision time (estimate 25 min per revision item due in remaining days)
     final revisionItems = _repository.getRevisionItemsForExam(examId);
-    final upcomingRevisions = revisionItems.where((r) => r.status == RevisionStatus.pending).length;
+    final upcomingRevisions =
+        revisionItems.where((r) => r.status == RevisionStatus.pending).length;
     totalMinutes += upcomingRevisions * 25;
-    
+
     return totalMinutes;
   }
 
@@ -861,7 +932,8 @@ class MilestoneProgress {
     required this.unit,
   });
 
-  double get percent => targetValue == 0 ? 0.0 : (currentValue / targetValue).clamp(0.0, 1.0);
+  double get percent =>
+      targetValue == 0 ? 0.0 : (currentValue / targetValue).clamp(0.0, 1.0);
   bool get isCompleted => currentValue >= targetValue;
 }
 
@@ -910,12 +982,15 @@ class DailyPlanResult {
     this.examDate,
   });
 
-  int get breakMinutes => tasks.where((t) => t.type == DailyPlanTaskType.breakTime)
+  int get breakMinutes => tasks
+      .where((t) => t.type == DailyPlanTaskType.breakTime)
       .fold(0, (sum, t) => sum + t.estimatedMinutes);
 
   int get studyMinutes => totalEstimatedMinutes;
 
-  double get utilizationPercent => availableMinutes == 0 ? 0.0 : (totalEstimatedMinutes + breakMinutes) / availableMinutes;
+  double get utilizationPercent => availableMinutes == 0
+      ? 0.0
+      : (totalEstimatedMinutes + breakMinutes) / availableMinutes;
 
   bool get hasWorkloadWarning => workloadWarning != null;
 }

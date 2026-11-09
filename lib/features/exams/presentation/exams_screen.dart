@@ -15,13 +15,13 @@ import 'package:exam_prep/core/extensions/extensions.dart';
 
 class ExamsScreen extends ConsumerWidget {
   const ExamsScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final examsAsync = ref.watch(allExamsProvider);
     final repo = ref.watch(examRepositoryProvider);
     final currentActiveExam = repo.getActiveExam();
-    
+
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
@@ -37,7 +37,8 @@ class ExamsScreen extends ConsumerWidget {
               _buildHeader(context),
               const SizedBox(height: AppSpacing.sectionVertical),
               examsAsync.when(
-                data: (exams) => _buildExamsList(context, ref, exams, currentActiveExam),
+                data: (exams) =>
+                    _buildExamsList(context, ref, exams, currentActiveExam),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (_, __) => _buildErrorState(),
               ),
@@ -51,7 +52,7 @@ class ExamsScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
@@ -59,7 +60,8 @@ class ExamsScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Everything you\'re prepping for', style: AppTextStyles.overline),
+              Text('Everything you\'re prepping for',
+                  style: AppTextStyles.overline),
               const SizedBox(height: 4),
               Text('Exams', style: AppTextStyles.screenTitle),
             ],
@@ -71,8 +73,9 @@ class ExamsScreen extends ConsumerWidget {
       ],
     );
   }
-  
-  Widget _buildExamsList(BuildContext context, WidgetRef ref, List<Exam> exams, Exam? currentActiveExam) {
+
+  Widget _buildExamsList(BuildContext context, WidgetRef ref, List<Exam> exams,
+      Exam? currentActiveExam) {
     if (exams.isEmpty) {
       return EmptyStateCard(
         icon: Icons.calendar_month_rounded,
@@ -85,7 +88,7 @@ class ExamsScreen extends ConsumerWidget {
         ),
       );
     }
-    
+
     return Column(
       children: exams.map((exam) {
         final isActive = exam.id == (currentActiveExam?.id ?? '');
@@ -93,16 +96,18 @@ class ExamsScreen extends ConsumerWidget {
       }).toList(),
     );
   }
-  
-  Widget _buildExamCard(BuildContext context, WidgetRef ref, Exam exam, bool isActive) {
+
+  Widget _buildExamCard(
+      BuildContext context, WidgetRef ref, Exam exam, bool isActive) {
     final stats = ref.watch(examStatsProvider(exam.id));
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: isActive ? Colors.white : Colors.white.withOpacity(0.7),
         borderRadius: BorderRadius.circular(AppRadius.card),
-        border: isActive ? Border.all(color: AppColors.primary, width: 1.5) : null,
+        border:
+            isActive ? Border.all(color: AppColors.primary, width: 1.5) : null,
         boxShadow: isActive ? [AppShadows.cardShadow] : [],
       ),
       child: Column(
@@ -130,7 +135,9 @@ class ExamsScreen extends ConsumerWidget {
                           fontSize: 30,
                         ),
                       ),
-                      Text('DAYS', style: AppTextStyles.caption.copyWith(color: AppColors.indigo)),
+                      Text('DAYS',
+                          style: AppTextStyles.caption
+                              .copyWith(color: AppColors.indigo)),
                     ],
                   ),
                 ),
@@ -150,18 +157,22 @@ class ExamsScreen extends ConsumerWidget {
                           ),
                           if (isActive)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
                                 color: AppColors.primarySoft,
-                                borderRadius: BorderRadius.circular(AppRadius.chip),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.chip),
                               ),
-                              child: Text('Active', style: AppTextStyles.activeBadge),
+                              child: Text('Active',
+                                  style: AppTextStyles.activeBadge),
                             ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       PopupMenuButton<String>(
-                        icon: Icon(Icons.more_vert_rounded, color: AppColors.textMuted, size: 20),
+                        icon: Icon(Icons.more_vert_rounded,
+                            color: AppColors.textMuted, size: 20),
                         onSelected: (value) {
                           if (value == 'activate') {
                             ref.read(setActiveExamProvider(exam.id).future);
@@ -173,9 +184,13 @@ class ExamsScreen extends ConsumerWidget {
                         },
                         itemBuilder: (context) => [
                           if (!isActive)
-                            const PopupMenuItem(value: 'activate', child: Text('Set as active')),
-                          const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                          const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                            const PopupMenuItem(
+                                value: 'activate',
+                                child: Text('Set as active')),
+                          const PopupMenuItem(
+                              value: 'edit', child: Text('Edit')),
+                          const PopupMenuItem(
+                              value: 'delete', child: Text('Delete')),
                         ],
                       ),
                     ],
@@ -205,8 +220,9 @@ class ExamsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 PillProgressBar(
-                  value: (stats['totalChapters'] ?? 0) > 0 
-                      ? ((stats['completedChapters'] ?? 0) / (stats['totalChapters'] ?? 1)) 
+                  value: (stats['totalChapters'] ?? 0) > 0
+                      ? ((stats['completedChapters'] ?? 0) /
+                          (stats['totalChapters'] ?? 1))
                       : 0.0,
                   color: AppColors.indigo,
                   height: 4,
@@ -219,11 +235,12 @@ class ExamsScreen extends ConsumerWidget {
       ),
     );
   }
-  
-  Widget _buildActiveExamDetails(BuildContext context, WidgetRef ref, Exam exam) {
+
+  Widget _buildActiveExamDetails(
+      BuildContext context, WidgetRef ref, Exam exam) {
     final stats = ref.watch(examStatsProvider(exam.id));
     final subjects = ref.watch(subjectsForExamProvider(exam.id));
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -233,18 +250,22 @@ class ExamsScreen extends ConsumerWidget {
             Text('Chapter progress', style: AppTextStyles.sectionTitle),
             Text(
               '${stats['completedChapters']} / ${stats['totalChapters']}',
-              style: AppTextStyles.body.copyWith(color: AppColors.primary, fontWeight: FontWeight.w700),
+              style: AppTextStyles.body.copyWith(
+                  color: AppColors.primary, fontWeight: FontWeight.w700),
             ),
           ],
         ),
         const SizedBox(height: 12),
         ...subjects.take(5).map((subject) {
-          final chapters = ref.read(examRepositoryProvider).getChaptersForSubject(subject.id);
+          final chapters = ref
+              .read(examRepositoryProvider)
+              .getChaptersForSubject(subject.id);
           final completed = chapters.where((c) => c.isCompleted).length;
           final total = chapters.length;
           final progress = total > 0 ? completed / total : 0.0;
-          final status = ref.watch(subjectStatusesProvider)[subject.id] ?? 'on track';
-          
+          final status =
+              ref.watch(subjectStatusesProvider)[subject.id] ?? 'on track';
+
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Row(
@@ -252,7 +273,8 @@ class ExamsScreen extends ConsumerWidget {
                 Container(
                   width: 8,
                   height: 8,
-                  decoration: BoxDecoration(color: subject.color, shape: BoxShape.circle),
+                  decoration: BoxDecoration(
+                      color: subject.color, shape: BoxShape.circle),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -260,14 +282,17 @@ class ExamsScreen extends ConsumerWidget {
                 ),
                 Text(
                   '$completed/$total',
-                  style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
+                  style: AppTextStyles.caption
+                      .copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(width: 12),
                 Container(
                   width: 80,
                   child: PillProgressBar(
                     value: progress,
-                    color: status == 'on track' ? AppColors.success : AppColors.primary,
+                    color: status == 'on track'
+                        ? AppColors.success
+                        : AppColors.primary,
                     height: 4,
                   ),
                 ),
@@ -315,7 +340,8 @@ class ExamsScreen extends ConsumerWidget {
                 icon: Icons.timer_rounded,
                 iconColor: AppColors.purple,
                 softColor: AppColors.purpleSoft,
-                value: AppDateUtils.formatDuration(Duration(minutes: stats['focusMinutes'] ?? 0)),
+                value: AppDateUtils.formatDuration(
+                    Duration(minutes: stats['focusMinutes'] ?? 0)),
                 label: 'Focus time',
               ),
             ),
@@ -348,18 +374,20 @@ class ExamsScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   void _showEditExamSheet(BuildContext context, WidgetRef ref, Exam exam) {
-    final TextEditingController nameController = TextEditingController(text: exam.name);
+    final TextEditingController nameController =
+        TextEditingController(text: exam.name);
     DateTime selectedDate = exam.examDate;
     int dailyGoal = exam.dailyGoalMinutes;
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
       ),
       builder: (context) {
         return StatefulBuilder(
@@ -418,10 +446,12 @@ class ExamsScreen extends ConsumerWidget {
                         context: context,
                         initialDate: selectedDate,
                         firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+                        lastDate:
+                            DateTime.now().add(const Duration(days: 365 * 2)),
                         builder: (context, child) => Theme(
                           data: Theme.of(context).copyWith(
-                            colorScheme: ColorScheme.light(primary: AppColors.primary),
+                            colorScheme:
+                                ColorScheme.light(primary: AppColors.primary),
                           ),
                           child: child!,
                         ),
@@ -429,7 +459,8 @@ class ExamsScreen extends ConsumerWidget {
                       if (date != null) setState(() => selectedDate = date);
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
                         borderRadius: BorderRadius.circular(AppRadius.input),
@@ -437,9 +468,11 @@ class ExamsScreen extends ConsumerWidget {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.calendar_today_rounded, color: AppColors.textSecondary, size: 20),
+                          Icon(Icons.calendar_today_rounded,
+                              color: AppColors.textSecondary, size: 20),
                           const SizedBox(width: 12),
-                          Text(selectedDate.formatMMMd(), style: AppTextStyles.inputText),
+                          Text(selectedDate.formatMMMd(),
+                              style: AppTextStyles.inputText),
                         ],
                       ),
                     ),
@@ -457,13 +490,15 @@ class ExamsScreen extends ConsumerWidget {
                       Expanded(
                         child: TextField(
                           keyboardType: TextInputType.number,
-                          controller: TextEditingController(text: dailyGoal.toString()),
+                          controller:
+                              TextEditingController(text: dailyGoal.toString()),
                           style: AppTextStyles.inputText,
                           decoration: InputDecoration(
                             hintText: '120',
                             hintStyle: AppTextStyles.inputHint,
                           ),
-                          onChanged: (val) => dailyGoal = int.tryParse(val) ?? dailyGoal,
+                          onChanged: (val) =>
+                              dailyGoal = int.tryParse(val) ?? dailyGoal,
                         ),
                       ),
                     ],
@@ -483,7 +518,8 @@ class ExamsScreen extends ConsumerWidget {
                         )));
                         Navigator.pop(context);
                       },
-                      child: Text('Save Changes', style: AppTextStyles.buttonText),
+                      child:
+                          Text('Save Changes', style: AppTextStyles.buttonText),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -495,7 +531,7 @@ class ExamsScreen extends ConsumerWidget {
       },
     );
   }
-  
+
   void _confirmDeleteExam(BuildContext context, WidgetRef ref, Exam exam) {
     showDialog(
       context: context,
@@ -508,20 +544,23 @@ class ExamsScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: AppTextStyles.buttonText.copyWith(color: AppColors.textSecondary)),
+            child: Text('Cancel',
+                style: AppTextStyles.buttonText
+                    .copyWith(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () {
               ref.read(deleteExamProvider(exam.id).future);
               Navigator.pop(context);
             },
-            child: Text('Delete', style: AppTextStyles.buttonText.copyWith(color: Colors.red)),
+            child: Text('Delete',
+                style: AppTextStyles.buttonText.copyWith(color: Colors.red)),
           ),
         ],
       ),
     );
   }
-  
+
   Widget _buildErrorState() {
     return EmptyStateCard(
       icon: Icons.error_outline_rounded,
@@ -538,7 +577,7 @@ class _StatTile extends StatelessWidget {
   final Color softColor;
   final String value;
   final String label;
-  
+
   const _StatTile({
     required this.icon,
     required this.iconColor,
@@ -546,7 +585,7 @@ class _StatTile extends StatelessWidget {
     required this.value,
     required this.label,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -561,10 +600,12 @@ class _StatTile extends StatelessWidget {
           const SizedBox(height: 8),
           FittedBox(
             fit: BoxFit.scaleDown,
-            child: Text(value, style: AppTextStyles.statNumber.copyWith(fontSize: 20)),
+            child: Text(value,
+                style: AppTextStyles.statNumber.copyWith(fontSize: 20)),
           ),
           const SizedBox(height: 2),
-          Text(label, style: AppTextStyles.caption, textAlign: TextAlign.center),
+          Text(label,
+              style: AppTextStyles.caption, textAlign: TextAlign.center),
         ],
       ),
     );

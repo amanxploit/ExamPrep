@@ -18,10 +18,18 @@ class RevisionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeExam = ref.watch(activeExamProvider).value;
-    final revisionHealth = activeExam != null ? ref.watch(revisionHealthProvider(activeExam.id)) : 0.0;
-    final dueRevisions = activeExam != null ? ref.watch(dueRevisionsProvider(activeExam.id)) : [];
-    final overdueRevisions = activeExam != null ? ref.watch(overdueRevisionsProvider(activeExam.id)) : [];
-    final upcomingRevisions = activeExam != null ? ref.watch(upcomingRevisionsProvider(activeExam.id)) : [];
+    final revisionHealth = activeExam != null
+        ? ref.watch(revisionHealthProvider(activeExam.id))
+        : 0.0;
+    final dueRevisions = activeExam != null
+        ? ref.watch(dueRevisionsProvider(activeExam.id))
+        : [];
+    final overdueRevisions = activeExam != null
+        ? ref.watch(overdueRevisionsProvider(activeExam.id))
+        : [];
+    final upcomingRevisions = activeExam != null
+        ? ref.watch(upcomingRevisionsProvider(activeExam.id))
+        : [];
 
     if (activeExam == null) {
       return _buildNoExamState(context);
@@ -29,11 +37,17 @@ class RevisionScreen extends ConsumerWidget {
 
     final slivers = <Widget>[
       SliverToBoxAdapter(child: _buildHealthCard(context, revisionHealth)),
-      _buildSectionHeader(context, 'Due Today', dueRevisions.length, AppColors.warning, showCount: dueRevisions.isNotEmpty),
+      _buildSectionHeader(
+          context, 'Due Today', dueRevisions.length, AppColors.warning,
+          showCount: dueRevisions.isNotEmpty),
       ..._buildRevisionSlivers(context, ref, dueRevisions, true),
-      _buildSectionHeader(context, 'Overdue', overdueRevisions.length, AppColors.error, showCount: overdueRevisions.isNotEmpty),
+      _buildSectionHeader(
+          context, 'Overdue', overdueRevisions.length, AppColors.error,
+          showCount: overdueRevisions.isNotEmpty),
       ..._buildRevisionSlivers(context, ref, overdueRevisions, true),
-      _buildSectionHeader(context, 'Upcoming', upcomingRevisions.length, AppColors.primary, showCount: false),
+      _buildSectionHeader(
+          context, 'Upcoming', upcomingRevisions.length, AppColors.primary,
+          showCount: false),
       ..._buildRevisionSlivers(context, ref, upcomingRevisions, false),
       const SliverToBoxAdapter(child: SizedBox(height: 100)),
     ];
@@ -41,15 +55,20 @@ class RevisionScreen extends ConsumerWidget {
     return CustomScrollView(slivers: slivers);
   }
 
-  List<Widget> _buildRevisionSlivers(BuildContext context, WidgetRef ref, List<RevisionItem> items, bool isDueOrOverdue) {
+  List<Widget> _buildRevisionSlivers(BuildContext context, WidgetRef ref,
+      List<RevisionItem> items, bool isDueOrOverdue) {
     if (items.isEmpty) {
       return [
         SliverToBoxAdapter(
           child: _buildEmptySection(
             context,
             isDueOrOverdue ? 'No revisions due today' : 'No overdue revisions',
-            isDueOrOverdue ? 'Great job! All caught up for today.' : 'You\'re on track!',
-            isDueOrOverdue ? Icons.check_circle_rounded : Icons.schedule_rounded,
+            isDueOrOverdue
+                ? 'Great job! All caught up for today.'
+                : 'You\'re on track!',
+            isDueOrOverdue
+                ? Icons.check_circle_rounded
+                : Icons.schedule_rounded,
             isDueOrOverdue ? AppColors.success : AppColors.warning,
           ),
         ),
@@ -153,24 +172,29 @@ class RevisionScreen extends ConsumerWidget {
     return 'Several revisions are overdue. Schedule time to catch up.';
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title, int count, Color color, {bool showCount = true}) {
+  Widget _buildSectionHeader(
+      BuildContext context, String title, int count, Color color,
+      {bool showCount = true}) {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
         child: Row(
           children: [
-            Text(title, style: AppTextStyles.sectionTitle.copyWith(color: color)),
+            Text(title,
+                style: AppTextStyles.sectionTitle.copyWith(color: color)),
             const Spacer(),
             if (showCount && count > 0)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: color,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Text(
                   '$count',
-                  style: AppTextStyles.caption.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: AppTextStyles.caption.copyWith(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
           ],
@@ -179,7 +203,8 @@ class RevisionScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptySection(BuildContext context, String title, String subtitle, IconData icon, Color color) {
+  Widget _buildEmptySection(BuildContext context, String title, String subtitle,
+      IconData icon, Color color) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Container(
@@ -195,14 +220,16 @@ class RevisionScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             Text(title, style: AppTextStyles.title.copyWith(color: color)),
             const SizedBox(height: 4),
-            Text(subtitle, style: AppTextStyles.body, textAlign: TextAlign.center),
+            Text(subtitle,
+                style: AppTextStyles.body, textAlign: TextAlign.center),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildRevisionCard(BuildContext context, WidgetRef ref, RevisionItem item, bool isDueOrOverdue) {
+  Widget _buildRevisionCard(BuildContext context, WidgetRef ref,
+      RevisionItem item, bool isDueOrOverdue) {
     final isOverdue = item.isOverdue;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -211,7 +238,9 @@ class RevisionScreen extends ConsumerWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
         border: Border.all(
-          color: isOverdue ? AppColors.error.withValues(alpha: 0.3) : AppColors.border,
+          color: isOverdue
+              ? AppColors.error.withValues(alpha: 0.3)
+              : AppColors.border,
           width: isOverdue ? 2 : 1,
         ),
       ),
@@ -221,9 +250,12 @@ class RevisionScreen extends ConsumerWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isOverdue ? AppColors.error.withValues(alpha: 0.15) : AppColors.warning.withValues(alpha: 0.15),
+                  color: isOverdue
+                      ? AppColors.error.withValues(alpha: 0.15)
+                      : AppColors.warning.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Text(
@@ -246,7 +278,8 @@ class RevisionScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              Icon(Icons.schedule_rounded, size: 16, color: AppColors.textSecondary),
+              Icon(Icons.schedule_rounded,
+                  size: 16, color: AppColors.textSecondary),
               const SizedBox(width: 4),
               Text(
                 'Due: ${item.dueAt.formattedShort}',
@@ -269,7 +302,8 @@ class RevisionScreen extends ConsumerWidget {
                 child: OutlinedPillButton(
                   label: 'Again',
                   icon: Icons.refresh_rounded,
-                  onPressed: () => _showReviewDialog(context, ref, item, ReviewRating.again),
+                  onPressed: () =>
+                      _showReviewDialog(context, ref, item, ReviewRating.again),
                   color: AppColors.error,
                 ),
               ),
@@ -278,7 +312,8 @@ class RevisionScreen extends ConsumerWidget {
                 child: OutlinedPillButton(
                   label: 'Hard',
                   icon: Icons.remove_rounded,
-                  onPressed: () => _showReviewDialog(context, ref, item, ReviewRating.hard),
+                  onPressed: () =>
+                      _showReviewDialog(context, ref, item, ReviewRating.hard),
                   color: AppColors.warning,
                 ),
               ),
@@ -287,7 +322,8 @@ class RevisionScreen extends ConsumerWidget {
                 child: PrimaryPillButton(
                   label: 'Good',
                   icon: Icons.check_rounded,
-                  onPressed: () => _showReviewDialog(context, ref, item, ReviewRating.good),
+                  onPressed: () =>
+                      _showReviewDialog(context, ref, item, ReviewRating.good),
                 ),
               ),
               const SizedBox(width: 8),
@@ -295,7 +331,8 @@ class RevisionScreen extends ConsumerWidget {
                 child: PrimaryPillButton(
                   label: 'Easy',
                   icon: Icons.bolt_rounded,
-                  onPressed: () => _showReviewDialog(context, ref, item, ReviewRating.easy),
+                  onPressed: () =>
+                      _showReviewDialog(context, ref, item, ReviewRating.easy),
                   color: AppColors.success,
                 ),
               ),
@@ -306,7 +343,8 @@ class RevisionScreen extends ConsumerWidget {
     );
   }
 
-  void _showReviewDialog(BuildContext context, WidgetRef ref, RevisionItem item, ReviewRating rating) {
+  void _showReviewDialog(BuildContext context, WidgetRef ref, RevisionItem item,
+      ReviewRating rating) {
     final calc = ref.read(calculationServiceProvider);
     final result = calc.calculateSM2Interval(
       rating: rating,
@@ -359,7 +397,8 @@ class RevisionScreen extends ConsumerWidget {
               ref.invalidate(revisionHealthProvider(examId));
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Review recorded: ${rating.displayName}')),
+                SnackBar(
+                    content: Text('Review recorded: ${rating.displayName}')),
               );
             },
           ),

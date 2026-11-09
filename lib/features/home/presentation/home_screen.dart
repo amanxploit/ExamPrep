@@ -17,11 +17,11 @@ import 'package:exam_prep/core/extensions/extensions.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeExam = ref.watch(activeExamProvider).value;
-    
+
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
@@ -55,7 +55,7 @@ class HomeScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildGreetingAndSettings(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
@@ -82,7 +82,7 @@ class HomeScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildExamSelector(WidgetRef ref, Exam exam) {
     return ExamSelectorChip(
       examName: exam.name,
@@ -90,16 +90,17 @@ class HomeScreen extends ConsumerWidget {
       onTap: () => _showExamSelectorSheet(ref),
     );
   }
-  
+
   void _showExamSelectorSheet(WidgetRef ref) {
     final exams = ref.read(examRepositoryProvider).getAllExams();
     final activeExam = ref.read(activeExamProvider).value;
-    
+
     showModalBottomSheet(
       context: ref.context,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
       ),
       builder: (context) {
         return SafeArea(
@@ -142,7 +143,9 @@ class HomeScreen extends ConsumerWidget {
                     return InkWell(
                       onTap: () async {
                         if (!isActive) {
-                          await ref.read(examRepositoryProvider).setActiveExam(exam.id);
+                          await ref
+                              .read(examRepositoryProvider)
+                              .setActiveExam(exam.id);
                         }
                         if (context.mounted) Navigator.pop(context);
                       },
@@ -150,9 +153,10 @@ class HomeScreen extends ConsumerWidget {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: isActive ? AppColors.primarySoft : Colors.white,
+                          color:
+                              isActive ? AppColors.primarySoft : Colors.white,
                           borderRadius: BorderRadius.circular(16),
-                          border: isActive 
+                          border: isActive
                               ? Border.all(color: AppColors.primary, width: 1.5)
                               : null,
                         ),
@@ -172,12 +176,15 @@ class HomeScreen extends ConsumerWidget {
                                 exam.name,
                                 style: AppTextStyles.body.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: isActive ? AppColors.primary : AppColors.textPrimary,
+                                  color: isActive
+                                      ? AppColors.primary
+                                      : AppColors.textPrimary,
                                 ),
                               ),
                             ),
                             if (isActive)
-                              Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 24),
+                              Icon(Icons.check_circle_rounded,
+                                  color: AppColors.primary, size: 24),
                           ],
                         ),
                       ),
@@ -192,13 +199,13 @@ class HomeScreen extends ConsumerWidget {
       },
     );
   }
-  
+
   Widget _buildCountdownCard(BuildContext context, WidgetRef ref, Exam exam) {
     final daysLeft = ref.watch(daysLeftProvider);
     final percent = ref.watch(percentPreparedProvider);
     final completed = ref.watch(completedChaptersProvider);
     final total = ref.watch(totalChaptersProvider);
-    
+
     return TweenAnimationBuilder<int>(
       tween: IntTween(begin: 0, end: daysLeft),
       duration: AppDurations.countUpAnimation,
@@ -245,7 +252,8 @@ class HomeScreen extends ConsumerWidget {
                     padding: const EdgeInsets.only(bottom: 4),
                     child: Text(
                       'days left',
-                      style: AppTextStyles.examNameCountdown.copyWith(fontSize: 18),
+                      style: AppTextStyles.examNameCountdown
+                          .copyWith(fontSize: 18),
                     ),
                   ),
                 ],
@@ -277,12 +285,12 @@ class HomeScreen extends ConsumerWidget {
       },
     );
   }
-  
+
   Widget _buildStatCards(WidgetRef ref) {
     final total = ref.watch(totalChaptersProvider);
     final completed = ref.watch(completedChaptersProvider);
     final remaining = ref.watch(remainingChaptersProvider);
-    
+
     return Row(
       children: [
         Expanded(
@@ -317,13 +325,13 @@ class HomeScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildFocusCard(BuildContext context, WidgetRef ref) {
     final streak = ref.watch(currentStreakProvider);
     final todayMinutes = ref.watch(todayFocusMinutesProvider);
     final progress = ref.watch(todayFocusProgressProvider);
     final goal = ref.watch(dailyGoalMinutesProvider);
-    
+
     return SoftCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,7 +345,8 @@ class HomeScreen extends ConsumerWidget {
                   color: AppColors.primarySoft,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.schedule_rounded, color: AppColors.primary, size: 22),
+                child: Icon(Icons.schedule_rounded,
+                    color: AppColors.primary, size: 22),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -356,7 +365,8 @@ class HomeScreen extends ConsumerWidget {
                           ),
                           TextSpan(
                             text: '$streak days',
-                            style: AppTextStyles.caption.copyWith(color: AppColors.primary),
+                            style: AppTextStyles.caption
+                                .copyWith(color: AppColors.primary),
                           ),
                           TextSpan(
                             text: ' · ',
@@ -394,10 +404,10 @@ class HomeScreen extends ConsumerWidget {
       ),
     );
   }
-  
+
   Widget _buildTodaysPlan(BuildContext context, WidgetRef ref) {
     final tasks = ref.watch(todayTasksProvider);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -419,7 +429,7 @@ class HomeScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildEmptyTasksState() {
     return SoftCard(
       color: AppColors.successSoft,
@@ -452,14 +462,15 @@ class HomeScreen extends ConsumerWidget {
       ),
     );
   }
-  
-  Widget _buildTasksList(BuildContext context, WidgetRef ref, List<StudyTask> tasks) {
+
+  Widget _buildTasksList(
+      BuildContext context, WidgetRef ref, List<StudyTask> tasks) {
     return Column(
       children: tasks.map((task) {
-        final subject = task.subjectId != null 
+        final subject = task.subjectId != null
             ? ref.read(examRepositoryProvider).getSubject(task.subjectId!)
             : null;
-        
+
         return Dismissible(
           key: ValueKey(task.id),
           direction: DismissDirection.endToStart,
@@ -470,22 +481,28 @@ class HomeScreen extends ConsumerWidget {
               color: Colors.red.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(Icons.delete_outline_rounded, color: Colors.red, size: 24),
+            child:
+                Icon(Icons.delete_outline_rounded, color: Colors.red, size: 24),
           ),
           confirmDismiss: (direction) async {
             final confirmed = await showDialog<bool>(
               context: context,
               builder: (context) => AlertDialog(
                 title: Text('Delete task?', style: AppTextStyles.sheetTitle),
-                content: Text('This action cannot be undone.', style: AppTextStyles.body),
+                content: Text('This action cannot be undone.',
+                    style: AppTextStyles.body),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context, false),
-                    child: Text('Cancel', style: AppTextStyles.buttonText.copyWith(color: AppColors.textSecondary)),
+                    child: Text('Cancel',
+                        style: AppTextStyles.buttonText
+                            .copyWith(color: AppColors.textSecondary)),
                   ),
                   TextButton(
                     onPressed: () => Navigator.pop(context, true),
-                    child: Text('Delete', style: AppTextStyles.buttonText.copyWith(color: Colors.red)),
+                    child: Text('Delete',
+                        style: AppTextStyles.buttonText
+                            .copyWith(color: Colors.red)),
                   ),
                 ],
               ),
@@ -513,11 +530,11 @@ class HomeScreen extends ConsumerWidget {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: task.isDone 
+                        color: task.isDone
                             ? (subject?.color ?? AppColors.success)
                             : Colors.transparent,
                         border: Border.all(
-                          color: task.isDone 
+                          color: task.isDone
                               ? (subject?.color ?? AppColors.success)
                               : AppColors.track,
                           width: 2,
@@ -525,7 +542,8 @@ class HomeScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: task.isDone
-                          ? Icon(Icons.check_rounded, color: Colors.white, size: 16)
+                          ? Icon(Icons.check_rounded,
+                              color: Colors.white, size: 16)
                           : null,
                     ),
                     const SizedBox(width: 12),
@@ -544,8 +562,11 @@ class HomeScreen extends ConsumerWidget {
                       child: Text(
                         task.title,
                         style: AppTextStyles.body.copyWith(
-                          decoration: task.isDone ? TextDecoration.lineThrough : null,
-                          color: task.isDone ? AppColors.textMuted : AppColors.textPrimary,
+                          decoration:
+                              task.isDone ? TextDecoration.lineThrough : null,
+                          color: task.isDone
+                              ? AppColors.textMuted
+                              : AppColors.textPrimary,
                         ),
                       ),
                     ),
@@ -558,27 +579,29 @@ class HomeScreen extends ConsumerWidget {
       }).toList(),
     );
   }
-  
+
   void _showAddTaskSheet(BuildContext context, WidgetRef ref) {
     final exam = ref.read(activeExamProvider).value;
     if (exam == null) return;
-    
-    final subjects = ref.read(examRepositoryProvider).getSubjectsForExam(exam.id);
+
+    final subjects =
+        ref.read(examRepositoryProvider).getSubjectsForExam(exam.id);
     String? selectedSubjectId;
     DateTime selectedDate = DateTime.now();
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
       ),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
             final titleController = TextEditingController();
-            
+
             void _submitTask() {
               final title = titleController.text.trim();
               if (title.isEmpty) return;
@@ -590,7 +613,7 @@ class HomeScreen extends ConsumerWidget {
               ));
               Navigator.pop(context);
             }
-            
+
             return Padding(
               padding: EdgeInsets.fromLTRB(
                 20,
@@ -637,26 +660,28 @@ class HomeScreen extends ConsumerWidget {
                       hintStyle: AppTextStyles.inputHint,
                     ),
                     items: [
-                      const DropdownMenuItem(value: null, child: Text('No subject')),
+                      const DropdownMenuItem(
+                          value: null, child: Text('No subject')),
                       ...subjects.map((s) => DropdownMenuItem(
-                        value: s.id,
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 10,
-                              height: 10,
-                              decoration: BoxDecoration(
-                                color: s.color,
-                                shape: BoxShape.circle,
-                              ),
+                            value: s.id,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 10,
+                                  height: 10,
+                                  decoration: BoxDecoration(
+                                    color: s.color,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(s.name),
+                              ],
                             ),
-                            const SizedBox(width: 8),
-                            Text(s.name),
-                          ],
-                        ),
-                      )),
+                          )),
                     ],
-                    onChanged: (value) => setState(() => selectedSubjectId = value),
+                    onChanged: (value) =>
+                        setState(() => selectedSubjectId = value),
                   ),
                   const SizedBox(height: 16),
                   Text('DUE DATE', style: AppTextStyles.fieldLabel),
@@ -670,7 +695,8 @@ class HomeScreen extends ConsumerWidget {
                         lastDate: DateTime.now().add(const Duration(days: 365)),
                         builder: (context, child) => Theme(
                           data: Theme.of(context).copyWith(
-                            colorScheme: ColorScheme.light(primary: AppColors.primary),
+                            colorScheme:
+                                ColorScheme.light(primary: AppColors.primary),
                           ),
                           child: child!,
                         ),
@@ -678,7 +704,8 @@ class HomeScreen extends ConsumerWidget {
                       if (date != null) setState(() => selectedDate = date);
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
                       decoration: BoxDecoration(
                         color: AppColors.inputFill,
                         borderRadius: BorderRadius.circular(AppRadius.input),
@@ -686,7 +713,8 @@ class HomeScreen extends ConsumerWidget {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.calendar_today_rounded, color: AppColors.textSecondary, size: 20),
+                          Icon(Icons.calendar_today_rounded,
+                              color: AppColors.textSecondary, size: 20),
                           const SizedBox(width: 12),
                           Text(
                             selectedDate.formatMMMd(),
@@ -714,7 +742,7 @@ class HomeScreen extends ConsumerWidget {
       },
     );
   }
-  
+
   Widget _buildEmptyState(BuildContext context) {
     return Column(
       children: [

@@ -13,7 +13,8 @@ Stream<List<StudyTask>> examTasks(ExamTasksRef ref, String examId) {
 }
 
 @riverpod
-Future<void> addTask(AddTaskRef ref, {
+Future<void> addTask(
+  AddTaskRef ref, {
   required String examId,
   required String title,
   String? subjectId,

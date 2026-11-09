@@ -68,16 +68,19 @@ class ProgressScreen extends ConsumerWidget {
                 ],
 
                 // Today's Plan
-                _buildTodaysPlanCard(context, todayFocus, todayProgress, dailyGoal, dueRevisions, overdueRevisions),
+                _buildTodaysPlanCard(context, todayFocus, todayProgress,
+                    dailyGoal, dueRevisions, overdueRevisions),
                 const SizedBox(height: AppSpacing.sectionVertical),
 
                 // Focus Goal Progress
-                _buildFocusGoalCard(context, todayFocus, dailyGoal, todayProgress),
+                _buildFocusGoalCard(
+                    context, todayFocus, dailyGoal, todayProgress),
                 const SizedBox(height: AppSpacing.sectionVertical),
 
                 // Revision Alerts
                 if (dueRevisions > 0 || overdueRevisions > 0) ...[
-                  _buildRevisionAlertCard(context, dueRevisions, overdueRevisions, revisionHealth),
+                  _buildRevisionAlertCard(
+                      context, dueRevisions, overdueRevisions, revisionHealth),
                   const SizedBox(height: AppSpacing.sectionVertical),
                 ],
 
@@ -109,7 +112,8 @@ class ProgressScreen extends ConsumerWidget {
 
                 // Subject Progress
                 if (subjectProgress.isNotEmpty) ...[
-                  _buildSubjectProgressCard(context, subjectProgress, subjectStatus),
+                  _buildSubjectProgressCard(
+                      context, subjectProgress, subjectStatus),
                   const SizedBox(height: AppSpacing.sectionVertical),
                 ],
 
@@ -154,7 +158,8 @@ class ProgressScreen extends ConsumerWidget {
               const SizedBox(height: 4),
               Text(
                 'All metrics from CalculationService',
-                style: AppTextStyles.caption.copyWith(color: AppColors.textMuted),
+                style:
+                    AppTextStyles.caption.copyWith(color: AppColors.textMuted),
               ),
             ],
           ),
@@ -177,7 +182,8 @@ class ProgressScreen extends ConsumerWidget {
       context: ref.context,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppRadius.sheetTop)),
       ),
       builder: (context) {
         return SafeArea(
@@ -220,7 +226,9 @@ class ProgressScreen extends ConsumerWidget {
                     return InkWell(
                       onTap: () async {
                         if (!isActive) {
-                          await ref.read(examRepositoryProvider).setActiveExam(exam.id);
+                          await ref
+                              .read(examRepositoryProvider)
+                              .setActiveExam(exam.id);
                         }
                         if (context.mounted) Navigator.pop(context);
                       },
@@ -228,7 +236,8 @@ class ProgressScreen extends ConsumerWidget {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: isActive ? AppColors.primarySoft : Colors.white,
+                          color:
+                              isActive ? AppColors.primarySoft : Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           border: isActive
                               ? Border.all(color: AppColors.primary, width: 1.5)
@@ -250,12 +259,15 @@ class ProgressScreen extends ConsumerWidget {
                                 exam.name,
                                 style: AppTextStyles.body.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: isActive ? AppColors.primary : AppColors.textPrimary,
+                                  color: isActive
+                                      ? AppColors.primary
+                                      : AppColors.textPrimary,
                                 ),
                               ),
                             ),
                             if (isActive)
-                              Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 24),
+                              Icon(Icons.check_circle_rounded,
+                                  color: AppColors.primary, size: 24),
                           ],
                         ),
                       ),
@@ -280,7 +292,10 @@ class ProgressScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         gradient: isPast
             ? LinearGradient(
-                colors: [AppColors.errorSoft, AppColors.errorSoft.withValues(alpha: 0.5)],
+                colors: [
+                  AppColors.errorSoft,
+                  AppColors.errorSoft.withValues(alpha: 0.5)
+                ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
@@ -294,7 +309,9 @@ class ProgressScreen extends ConsumerWidget {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: isPast ? AppColors.error.withValues(alpha: 0.15) : Colors.white.withValues(alpha: 0.2),
+              color: isPast
+                  ? AppColors.error.withValues(alpha: 0.15)
+                  : Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -323,13 +340,16 @@ class ProgressScreen extends ConsumerWidget {
                 Text(
                   countdown.displayText,
                   style: AppTextStyles.body.copyWith(
-                    color: isPast ? AppColors.error.withValues(alpha: 0.8) : Colors.white.withValues(alpha: 0.9),
+                    color: isPast
+                        ? AppColors.error.withValues(alpha: 0.8)
+                        : Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
                 if (!isPast && daysLeft <= 7) ...[
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -351,7 +371,8 @@ class ProgressScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSyllabusCoverageCard(BuildContext context, ChapterCoverage coverage) {
+  Widget _buildSyllabusCoverageCard(
+      BuildContext context, ChapterCoverage coverage) {
     return SoftCard(
       child: Row(
         children: [
@@ -373,7 +394,9 @@ class ProgressScreen extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      coverage.total == 0 ? '—' : '${(coverage.percent * 100).round()}%',
+                      coverage.total == 0
+                          ? '—'
+                          : '${(coverage.percent * 100).round()}%',
                       style: AppTextStyles.donutPercent,
                     ),
                     Text('SYLLABUS', style: AppTextStyles.donutLabel),
@@ -391,7 +414,8 @@ class ProgressScreen extends ConsumerWidget {
                 Text('Syllabus Coverage', style: AppTextStyles.cardTitle),
                 Text(
                   'Chapters completed / total. Does not include revision or readiness.',
-                  style: AppTextStyles.caption.copyWith(color: AppColors.textMuted),
+                  style: AppTextStyles.caption
+                      .copyWith(color: AppColors.textMuted),
                 ),
                 const SizedBox(height: 16),
                 _LegendRow(
@@ -432,7 +456,8 @@ class ProgressScreen extends ConsumerWidget {
                   color: AppColors.purpleSoft,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: Icon(Icons.psychology_rounded, color: AppColors.purple, size: 20),
+                child: Icon(Icons.psychology_rounded,
+                    color: AppColors.purple, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -442,20 +467,23 @@ class ProgressScreen extends ConsumerWidget {
                     Text('Exam Readiness', style: AppTextStyles.cardTitle),
                     Text(
                       'Weighted estimate: syllabus, revision health, consistency',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.textMuted),
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.textMuted),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: AppColors.purpleSoft,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Text(
                   '${readiness.score}%',
-                  style: AppTextStyles.title.copyWith(color: AppColors.purple, fontWeight: FontWeight.bold),
+                  style: AppTextStyles.title.copyWith(
+                      color: AppColors.purple, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -492,12 +520,14 @@ class ProgressScreen extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline_rounded, size: 16, color: AppColors.warning),
+                  Icon(Icons.info_outline_rounded,
+                      size: 16, color: AppColors.warning),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Weights renormalized: ${!readiness.hasRevisionData ? 'no revision data' : ''} ${!readiness.hasPracticeData ? 'no practice data' : ''}',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.warningDark),
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.warningDark),
                     ),
                   ),
                 ],
@@ -546,7 +576,8 @@ class ProgressScreen extends ConsumerWidget {
                   color: AppColors.blueSoft,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: Icon(Icons.calendar_today_rounded, color: AppColors.blue, size: 20),
+                child: Icon(Icons.calendar_today_rounded,
+                    color: AppColors.blue, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -556,7 +587,8 @@ class ProgressScreen extends ConsumerWidget {
                     Text("Today's Plan", style: AppTextStyles.cardTitle),
                     Text(
                       '$todayFocus / $dailyGoal min • ${(todayProgress * 100).round()}%',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.textMuted),
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.textMuted),
                     ),
                   ],
                 ),
@@ -569,7 +601,8 @@ class ProgressScreen extends ConsumerWidget {
             minHeight: 8,
             borderRadius: BorderRadius.circular(4),
             backgroundColor: AppColors.track,
-            valueColor: AlwaysStoppedAnimation(todayProgress >= 1.0 ? AppColors.success : AppColors.blue),
+            valueColor: AlwaysStoppedAnimation(
+                todayProgress >= 1.0 ? AppColors.success : AppColors.blue),
           ),
           const SizedBox(height: 12),
           Row(
@@ -602,15 +635,21 @@ class ProgressScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: overdueRevisions > 0 ? AppColors.errorSoft : AppColors.warningSoft,
+                color: overdueRevisions > 0
+                    ? AppColors.errorSoft
+                    : AppColors.warningSoft,
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Row(
                 children: [
                   Icon(
-                    overdueRevisions > 0 ? Icons.warning_amber_rounded : Icons.schedule_rounded,
+                    overdueRevisions > 0
+                        ? Icons.warning_amber_rounded
+                        : Icons.schedule_rounded,
                     size: 18,
-                    color: overdueRevisions > 0 ? AppColors.error : AppColors.warning,
+                    color: overdueRevisions > 0
+                        ? AppColors.error
+                        : AppColors.warning,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -619,14 +658,18 @@ class ProgressScreen extends ConsumerWidget {
                           ? '$overdueRevisions overdue, $dueRevisions due today'
                           : '$dueRevisions revisions due today',
                       style: AppTextStyles.caption.copyWith(
-                        color: overdueRevisions > 0 ? AppColors.errorDark : AppColors.warningDark,
+                        color: overdueRevisions > 0
+                            ? AppColors.errorDark
+                            : AppColors.warningDark,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
                   TextButton(
                     onPressed: () {},
-                    child: Text('View', style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600)),
+                    child: Text('View',
+                        style: AppTextStyles.caption
+                            .copyWith(fontWeight: FontWeight.w600)),
                   ),
                 ],
               ),
@@ -637,7 +680,8 @@ class ProgressScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFocusGoalCard(BuildContext context, int todayFocus, int dailyGoal, double progress) {
+  Widget _buildFocusGoalCard(
+      BuildContext context, int todayFocus, int dailyGoal, double progress) {
     return SoftCard(
       child: Row(
         children: [
@@ -645,12 +689,16 @@ class ProgressScreen extends ConsumerWidget {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: progress >= 1.0 ? AppColors.successSoft : AppColors.primarySoft,
+              color: progress >= 1.0
+                  ? AppColors.successSoft
+                  : AppColors.primarySoft,
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Icon(
-                progress >= 1.0 ? Icons.check_circle_rounded : Icons.timer_rounded,
+                progress >= 1.0
+                    ? Icons.check_circle_rounded
+                    : Icons.timer_rounded,
                 color: progress >= 1.0 ? AppColors.success : AppColors.primary,
                 size: 28,
               ),
@@ -677,11 +725,13 @@ class ProgressScreen extends ConsumerWidget {
               Text(
                 '${(progress * 100).round()}%',
                 style: AppTextStyles.headline.copyWith(
-                  color: progress >= 1.0 ? AppColors.success : AppColors.primary,
+                  color:
+                      progress >= 1.0 ? AppColors.success : AppColors.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Text(progress >= 1.0 ? 'Goal met!' : 'Keep going', style: AppTextStyles.caption),
+              Text(progress >= 1.0 ? 'Goal met!' : 'Keep going',
+                  style: AppTextStyles.caption),
             ],
           ),
         ],
@@ -704,12 +754,18 @@ class ProgressScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: overdueRevisions > 0 ? AppColors.errorSoft : AppColors.warningSoft,
+                  color: overdueRevisions > 0
+                      ? AppColors.errorSoft
+                      : AppColors.warningSoft,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Icon(
-                  overdueRevisions > 0 ? Icons.warning_amber_rounded : Icons.schedule_rounded,
-                  color: overdueRevisions > 0 ? AppColors.error : AppColors.warning,
+                  overdueRevisions > 0
+                      ? Icons.warning_amber_rounded
+                      : Icons.schedule_rounded,
+                  color: overdueRevisions > 0
+                      ? AppColors.error
+                      : AppColors.warning,
                   size: 20,
                 ),
               ),
@@ -721,23 +777,31 @@ class ProgressScreen extends ConsumerWidget {
                     Text('Revision Alerts', style: AppTextStyles.cardTitle),
                     Text(
                       'Due/overdue items from SM-2 scheduler',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.textMuted),
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.textMuted),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: revisionHealth >= 0.8 ? AppColors.successSoft :
-                         revisionHealth >= 0.5 ? AppColors.warningSoft : AppColors.errorSoft,
+                  color: revisionHealth >= 0.8
+                      ? AppColors.successSoft
+                      : revisionHealth >= 0.5
+                          ? AppColors.warningSoft
+                          : AppColors.errorSoft,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Text(
                   '${(revisionHealth * 100).round()}% health',
                   style: AppTextStyles.caption.copyWith(
-                    color: revisionHealth >= 0.8 ? AppColors.success :
-                           revisionHealth >= 0.5 ? AppColors.warning : AppColors.error,
+                    color: revisionHealth >= 0.8
+                        ? AppColors.success
+                        : revisionHealth >= 0.5
+                            ? AppColors.warning
+                            : AppColors.error,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -765,8 +829,11 @@ class ProgressScreen extends ConsumerWidget {
                 child: _MetricItem(
                   label: 'Health',
                   value: '${(revisionHealth * 100).round()}%',
-                  color: revisionHealth >= 0.8 ? AppColors.success :
-                         revisionHealth >= 0.5 ? AppColors.warning : AppColors.error,
+                  color: revisionHealth >= 0.8
+                      ? AppColors.success
+                      : revisionHealth >= 0.5
+                          ? AppColors.warning
+                          : AppColors.error,
                 ),
               ),
             ],
@@ -789,7 +856,8 @@ class ProgressScreen extends ConsumerWidget {
   }) {
     final todayIndex = 6;
     final values = data.values.toList();
-    final maxValue = values.isEmpty ? 1 : values.reduce((a, b) => a > b ? a : b);
+    final maxValue =
+        values.isEmpty ? 1 : values.reduce((a, b) => a > b ? a : b);
 
     return SoftCard(
       child: Column(
@@ -806,9 +874,11 @@ class ProgressScreen extends ConsumerWidget {
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isChapters ? AppColors.orangeSoft : AppColors.successSoft,
+                  color:
+                      isChapters ? AppColors.orangeSoft : AppColors.successSoft,
                   borderRadius: BorderRadius.circular(AppRadius.chip),
                 ),
                 child: Text(
@@ -837,14 +907,19 @@ class ProgressScreen extends ConsumerWidget {
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
                         final index = value.toInt();
-                        if (index < 0 || index >= labels.length) return const SizedBox();
+                        if (index < 0 || index >= labels.length)
+                          return const SizedBox();
                         return Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
                             labels[index],
                             style: AppTextStyles.caption.copyWith(
-                              color: index == todayIndex ? AppColors.primary : AppColors.textSecondary,
-                              fontWeight: index == todayIndex ? FontWeight.w700 : FontWeight.w500,
+                              color: index == todayIndex
+                                  ? AppColors.primary
+                                  : AppColors.textSecondary,
+                              fontWeight: index == todayIndex
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
                             ),
                           ),
                         );
@@ -852,9 +927,12 @@ class ProgressScreen extends ConsumerWidget {
                       reservedSize: 28,
                     ),
                   ),
-                  leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles:
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles:
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles:
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 borderData: FlBorderData(show: false),
                 barGroups: List.generate(labels.length, (index) {
@@ -865,7 +943,8 @@ class ProgressScreen extends ConsumerWidget {
                       BarChartRodData(
                         toY: value.toDouble(),
                         width: AppSpacing.barWidth,
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                        borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(4)),
                         color: index == todayIndex ? todayColor : barColor,
                         backDrawRodData: BackgroundBarChartRodData(
                           show: true,
@@ -904,7 +983,8 @@ class ProgressScreen extends ConsumerWidget {
                   color: AppColors.purpleSoft,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: Icon(Icons.layers_rounded, color: AppColors.purple, size: 20),
+                child: Icon(Icons.layers_rounded,
+                    color: AppColors.purple, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -914,7 +994,8 @@ class ProgressScreen extends ConsumerWidget {
                     Text('Subject Progress', style: AppTextStyles.cardTitle),
                     Text(
                       'Coverage per subject with on-track/behind status',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.textMuted),
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.textMuted),
                     ),
                   ],
                 ),
@@ -929,7 +1010,8 @@ class ProgressScreen extends ConsumerWidget {
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final subject = subjectProgress[index];
-              final status = subjectStatus[subject.subjectId] ?? SubjectStatus.onTrack;
+              final status =
+                  subjectStatus[subject.subjectId] ?? SubjectStatus.onTrack;
               return _SubjectProgressRow(
                 subject: subject,
                 status: status,
@@ -941,7 +1023,8 @@ class ProgressScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTimePerSubjectCard(BuildContext context, Map<String, int> timePerSubject) {
+  Widget _buildTimePerSubjectCard(
+      BuildContext context, Map<String, int> timePerSubject) {
     final totalMinutes = timePerSubject.values.fold(0, (a, b) => a + b);
 
     return SoftCard(
@@ -956,7 +1039,8 @@ class ProgressScreen extends ConsumerWidget {
                   color: AppColors.blueSoft,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: Icon(Icons.pie_chart_rounded, color: AppColors.blue, size: 20),
+                child: Icon(Icons.pie_chart_rounded,
+                    color: AppColors.blue, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -966,7 +1050,8 @@ class ProgressScreen extends ConsumerWidget {
                     Text('Time per Subject', style: AppTextStyles.cardTitle),
                     Text(
                       'Estimated focus minutes per subject (50 min/chapter)',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.textMuted),
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.textMuted),
                     ),
                   ],
                 ),
@@ -975,7 +1060,8 @@ class ProgressScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           if (timePerSubject.isEmpty) ...[
-            Text('No time tracked yet', style: AppTextStyles.body.copyWith(color: AppColors.textMuted)),
+            Text('No time tracked yet',
+                style: AppTextStyles.body.copyWith(color: AppColors.textMuted)),
           ] else ...[
             ListView.separated(
               shrinkWrap: true,
@@ -984,7 +1070,8 @@ class ProgressScreen extends ConsumerWidget {
               separatorBuilder: (_, __) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final entry = timePerSubject.entries.elementAt(index);
-                final percent = totalMinutes > 0 ? entry.value / totalMinutes : 0.0;
+                final percent =
+                    totalMinutes > 0 ? entry.value / totalMinutes : 0.0;
                 return _TimePerSubjectRow(
                   subjectName: entry.key,
                   minutes: entry.value,
@@ -995,7 +1082,8 @@ class ProgressScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             _MetricItem(
               label: 'Total',
-              value: AppDateUtils.formatDuration(Duration(minutes: totalMinutes)),
+              value:
+                  AppDateUtils.formatDuration(Duration(minutes: totalMinutes)),
               color: AppColors.blue,
             ),
           ],
@@ -1017,7 +1105,8 @@ class ProgressScreen extends ConsumerWidget {
                   color: AppColors.orangeSoft,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: Icon(Icons.local_fire_department_rounded, color: AppColors.orange, size: 20),
+                child: Icon(Icons.local_fire_department_rounded,
+                    color: AppColors.orange, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1027,7 +1116,8 @@ class ProgressScreen extends ConsumerWidget {
                     Text('Streaks & Records', style: AppTextStyles.cardTitle),
                     Text(
                       'Consecutive days with focus session or chapter completion',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.textMuted),
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.textMuted),
                     ),
                   ],
                 ),
@@ -1074,7 +1164,8 @@ class ProgressScreen extends ConsumerWidget {
               Expanded(
                 child: _RecordItem(
                   label: 'Total Focus',
-                  value: AppDateUtils.formatDuration(Duration(minutes: summary.totalFocusMinutes)),
+                  value: AppDateUtils.formatDuration(
+                      Duration(minutes: summary.totalFocusMinutes)),
                   subtitle: 'all time',
                   icon: Icons.timer_rounded,
                   color: AppColors.purple,
@@ -1107,7 +1198,8 @@ class ProgressScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMilestonesCard(BuildContext context, List<MilestoneProgress> milestones) {
+  Widget _buildMilestonesCard(
+      BuildContext context, List<MilestoneProgress> milestones) {
     return SoftCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1120,7 +1212,8 @@ class ProgressScreen extends ConsumerWidget {
                   color: AppColors.purpleSoft,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: Icon(Icons.star_rounded, color: AppColors.purple, size: 20),
+                child:
+                    Icon(Icons.star_rounded, color: AppColors.purple, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1130,7 +1223,8 @@ class ProgressScreen extends ConsumerWidget {
                     Text('Milestones', style: AppTextStyles.cardTitle),
                     Text(
                       'Long-term progress targets',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.textMuted),
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.textMuted),
                     ),
                   ],
                 ),
@@ -1161,7 +1255,8 @@ class ProgressScreen extends ConsumerWidget {
             child: _SummaryItem(
               icon: Icons.timer_rounded,
               iconColor: AppColors.purple,
-              value: AppDateUtils.formatDuration(Duration(minutes: summary.totalFocusMinutes)),
+              value: AppDateUtils.formatDuration(
+                  Duration(minutes: summary.totalFocusMinutes)),
               label: 'Total time',
             ),
           ),
@@ -1300,8 +1395,7 @@ class _DonutPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return oldDelegate is _DonutPainter &&
-        oldDelegate.sections != sections;
+    return oldDelegate is _DonutPainter && oldDelegate.sections != sections;
   }
 }
 
@@ -1376,7 +1470,9 @@ class _MetricItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(value, style: AppTextStyles.statNumber.copyWith(color: color, fontSize: 20)),
+        Text(value,
+            style:
+                AppTextStyles.statNumber.copyWith(color: color, fontSize: 20)),
         const SizedBox(height: 2),
         Text(label, style: AppTextStyles.caption.copyWith(color: color)),
       ],
@@ -1418,7 +1514,9 @@ class _SubjectProgressRow extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(subject.subjectName, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
+                child: Text(subject.subjectName,
+                    style: AppTextStyles.body
+                        .copyWith(fontWeight: FontWeight.w600)),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -1428,7 +1526,10 @@ class _SubjectProgressRow extends StatelessWidget {
                 ),
                 child: Text(
                   isBehind ? 'BEHIND' : 'ON TRACK',
-                  style: AppTextStyles.caption.copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10),
+                  style: AppTextStyles.caption.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10),
                 ),
               ),
             ],
@@ -1438,8 +1539,11 @@ class _SubjectProgressRow extends StatelessWidget {
             value: subject.percent,
             minHeight: 6,
             borderRadius: BorderRadius.circular(3),
-            backgroundColor: isBehind ? AppColors.error.withValues(alpha: 0.2) : AppColors.success.withValues(alpha: 0.2),
-            valueColor: AlwaysStoppedAnimation(isBehind ? AppColors.error : AppColors.success),
+            backgroundColor: isBehind
+                ? AppColors.error.withValues(alpha: 0.2)
+                : AppColors.success.withValues(alpha: 0.2),
+            valueColor: AlwaysStoppedAnimation(
+                isBehind ? AppColors.error : AppColors.success),
           ),
           const SizedBox(height: 4),
           Text(
@@ -1471,9 +1575,13 @@ class _TimePerSubjectRow extends StatelessWidget {
         Row(
           children: [
             Expanded(child: Text(subjectName, style: AppTextStyles.body)),
-            Text(AppDateUtils.formatDuration(Duration(minutes: minutes)), style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
+            Text(AppDateUtils.formatDuration(Duration(minutes: minutes)),
+                style:
+                    AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(width: 12),
-            Text('${(percent * 100).round()}%', style: AppTextStyles.caption.copyWith(color: AppColors.textMuted)),
+            Text('${(percent * 100).round()}%',
+                style:
+                    AppTextStyles.caption.copyWith(color: AppColors.textMuted)),
           ],
         ),
         const SizedBox(height: 4),
@@ -1510,7 +1618,9 @@ class _RecordItem extends StatelessWidget {
       children: [
         Icon(icon, color: color, size: 24),
         const SizedBox(height: 4),
-        Text(value, style: AppTextStyles.statNumber.copyWith(color: color, fontSize: 20)),
+        Text(value,
+            style:
+                AppTextStyles.statNumber.copyWith(color: color, fontSize: 20)),
         const SizedBox(height: 2),
         Text(subtitle, style: AppTextStyles.caption.copyWith(color: color)),
       ],
@@ -1555,7 +1665,9 @@ class _MilestoneRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(milestone.name, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
+                Text(milestone.name,
+                    style: AppTextStyles.body
+                        .copyWith(fontWeight: FontWeight.w600)),
                 Text(milestone.description, style: AppTextStyles.caption),
               ],
             ),
@@ -1567,7 +1679,8 @@ class _MilestoneRow extends StatelessWidget {
                 '${milestone.currentValue} / ${milestone.targetValue} ${milestone.unit}',
                 style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
               ),
-              Text('${(milestone.percent * 100).round()}%', style: AppTextStyles.caption),
+              Text('${(milestone.percent * 100).round()}%',
+                  style: AppTextStyles.caption),
             ],
           ),
         ],

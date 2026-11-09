@@ -11,11 +11,11 @@ import 'package:exam_prep/core/extensions/extensions.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider).value ?? Settings();
-    
+
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
@@ -36,7 +36,8 @@ class SettingsScreen extends ConsumerWidget {
                   _buildStepperTile(
                     'Focus duration',
                     settings.focusMinutes,
-                    (val) => _updateSettings(ref, settings.copyWith(focusMinutes: val)),
+                    (val) => _updateSettings(
+                        ref, settings.copyWith(focusMinutes: val)),
                     5,
                     120,
                     icon: Icons.timer_rounded,
@@ -45,7 +46,8 @@ class SettingsScreen extends ConsumerWidget {
                   _buildStepperTile(
                     'Short break',
                     settings.shortBreakMinutes,
-                    (val) => _updateSettings(ref, settings.copyWith(shortBreakMinutes: val)),
+                    (val) => _updateSettings(
+                        ref, settings.copyWith(shortBreakMinutes: val)),
                     1,
                     30,
                     icon: Icons.coffee_rounded,
@@ -54,7 +56,8 @@ class SettingsScreen extends ConsumerWidget {
                   _buildStepperTile(
                     'Long break',
                     settings.longBreakMinutes,
-                    (val) => _updateSettings(ref, settings.copyWith(longBreakMinutes: val)),
+                    (val) => _updateSettings(
+                        ref, settings.copyWith(longBreakMinutes: val)),
                     5,
                     60,
                     icon: Icons.hotel_rounded,
@@ -63,7 +66,8 @@ class SettingsScreen extends ConsumerWidget {
                   _buildStepperTile(
                     'Sessions before long break',
                     settings.sessionsBeforeLongBreak,
-                    (val) => _updateSettings(ref, settings.copyWith(sessionsBeforeLongBreak: val)),
+                    (val) => _updateSettings(
+                        ref, settings.copyWith(sessionsBeforeLongBreak: val)),
                     2,
                     10,
                     icon: Icons.repeat_rounded,
@@ -77,9 +81,12 @@ class SettingsScreen extends ConsumerWidget {
                 children: [
                   SwitchListTile(
                     title: Text('Auto-start breaks', style: AppTextStyles.body),
-                    subtitle: Text('Automatically start the next session when one ends', style: AppTextStyles.caption),
+                    subtitle: Text(
+                        'Automatically start the next session when one ends',
+                        style: AppTextStyles.caption),
                     value: settings.autoStartBreaks,
-                    onChanged: (val) => _updateSettings(ref, settings.copyWith(autoStartBreaks: val)),
+                    onChanged: (val) => _updateSettings(
+                        ref, settings.copyWith(autoStartBreaks: val)),
                     activeColor: AppColors.primary,
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -98,17 +105,21 @@ class SettingsScreen extends ConsumerWidget {
                 children: [
                   SwitchListTile(
                     title: Text('Sound', style: AppTextStyles.body),
-                    subtitle: Text('Play sound when timer completes', style: AppTextStyles.caption),
+                    subtitle: Text('Play sound when timer completes',
+                        style: AppTextStyles.caption),
                     value: settings.sound,
-                    onChanged: (val) => _updateSettings(ref, settings.copyWith(sound: val)),
+                    onChanged: (val) =>
+                        _updateSettings(ref, settings.copyWith(sound: val)),
                     activeColor: AppColors.primary,
                     contentPadding: EdgeInsets.zero,
                   ),
                   SwitchListTile(
                     title: Text('Vibration', style: AppTextStyles.body),
-                    subtitle: Text('Vibrate when timer completes', style: AppTextStyles.caption),
+                    subtitle: Text('Vibrate when timer completes',
+                        style: AppTextStyles.caption),
                     value: settings.vibration,
-                    onChanged: (val) => _updateSettings(ref, settings.copyWith(vibration: val)),
+                    onChanged: (val) =>
+                        _updateSettings(ref, settings.copyWith(vibration: val)),
                     activeColor: AppColors.primary,
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -119,9 +130,13 @@ class SettingsScreen extends ConsumerWidget {
                 'Data',
                 children: [
                   ListTile(
-                    leading: Icon(Icons.delete_forever_rounded, color: Colors.red, size: 24),
-                    title: Text('Reset all data', style: AppTextStyles.body.copyWith(color: Colors.red)),
-                    subtitle: Text('Permanently delete all exams, subjects, chapters, tasks, and sessions', style: AppTextStyles.caption),
+                    leading: Icon(Icons.delete_forever_rounded,
+                        color: Colors.red, size: 24),
+                    title: Text('Reset all data',
+                        style: AppTextStyles.body.copyWith(color: Colors.red)),
+                    subtitle: Text(
+                        'Permanently delete all exams, subjects, chapters, tasks, and sessions',
+                        style: AppTextStyles.caption),
                     onTap: () => _confirmResetAllData(context, ref),
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -132,22 +147,27 @@ class SettingsScreen extends ConsumerWidget {
                 'About',
                 children: [
                   ListTile(
-                    leading: Icon(Icons.info_outline_rounded, color: AppColors.textSecondary, size: 24),
+                    leading: Icon(Icons.info_outline_rounded,
+                        color: AppColors.textSecondary, size: 24),
                     title: Text('Version', style: AppTextStyles.body),
                     trailing: Text('1.0.0', style: AppTextStyles.caption),
                     contentPadding: EdgeInsets.zero,
                   ),
                   ListTile(
-                    leading: Icon(Icons.code_rounded, color: AppColors.textSecondary, size: 24),
+                    leading: Icon(Icons.code_rounded,
+                        color: AppColors.textSecondary, size: 24),
                     title: Text('Open Source', style: AppTextStyles.body),
-                    trailing: Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
+                    trailing: Icon(Icons.chevron_right_rounded,
+                        color: AppColors.textMuted),
                     onTap: () {},
                     contentPadding: EdgeInsets.zero,
                   ),
                   ListTile(
-                    leading: Icon(Icons.privacy_tip_outlined, color: AppColors.textSecondary, size: 24),
+                    leading: Icon(Icons.privacy_tip_outlined,
+                        color: AppColors.textSecondary, size: 24),
                     title: Text('Privacy Policy', style: AppTextStyles.body),
-                    trailing: Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
+                    trailing: Icon(Icons.chevron_right_rounded,
+                        color: AppColors.textMuted),
                     onTap: () {},
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -159,7 +179,7 @@ class SettingsScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
@@ -174,7 +194,7 @@ class SettingsScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildSection(String title, {required List<Widget> children}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +208,7 @@ class SettingsScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildStepperTile(
     String label,
     int value,
@@ -218,8 +238,9 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
   }
-  
-  Widget _buildStepper(int value, ValueChanged<int> onChanged, int min, int max) {
+
+  Widget _buildStepper(
+      int value, ValueChanged<int> onChanged, int min, int max) {
     return Row(
       children: [
         InkWell(
@@ -269,7 +290,7 @@ class SettingsScreen extends ConsumerWidget {
       ],
     );
   }
-  
+
   Widget _buildReminderTile(Settings settings, WidgetRef ref) {
     return ListTile(
       leading: Container(
@@ -279,7 +300,8 @@ class SettingsScreen extends ConsumerWidget {
           color: AppColors.orange.withOpacity(0.15),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(Icons.notifications_active_rounded, color: AppColors.orange, size: 20),
+        child: Icon(Icons.notifications_active_rounded,
+            color: AppColors.orange, size: 20),
       ),
       title: Text('Daily reminder', style: AppTextStyles.body),
       subtitle: Text(
@@ -290,15 +312,19 @@ class SettingsScreen extends ConsumerWidget {
       ),
       trailing: settings.dailyReminderTime != null
           ? TextButton(
-              onPressed: () => _updateSettings(ref, settings.copyWith(clearReminderTime: true)),
-              child: Text('Remove', style: AppTextStyles.buttonText.copyWith(color: Colors.red)),
+              onPressed: () => _updateSettings(
+                  ref, settings.copyWith(clearReminderTime: true)),
+              child: Text('Remove',
+                  style: AppTextStyles.buttonText.copyWith(color: Colors.red)),
             )
           : Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
-      onTap: settings.dailyReminderTime == null ? () => _pickReminderTime(settings, ref) : null,
+      onTap: settings.dailyReminderTime == null
+          ? () => _pickReminderTime(settings, ref)
+          : null,
       contentPadding: EdgeInsets.zero,
     );
   }
-  
+
   void _pickReminderTime(Settings settings, WidgetRef ref) async {
     final time = await showTimePicker(
       context: ref.context,
@@ -311,15 +337,16 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
     if (time != null) {
-      final timeString = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+      final timeString =
+          '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
       _updateSettings(ref, settings.copyWith(dailyReminderTime: timeString));
     }
   }
-  
+
   void _updateSettings(WidgetRef ref, Settings newSettings) {
     ref.read(updateSettingsProvider(newSettings));
   }
-  
+
   void _confirmResetAllData(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
@@ -332,14 +359,17 @@ class SettingsScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: AppTextStyles.buttonText.copyWith(color: AppColors.textSecondary)),
+            child: Text('Cancel',
+                style: AppTextStyles.buttonText
+                    .copyWith(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () {
               ref.read(resetAllDataProvider.future);
               Navigator.pop(context);
             },
-            child: Text('Reset', style: AppTextStyles.buttonText.copyWith(color: Colors.red)),
+            child: Text('Reset',
+                style: AppTextStyles.buttonText.copyWith(color: Colors.red)),
           ),
         ],
       ),

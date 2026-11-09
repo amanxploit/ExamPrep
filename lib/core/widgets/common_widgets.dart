@@ -10,7 +10,7 @@ class AppScaffold extends StatelessWidget {
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final bool resizeToAvoidBottomInset;
   final bool extendBody;
-  
+
   const AppScaffold({
     super.key,
     required this.child,
@@ -20,7 +20,7 @@ class AppScaffold extends StatelessWidget {
     this.resizeToAvoidBottomInset = true,
     this.extendBody = true,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +49,7 @@ class AppScaffold extends StatelessWidget {
 
 class _SparklesBackground extends StatelessWidget {
   const _SparklesBackground();
-  
+
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
@@ -65,11 +65,11 @@ class _SparklesPainter extends CustomPainter {
     final paint = Paint()
       ..color = AppColors.primary.withOpacity(0.04)
       ..style = PaintingStyle.fill;
-    
+
     final heartPaint = Paint()
       ..color = AppColors.primary.withOpacity(0.03)
       ..style = PaintingStyle.fill;
-    
+
     // Draw scattered sparkles
     final sparklePositions = [
       Offset(size.width * 0.1, size.height * 0.15),
@@ -81,11 +81,11 @@ class _SparklesPainter extends CustomPainter {
       Offset(size.width * 0.2, size.height * 0.9),
       Offset(size.width * 0.8, size.height * 0.4),
     ];
-    
+
     for (final pos in sparklePositions) {
       _drawSparkle(canvas, pos, paint);
     }
-    
+
     // Draw hearts
     final heartPositions = [
       Offset(size.width * 0.15, size.height * 0.25),
@@ -93,12 +93,12 @@ class _SparklesPainter extends CustomPainter {
       Offset(size.width * 0.95, size.height * 0.2),
       Offset(size.width * 0.02, size.height * 0.8),
     ];
-    
+
     for (final pos in heartPositions) {
       _drawHeart(canvas, pos, heartPaint);
     }
   }
-  
+
   void _drawSparkle(Canvas canvas, Offset center, Paint paint) {
     const size = 8.0;
     final path = Path()
@@ -113,25 +113,31 @@ class _SparklesPainter extends CustomPainter {
       ..close();
     canvas.drawPath(path, paint);
   }
-  
+
   void _drawHeart(Canvas canvas, Offset center, Paint paint) {
     const size = 12.0;
     final path = Path()
       ..moveTo(center.dx, center.dy + size * 0.3)
       ..cubicTo(
-        center.dx - size, center.dy - size * 0.3,
-        center.dx - size * 1.5, center.dy - size * 0.8,
-        center.dx, center.dy + size * 0.5,
+        center.dx - size,
+        center.dy - size * 0.3,
+        center.dx - size * 1.5,
+        center.dy - size * 0.8,
+        center.dx,
+        center.dy + size * 0.5,
       )
       ..cubicTo(
-        center.dx + size * 1.5, center.dy - size * 0.8,
-        center.dx + size, center.dy - size * 0.3,
-        center.dx, center.dy + size * 0.3,
+        center.dx + size * 1.5,
+        center.dy - size * 0.8,
+        center.dx + size,
+        center.dy - size * 0.3,
+        center.dx,
+        center.dy + size * 0.3,
       )
       ..close();
     canvas.drawPath(path, paint);
   }
-  
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
@@ -143,7 +149,7 @@ class SoftCard extends StatelessWidget {
   final double? radius;
   final List<BoxShadow>? shadows;
   final Color? color;
-  
+
   const SoftCard({
     super.key,
     required this.child,
@@ -153,7 +159,7 @@ class SoftCard extends StatelessWidget {
     this.shadows,
     this.color,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -161,7 +167,7 @@ class SoftCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color ?? AppColors.surface,
         borderRadius: BorderRadius.circular(radius ?? AppRadius.card),
-        border: borderColor != null 
+        border: borderColor != null
             ? Border.all(color: borderColor!, width: 1.5)
             : null,
         boxShadow: shadows ?? [AppShadows.cardShadow],
@@ -177,7 +183,7 @@ class IconBadge extends StatelessWidget {
   final Color softColor;
   final double? size;
   final double? iconSize;
-  
+
   const IconBadge({
     super.key,
     required this.icon,
@@ -186,7 +192,7 @@ class IconBadge extends StatelessWidget {
     this.size,
     this.iconSize,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -211,7 +217,7 @@ class PillProgressBar extends StatelessWidget {
   final double height;
   final Color? trackColor;
   final Duration? animationDuration;
-  
+
   const PillProgressBar({
     super.key,
     required this.value,
@@ -220,7 +226,7 @@ class PillProgressBar extends StatelessWidget {
     this.trackColor,
     this.animationDuration,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
@@ -255,7 +261,7 @@ class ExamSelectorChip extends StatelessWidget {
   final Color dotColor;
   final VoidCallback onTap;
   final bool showChevron;
-  
+
   const ExamSelectorChip({
     super.key,
     required this.examName,
@@ -263,7 +269,7 @@ class ExamSelectorChip extends StatelessWidget {
     required this.onTap,
     this.showChevron = true,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -321,7 +327,7 @@ class SquareIconButton extends StatelessWidget {
   final Color? backgroundColor;
   final double? size;
   final double? iconSize;
-  
+
   const SquareIconButton({
     super.key,
     required this.icon,
@@ -331,7 +337,7 @@ class SquareIconButton extends StatelessWidget {
     this.size,
     this.iconSize,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -363,14 +369,14 @@ class GradientPlusButton extends StatelessWidget {
   final VoidCallback onTap;
   final double? size;
   final IconData? icon;
-  
+
   const GradientPlusButton({
     super.key,
     required this.onTap,
     this.size,
     this.icon,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -407,7 +413,7 @@ class StatTile extends StatelessWidget {
   final Color iconColor;
   final Color softColor;
   final double? iconSize;
-  
+
   const StatTile({
     super.key,
     required this.icon,
@@ -417,7 +423,7 @@ class StatTile extends StatelessWidget {
     required this.softColor,
     this.iconSize,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -454,7 +460,7 @@ class ProgressRing extends StatelessWidget {
   final Color color;
   final Color trackColor;
   final Widget? child;
-  
+
   const ProgressRing({
     super.key,
     required this.value,
@@ -464,7 +470,7 @@ class ProgressRing extends StatelessWidget {
     required this.trackColor,
     this.child,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -488,34 +494,34 @@ class _ProgressRingPainter extends CustomPainter {
   final double strokeWidth;
   final Color color;
   final Color trackColor;
-  
+
   _ProgressRingPainter({
     required this.value,
     required this.strokeWidth,
     required this.color,
     required this.trackColor,
   });
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = (size.width - strokeWidth) / 2;
-    
+
     final trackPaint = Paint()
       ..color = trackColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
-    
+
     final progressPaint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
-    
+
     // Draw track
     canvas.drawCircle(center, radius, trackPaint);
-    
+
     // Draw progress
     const startAngle = -math.pi / 2;
     final sweepAngle = 2 * math.pi * value;
@@ -527,7 +533,7 @@ class _ProgressRingPainter extends CustomPainter {
       progressPaint,
     );
   }
-  
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return oldDelegate is _ProgressRingPainter &&
@@ -544,7 +550,7 @@ class PrimaryPillButton extends StatelessWidget {
   final bool isSecondary;
   final double? width;
   final Color? color;
-  
+
   const PrimaryPillButton({
     super.key,
     required this.label,
@@ -555,13 +561,16 @@ class PrimaryPillButton extends StatelessWidget {
     this.width,
     this.color,
   });
-  
+
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = isSecondary ? Colors.white : (color ?? AppColors.primary);
-    final foregroundColor = isSecondary ? (color ?? AppColors.primary) : Colors.white;
-    final borderColor = isSecondary ? (color ?? AppColors.primary) : Colors.transparent;
-    
+    final backgroundColor =
+        isSecondary ? Colors.white : (color ?? AppColors.primary);
+    final foregroundColor =
+        isSecondary ? (color ?? AppColors.primary) : Colors.white;
+    final borderColor =
+        isSecondary ? (color ?? AppColors.primary) : Colors.transparent;
+
     return AnimatedScale(
       scale: 1.0,
       duration: AppDurations.pressScale,
@@ -584,7 +593,8 @@ class PrimaryPillButton extends StatelessWidget {
                     height: 22,
                     child: CircularProgressIndicator(
                       strokeWidth: 2.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(foregroundColor),
                     ),
                   )
                 : Row(
@@ -617,7 +627,7 @@ class OutlinedPillButton extends StatelessWidget {
   final double? width;
   final Color? color;
   final Color? textColor;
-  
+
   const OutlinedPillButton({
     super.key,
     required this.label,
@@ -628,12 +638,12 @@ class OutlinedPillButton extends StatelessWidget {
     this.color,
     this.textColor,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final borderColor = color ?? AppColors.primary;
     final foregroundColor = textColor ?? (color ?? AppColors.primary);
-    
+
     return AnimatedScale(
       scale: 1.0,
       duration: AppDurations.pressScale,
@@ -655,7 +665,8 @@ class OutlinedPillButton extends StatelessWidget {
                     height: 22,
                     child: CircularProgressIndicator(
                       strokeWidth: 2.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(foregroundColor),
                     ),
                   )
                 : Row(
@@ -688,7 +699,7 @@ class SegmentedControl<T> extends StatelessWidget {
   final Color? selectedColor;
   final Color? unselectedColor;
   final Color? trackColor;
-  
+
   const SegmentedControl({
     super.key,
     required this.options,
@@ -699,7 +710,7 @@ class SegmentedControl<T> extends StatelessWidget {
     this.unselectedColor,
     this.trackColor,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -712,7 +723,8 @@ class SegmentedControl<T> extends StatelessWidget {
         children: [
           AnimatedAlign(
             alignment: Alignment(
-              (options.indexOf(selectedValue) * 2.0 / (options.length - 1)) - 1.0,
+              (options.indexOf(selectedValue) * 2.0 / (options.length - 1)) -
+                  1.0,
               0,
             ),
             duration: AppDurations.navAnimation,
@@ -739,8 +751,11 @@ class SegmentedControl<T> extends StatelessWidget {
                     child: Text(
                       labelBuilder(option),
                       style: AppTextStyles.body.copyWith(
-                        color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.textSecondary,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
                       ),
                     ),
                   ),
@@ -762,7 +777,7 @@ class EmptyStateCard extends StatelessWidget {
   final Widget? action;
   final Color? iconColor;
   final Color? backgroundColor;
-  
+
   const EmptyStateCard({
     super.key,
     required this.icon,
@@ -773,7 +788,7 @@ class EmptyStateCard extends StatelessWidget {
     this.iconColor,
     this.backgroundColor,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return SoftCard(
@@ -790,9 +805,11 @@ class EmptyStateCard extends StatelessWidget {
             iconSize: 28,
           ),
           const SizedBox(height: 16),
-          Text(title, style: AppTextStyles.emptyTitle, textAlign: TextAlign.center),
+          Text(title,
+              style: AppTextStyles.emptyTitle, textAlign: TextAlign.center),
           const SizedBox(height: 8),
-          Text(subtitle, style: AppTextStyles.emptySubtitle, textAlign: TextAlign.center),
+          Text(subtitle,
+              style: AppTextStyles.emptySubtitle, textAlign: TextAlign.center),
           if (illustration != null) ...[
             const SizedBox(height: 16),
             illustration!,

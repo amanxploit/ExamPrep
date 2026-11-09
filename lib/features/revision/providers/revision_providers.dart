@@ -52,7 +52,8 @@ class RevisionReviews extends _$RevisionReviews {
   Future<void> addRevisionReview(RevisionReview review) async {
     final repo = ref.read(examRepositoryProvider);
     await repo.addRevisionReview(review);
-    state = [...state, review]..sort((a, b) => b.reviewedAt.compareTo(a.reviewedAt));
+    state = [...state, review]
+      ..sort((a, b) => b.reviewedAt.compareTo(a.reviewedAt));
   }
 }
 
@@ -96,7 +97,8 @@ class Flashcards extends _$Flashcards {
   Future<void> addFlashcard(Flashcard flashcard) async {
     final repo = ref.read(examRepositoryProvider);
     await repo.addFlashcard(flashcard);
-    state = [...state, flashcard]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    state = [...state, flashcard]
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
   Future<void> updateFlashcard(Flashcard flashcard) async {
@@ -126,7 +128,8 @@ class ChapterFlashcards extends _$ChapterFlashcards {
     final repo = ref.read(examRepositoryProvider);
     await repo.addFlashcard(flashcard);
     if (flashcard.chapterId == chapterId) {
-      state = [...state, flashcard]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      state = [...state, flashcard]
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     }
   }
 
@@ -158,7 +161,8 @@ class FlashcardReviews extends _$FlashcardReviews {
   Future<void> addFlashcardReview(FlashcardReview review) async {
     final repo = ref.read(examRepositoryProvider);
     await repo.addFlashcardReview(review);
-    state = [...state, review]..sort((a, b) => b.reviewedAt.compareTo(a.reviewedAt));
+    state = [...state, review]
+      ..sort((a, b) => b.reviewedAt.compareTo(a.reviewedAt));
   }
 }
 
@@ -174,7 +178,8 @@ class DailyPlanTasks extends _$DailyPlanTasks {
   Future<void> addTask(DailyPlanTask task) async {
     final repo = ref.read(examRepositoryProvider);
     await repo.addDailyPlanTask(task);
-    state = [...state, task]..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    state = [...state, task]
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
   }
 
   Future<void> updateTask(DailyPlanTask task) async {

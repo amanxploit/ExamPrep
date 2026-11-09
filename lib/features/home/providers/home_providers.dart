@@ -31,7 +31,7 @@ int daysLeft(DaysLeftRef ref) {
 int totalChapters(TotalChaptersRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   if (exam == null) return 0;
-  
+
   final repo = ref.watch(examRepositoryProvider);
   final chapters = repo.getAllChaptersForExam(exam.id);
   return chapters.length;
@@ -42,7 +42,7 @@ int totalChapters(TotalChaptersRef ref) {
 int completedChapters(CompletedChaptersRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   if (exam == null) return 0;
-  
+
   final repo = ref.watch(examRepositoryProvider);
   final chapters = repo.getAllChaptersForExam(exam.id);
   return chapters.where((c) => c.isCompleted).length;
@@ -97,42 +97,43 @@ double todayFocusProgress(TodayFocusProgressRef ref) {
 int currentStreak(CurrentStreakRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final repo = ref.watch(examRepositoryProvider);
-  
+
   if (exam == null) return 0;
-  
+
   final sessions = repo.getCompletedSessions(exam.id);
   final chapters = repo.getAllChaptersForExam(exam.id);
-  
+
   // Get all dates with activity
   final activityDates = <DateTime>{};
-  
+
   for (final session in sessions) {
     if (session.type == SessionType.focus) {
       activityDates.add(session.startedAt.dateOnly);
     }
   }
-  
-  for (final chapter in chapters.where((c) => c.isCompleted && c.completedAt != null)) {
+
+  for (final chapter
+      in chapters.where((c) => c.isCompleted && c.completedAt != null)) {
     activityDates.add(chapter.completedAt!.dateOnly);
   }
-  
+
   if (activityDates.isEmpty) return 0;
-  
+
   // Check streak from today backwards
   var currentDate = DateTime.now().dateOnly;
   var streak = 0;
-  
+
   // If today has activity, count it
   // If not, check yesterday
   if (!activityDates.contains(currentDate)) {
     currentDate = currentDate.subtract(const Duration(days: 1));
   }
-  
+
   while (activityDates.contains(currentDate)) {
     streak++;
     currentDate = currentDate.subtract(const Duration(days: 1));
   }
-  
+
   return streak;
 }
 
@@ -141,31 +142,32 @@ int currentStreak(CurrentStreakRef ref) {
 int longestStreak(LongestStreakRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final repo = ref.watch(examRepositoryProvider);
-  
+
   if (exam == null) return 0;
-  
+
   final sessions = repo.getCompletedSessions(exam.id);
   final chapters = repo.getAllChaptersForExam(exam.id);
-  
+
   final activityDates = <DateTime>{};
-  
+
   for (final session in sessions) {
     if (session.type == SessionType.focus) {
       activityDates.add(session.startedAt.dateOnly);
     }
   }
-  
-  for (final chapter in chapters.where((c) => c.isCompleted && c.completedAt != null)) {
+
+  for (final chapter
+      in chapters.where((c) => c.isCompleted && c.completedAt != null)) {
     activityDates.add(chapter.completedAt!.dateOnly);
   }
-  
+
   if (activityDates.isEmpty) return 0;
-  
+
   final sortedDates = activityDates.toList()..sort();
-  
+
   var maxStreak = 1;
   var currentStreak = 1;
-  
+
   for (int i = 1; i < sortedDates.length; i++) {
     final diff = sortedDates[i].difference(sortedDates[i - 1]).inDays;
     if (diff == 1) {
@@ -175,7 +177,7 @@ int longestStreak(LongestStreakRef ref) {
       currentStreak = 1;
     }
   }
-  
+
   return maxStreak;
 }
 
@@ -204,21 +206,22 @@ int sessionsCount(SessionsCountRef ref) {
 List<int> weeklyChapters(WeeklyChaptersRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final repo = ref.watch(examRepositoryProvider);
-  
+
   if (exam == null) return List.filled(7, 0);
-  
-  final chapters = repo.getAllChaptersForExam(exam.id)
+
+  final chapters = repo
+      .getAllChaptersForExam(exam.id)
       .where((c) => c.isCompleted && c.completedAt != null)
       .toList();
-  
+
   final last7Days = AppDateUtils.last7Days();
   final result = <int>[];
-  
+
   for (final day in last7Days) {
     final count = chapters.where((c) => c.completedAt!.dateOnly == day).length;
     result.add(count);
   }
-  
+
   return result;
 }
 
@@ -227,21 +230,22 @@ List<int> weeklyChapters(WeeklyChaptersRef ref) {
 List<int> weeklyFocusMinutes(WeeklyFocusMinutesRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final repo = ref.watch(examRepositoryProvider);
-  
-  final sessions = repo.getCompletedSessions(exam?.id)
+
+  final sessions = repo
+      .getCompletedSessions(exam?.id)
       .where((s) => s.type == SessionType.focus)
       .toList();
-  
+
   final last7Days = AppDateUtils.last7Days();
   final result = <int>[];
-  
+
   for (final day in last7Days) {
     final minutes = sessions
         .where((s) => s.startedAt.dateOnly == day)
         .fold(0, (sum, s) => sum + s.durationMinutes);
     result.add(minutes);
   }
-  
+
   return result;
 }
 
@@ -256,30 +260,32 @@ List<String> weeklyLabels(WeeklyLabelsRef ref) {
 Map<String, String> subjectStatus(SubjectStatusRef ref) {
   final exam = ref.watch(activeExamProvider).value;
   final repo = ref.watch(examRepositoryProvider);
-  
+
   if (exam == null) return {};
-  
+
   final subjects = repo.getSubjectsForExam(exam.id);
   final status = <String, String>{};
-  
+
   for (final subject in subjects) {
     final chapters = repo.getChaptersForSubject(subject.id);
     if (chapters.isEmpty) {
       status[subject.id] = 'on track';
       continue;
     }
-    
+
     final completed = chapters.where((c) => c.isCompleted).length;
     final total = chapters.length;
     final completedRatio = completed / total;
-    
-    final daysSinceCreated = DateTime.now().dateOnly.difference(exam.createdAt.dateOnly).inDays;
+
+    final daysSinceCreated =
+        DateTime.now().dateOnly.difference(exam.createdAt.dateOnly).inDays;
     final totalDays = exam.daysLeft + daysSinceCreated;
     final expectedRatio = totalDays > 0 ? daysSinceCreated / totalDays : 1.0;
-    
-    status[subject.id] = completedRatio >= expectedRatio ? 'on track' : 'behind';
+
+    status[subject.id] =
+        completedRatio >= expectedRatio ? 'on track' : 'behind';
   }
-  
+
   return status;
 }
 

@@ -9,25 +9,25 @@ part 'exam.g.dart';
 class Exam extends HiveObject {
   @HiveField(0)
   String id;
-  
+
   @HiveField(1)
   String name;
-  
+
   @HiveField(2)
   DateTime examDate;
-  
+
   @HiveField(3)
   DateTime createdAt;
-  
+
   @HiveField(4)
   bool isActive;
-  
+
   @HiveField(5)
   int colorValue;
-  
+
   @HiveField(6)
   int dailyGoalMinutes;
-  
+
   Exam({
     String? id,
     required this.name,
@@ -37,7 +37,7 @@ class Exam extends HiveObject {
     required this.colorValue,
     this.dailyGoalMinutes = 120,
   }) : id = id ?? const Uuid().v4();
-  
+
   Exam copyWith({
     String? id,
     String? name,
@@ -57,18 +57,19 @@ class Exam extends HiveObject {
       dailyGoalMinutes: dailyGoalMinutes ?? this.dailyGoalMinutes,
     );
   }
-  
+
   Color get color => Color(colorValue);
-  
+
   int get daysLeft {
     final now = DateTime.now().dateOnly;
     final examDay = examDate.dateOnly;
     final diff = examDay.difference(now).inDays;
     return diff.clamp(0, double.infinity).toInt();
   }
-  
+
   bool get isUpcoming => examDate.isAfter(DateTime.now());
-  
+
   @override
-  String toString() => 'Exam(id: $id, name: $name, examDate: $examDate, isActive: $isActive)';
+  String toString() =>
+      'Exam(id: $id, name: $name, examDate: $examDate, isActive: $isActive)';
 }
