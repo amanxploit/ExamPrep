@@ -117,7 +117,7 @@ class AppTextStyles {
     letterSpacing: 1.0,
   );
   
-  // Helper text: 13 pink
+  // Helper text: 13 teal
   static TextStyle get helperText => _plusJakarta(
     fontSize: AppSpacing.helperTextSize,
     fontWeight: FontWeight.w500,
@@ -182,7 +182,7 @@ class AppTextStyles {
     height: 1.3,
   );
   
-  // Onboarding headline: pink 34 w800
+  // Onboarding headline: teal 34 w800
   static TextStyle get onboardingHeadline => _plusJakarta(
     fontSize: AppSpacing.headlineSize,
     fontWeight: FontWeight.w800,

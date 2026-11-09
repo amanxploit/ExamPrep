@@ -209,7 +209,7 @@ class HomeScreen extends ConsumerWidget {
           decoration: BoxDecoration(
             gradient: AppGradients.gradientCard,
             borderRadius: BorderRadius.circular(AppRadius.countdownCard),
-            boxShadow: [AppShadows.pinkGlowShadow],
+            boxShadow: [AppShadows.tealGlowShadow],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

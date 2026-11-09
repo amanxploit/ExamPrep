@@ -59,7 +59,7 @@ class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           elevation: 0,
-          shadowColor: AppColors.pinkGlow,
+          shadowColor: AppColors.tealGlow,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.button),
           ),

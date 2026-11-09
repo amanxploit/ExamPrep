@@ -4,13 +4,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/focus/presentation/focus_screen.dart';
 import '../features/syllabus/presentation/syllabus_screen.dart';
-import '../features/progress/presentation/progress_screen.dart';
 import '../features/exams/presentation/exams_screen.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
-import '../features/revision/presentation/revision_screen.dart';
-import '../features/revision/presentation/flashcard_screen.dart';
-import '../features/plan/presentation/daily_plan_screen.dart';
 import '../core/widgets/common_widgets.dart';
 import '../core/constants/app_design.dart';
 import '../core/constants/app_text_styles.dart';
@@ -18,7 +14,7 @@ import '../features/onboarding/providers/onboarding_providers.dart';
 
 part 'router.g.dart';
 
-enum AppTab { home, focus, syllabus, progress, exams }
+enum AppTab { home, focus, syllabus, exams }
 
 @riverpod
 GoRouter router(RouterRef ref) {
@@ -79,14 +75,6 @@ GoRouter router(RouterRef ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/progress',
-                builder: (context, state) => const ProgressScreen(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
                 path: '/exams',
                 builder: (context, state) => const ExamsScreen(),
               ),
@@ -97,22 +85,6 @@ GoRouter router(RouterRef ref) {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
-      ),
-      GoRoute(
-        path: '/revision',
-        builder: (context, state) => const RevisionScreen(),
-      ),
-      GoRoute(
-        path: '/flashcards',
-        builder: (context, state) => const FlashcardScreen(),
-      ),
-      GoRoute(
-        path: '/plan',
-        builder: (context, state) => const DailyPlanScreen(),
-      ),
-      GoRoute(
-        path: '/flashcards/chapter/:chapterId',
-        builder: (context, state) => FlashcardScreen(chapterId: state.pathParameters['chapterId']),
       ),
     ],
   );
@@ -155,7 +127,6 @@ class _CustomBottomNavBar extends StatelessWidget {
     _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home'),
     _NavItem(icon: Icons.timer_outlined, activeIcon: Icons.timer_rounded, label: 'Focus'),
     _NavItem(icon: Icons.layers_outlined, activeIcon: Icons.layers_rounded, label: 'Syllabus'),
-    _NavItem(icon: Icons.bar_chart_outlined, activeIcon: Icons.bar_chart_rounded, label: 'Progress'),
     _NavItem(icon: Icons.calendar_month_outlined, activeIcon: Icons.calendar_month_rounded, label: 'Exams'),
   ];
   

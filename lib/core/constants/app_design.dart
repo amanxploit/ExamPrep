@@ -1,83 +1,83 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary pink palette
-  static const primary = Color(0xFFE9547B);
-  static const primaryDark = Color(0xFFD63F68);
-  static const primaryLight = Color(0xFFF7A8BC);
-  static const primarySoft = Color(0xFFFDE7ED);
+  // Primary green/teal palette
+  static const primary = Color(0xFF00A885); // Teal primary
+  static const primaryDark = Color(0xFF00876A);
+  static const primaryLight = Color(0xFF4DD4B8);
+  static const primarySoft = Color(0xFFE8F8F4);
   
   // Gradient
-  static const gradientCardStart = Color(0xFFF07A98);
-  static const gradientCardEnd = Color(0xFFE04A72);
+  static const gradientCardStart = Color(0xFF00B894);
+  static const gradientCardEnd = Color(0xFF00A885);
   
-  // Background
-  static const bgTop = Color(0xFFFCE4EC);
-  static const bgBottom = Color(0xFFFFF7F9);
+  // Background - neutral light
+  static const bgTop = Color(0xFFF5F9F8);
+  static const bgBottom = Color(0xFFFFFFFF);
   
   // Surface
-  static const surface = Color(0xEBFFFFFF); // 92% opacity white
+  static const surface = Color(0xFFFFFFFF);
   
   // Semantic colors
-  static const success = Color(0xFF34B98A);
-  static const successSoft = Color(0xFFE3F6EE);
-  static const successDark = Color(0xFF1E9E70);
+  static const success = Color(0xFF10B981); // Emerald
+  static const successSoft = Color(0xFFECFDF5);
+  static const successDark = Color(0xFF059669);
   
-  static const warning = Color(0xFFF59E0B);
+  static const warning = Color(0xFFF59E0B); // Amber
   static const warningSoft = Color(0xFFFFF4E6);
   static const warningDark = Color(0xFFD97706);
   
-  static const error = Color(0xFFEF4444);
+  static const error = Color(0xFFEF4444); // Red
   static const errorSoft = Color(0xFFFEF2F2);
   static const errorDark = Color(0xFFDC2626);
   
-  static const indigo = Color(0xFF2E3192);
-  static const indigoSoft = Color(0xFFECEBFB);
+  static const indigo = Color(0xFF4F46E5);
+  static const indigoSoft = Color(0xFFEEF2FF);
   
-  static const blue = Color(0xFF3D7BF5);
-  static const blueSoft = Color(0xFFE6EEFE);
+  static const blue = Color(0xFF3B82F6);
+  static const blueSoft = Color(0xFFEFF6FF);
   
-  static const orange = Color(0xFFF57C3A);
+  static const orange = Color(0xFFF97316);
   static const orangeSoft = Color(0xFFFFF0E6);
   
-  static const purple = Color(0xFF8B6CF0);
-  static const purpleSoft = Color(0xFFF1ECFE);
+  static const purple = Color(0xFF8B5CF6);
+  static const purpleSoft = Color(0xFFF5F3FF);
   
   static const secondary = Color(0xFF6366F1);
   static const secondarySoft = Color(0xFFEEF2FF);
   
-  static const border = Color(0xFFE5E5E5);
+  static const border = Color(0xFFE5E7EB);
   
   // Text
-  static const textPrimary = Color(0xFF16161A);
-  static const textSecondary = Color(0xFF6B6B76);
-  static const textMuted = Color(0xFFA0A0AA);
+  static const textPrimary = Color(0xFF111827); // Gray-900
+  static const textSecondary = Color(0xFF6B7280); // Gray-500
+  static const textMuted = Color(0xFF9CA3AF); // Gray-400
   
   // Progress track
-  static const track = Color(0xFFF1E6EA);
+  static const track = Color(0xFFE5E7EB); // Gray-200
   
   // Navigation
-  static const navBar = Color(0xFF1C1C22);
+  static const navBar = Color(0xFF111827); // Gray-900
   
   // Segmented control track
-  static const segmentedTrack = Color(0xFFF1ECEE);
+  static const segmentedTrack = Color(0xFFF3F4F6); // Gray-100
   
   // Input fill
-  static const inputFill = Color(0xFFF7F7F9);
-  static const inputBorder = Color(0xFFEEEEEE);
+  static const inputFill = Color(0xFFF9FAFB); // Gray-50
+  static const inputBorder = Color(0xFFE5E7EB); // Gray-200
   
   // White with opacity
   static const white85 = Color(0xD9FFFFFF); // 85%
   static const white70 = Color(0xB3FFFFFF); // 70%
   static const white30 = Color(0x4DFFFFFF); // 30%
   
-  // Pink glow
-  static const pinkGlow = Color(0x59E9547B); // 35%
-  static const pinkShadow = Color(0x14E9547B); // 8%
+  // Teal glow
+  static const tealGlow = Color(0x5900A885); // 35%
+  static const tealShadow = Color(0x1400A885); // 8%
   
   // Onboarding background
-  static const onboardingStart = Color(0xFFF07A98);
-  static const onboardingEnd = Color(0xFFE04A72);
+  static const onboardingStart = Color(0xFF00B894);
+  static const onboardingEnd = Color(0xFF00A885);
 }
 
 class AppGradients {
@@ -99,22 +99,22 @@ class AppGradients {
     colors: [AppColors.onboardingStart, AppColors.onboardingEnd],
   );
   
-  static const pinkGlow = RadialGradient(
+  static const tealGlow = RadialGradient(
     center: Alignment.center,
     radius: 1.0,
-    colors: [Color(0x59E9547B), Colors.transparent],
+    colors: [AppColors.tealGlow, Colors.transparent],
   );
 }
 
 class AppShadows {
   static const cardShadow = BoxShadow(
-    color: AppColors.pinkShadow,
+    color: AppColors.tealShadow,
     blurRadius: 24,
     offset: Offset(0, 8),
   );
   
-  static const pinkGlowShadow = BoxShadow(
-    color: AppColors.pinkGlow,
+  static const tealGlowShadow = BoxShadow(
+    color: AppColors.tealGlow,
     blurRadius: 20,
     offset: Offset(0, 10),
   );
@@ -126,7 +126,7 @@ class AppShadows {
   );
   
   static const buttonShadow = BoxShadow(
-    color: AppColors.pinkGlow,
+    color: AppColors.tealGlow,
     blurRadius: 16,
     offset: Offset(0, 6),
   );
