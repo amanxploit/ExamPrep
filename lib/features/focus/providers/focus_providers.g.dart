@@ -37,7 +37,7 @@ final completedFocusSessionsTodayProvider = AutoDisposeProvider<int>.internal(
 );
 
 typedef CompletedFocusSessionsTodayRef = AutoDisposeProviderRef<int>;
-String _$focusTimerHash() => r'0192317c7ab761d864a77ca415d55454cd1c9a13';
+String _$focusTimerHash() => r'a8eaf6232b27e465bac68e8c9f20ad49d5d9d8bf';
 
 /// See also [FocusTimer].
 @ProviderFor(FocusTimer)

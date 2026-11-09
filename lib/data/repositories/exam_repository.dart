@@ -7,6 +7,7 @@ import 'package:exam_prep/data/models/chapter.dart';
 import 'package:exam_prep/data/models/study_task.dart';
 import 'package:exam_prep/data/models/focus_session.dart';
 import 'package:exam_prep/data/models/settings.dart';
+import 'package:exam_prep/data/models/timer_state.dart';
 import 'package:exam_prep/core/extensions/extensions.dart';
 
 part 'exam_repository.g.dart';
@@ -18,6 +19,7 @@ class ExamRepository {
   final Box<StudyTask> _taskBox;
   final Box<FocusSession> _sessionBox;
   final Box<Settings> _settingsBox;
+  final Box<TimerState> _timerStateBox;
   
   ExamRepository({
     required Box<Exam> examBox,
@@ -26,12 +28,14 @@ class ExamRepository {
     required Box<StudyTask> taskBox,
     required Box<FocusSession> sessionBox,
     required Box<Settings> settingsBox,
+    required Box<TimerState> timerStateBox,
   }) : _examBox = examBox,
        _subjectBox = subjectBox,
        _chapterBox = chapterBox,
        _taskBox = taskBox,
        _sessionBox = sessionBox,
-       _settingsBox = settingsBox;
+       _settingsBox = settingsBox,
+       _timerStateBox = timerStateBox;
   
   // Exam operations
   List<Exam> getAllExams() => _examBox.values.toList()..sort((a, b) => a.examDate.compareTo(b.examDate));
@@ -222,6 +226,19 @@ class ExamRepository {
     await _settingsBox.put('settings', settings);
   }
   
+  // Timer state operations
+  TimerState? getTimerState() {
+    return _timerStateBox.get('timer_state');
+  }
+  
+  Future<void> saveTimerState(TimerState state) async {
+    await _timerStateBox.put('timer_state', state);
+  }
+  
+  Future<void> clearTimerState() async {
+    await _timerStateBox.delete('timer_state');
+  }
+  
   // Stream providers
   Stream<List<Exam>> watchExams() => _examBox.watch().map((_) => getAllExams());
   
@@ -247,5 +264,6 @@ ExamRepository examRepository(ExamRepositoryRef ref) {
     taskBox: Hive.box<StudyTask>(studyTaskBoxName),
     sessionBox: Hive.box<FocusSession>(focusSessionBoxName),
     settingsBox: Hive.box<Settings>(settingsBoxName),
+    timerStateBox: Hive.box<TimerState>(timerStateBoxName),
   );
 }

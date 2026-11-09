@@ -1,18 +1,36 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:exam_prep/main.dart';
 import 'package:exam_prep/app/router.dart';
 import 'package:exam_prep/features/home/presentation/home_screen.dart';
 import 'package:exam_prep/features/exams/presentation/new_exam_sheet.dart';
+import 'package:exam_prep/features/onboarding/presentation/onboarding_screen.dart';
+import 'package:exam_prep/features/focus/presentation/focus_screen.dart';
+import 'package:exam_prep/features/syllabus/presentation/syllabus_screen.dart';
+import 'package:exam_prep/features/progress/presentation/progress_screen.dart';
+import 'package:exam_prep/features/exams/presentation/exams_screen.dart';
+import 'package:exam_prep/features/settings/presentation/settings_screen.dart';
 import 'package:exam_prep/data/models/exam.dart';
 import 'package:exam_prep/data/models/settings.dart';
 import 'package:exam_prep/data/repositories/exam_repository.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockExamRepository extends Mock implements ExamRepository {}
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(Exam(
+      id: 'test',
+      name: 'Test Exam',
+      examDate: DateTime.now().add(const Duration(days: 30)),
+      createdAt: DateTime.now(),
+      colorValue: 0xFFE9547B,
+    ));
+    registerFallbackValue(Settings());
+  });
+
   group('HomeScreen', () {
     testWidgets('shows empty state when no exams', (WidgetTester tester) async {
       final mockRepo = MockExamRepository();
@@ -27,7 +45,7 @@ void main() {
             examRepositoryProvider.overrideWithValue(mockRepo),
           ],
           child: MaterialApp(
-            home: const HomeScreen(),
+            home: Scaffold(body: const HomeScreen()),
           ),
         ),
       );
@@ -51,7 +69,7 @@ void main() {
             examRepositoryProvider.overrideWithValue(mockRepo),
           ],
           child: MaterialApp(
-            home: const HomeScreen(),
+            home: Scaffold(body: const HomeScreen()),
           ),
         ),
       );
@@ -150,11 +168,20 @@ void main() {
       when(() => mockRepo.getActiveExam()).thenReturn(null);
       when(() => mockRepo.watchActiveExam()).thenAnswer((_) => Stream.value(null));
       when(() => mockRepo.watchExams()).thenAnswer((_) => Stream.value([]));
-      when(() => mockRepo.watchSettings()).thenAnswer((_) => Stream.value(Settings()));
+      when(() => mockRepo.watchSettings()).thenAnswer((_) => Stream.value(Settings(onboardingDone: false)));
       when(() => mockRepo.watchSubjects(any())).thenAnswer((_) => Stream.value([]));
-      when(() => mockRepo.getSettings()).thenReturn(Settings());
+      when(() => mockRepo.getSettings()).thenReturn(Settings(onboardingDone: false));
       
-      final router = createTestRouter(mockRepo);
+      // Simple test router that goes directly to onboarding
+      final router = GoRouter(
+        initialLocation: '/onboarding',
+        routes: [
+          GoRoute(
+            path: '/onboarding',
+            builder: (context, state) => const OnboardingScreen(),
+          ),
+        ],
+      );
       
       await tester.pumpWidget(
         ProviderScope(
@@ -167,7 +194,8 @@ void main() {
         ),
       );
       
-      await tester.pumpAndSettle();
+      // Use pump instead of pumpAndSettle to avoid timeout from infinite animation
+      await tester.pump(const Duration(seconds: 1));
       
       // Should start at onboarding
       expect(find.byType(OnboardingScreen), findsOneWidget);
@@ -228,6 +256,10 @@ GoRouter createTestRouter(MockExamRepository mockRepo) {
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );

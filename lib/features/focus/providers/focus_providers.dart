@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'dart:async';
 import 'package:exam_prep/data/models/focus_session.dart';
 import 'package:exam_prep/data/models/settings.dart';
+import 'package:exam_prep/data/models/timer_state.dart';
 import 'package:exam_prep/data/repositories/exam_repository.dart';
 import 'package:exam_prep/core/utils/date_utils.dart';
 import 'package:exam_prep/core/extensions/extensions.dart';
@@ -20,18 +21,74 @@ class FocusTimer extends _$FocusTimer {
   int _completedFocusSessions = 0;
   bool _isRunning = false;
   String? _examId;
+  bool _isCompleting = false;
+  DateTime? _sessionStartTime;
   
   @override
   FocusTimerState build() {
+    final repo = ref.read(examRepositoryProvider);
+    final savedState = repo.getTimerState();
+    
     ref.onDispose(() {
       _timer?.cancel();
     });
+    
+    if (savedState != null && savedState.isTimerActive) {
+      _examId = savedState.examId;
+      _currentType = savedState.currentType;
+      _remaining = savedState.remaining;
+      _completedFocusSessions = savedState.completedFocusSessions;
+      _isRunning = savedState.isRunning;
+      _endTime = savedState.endTime;
+      _sessionStartTime = savedState.sessionStartTime;
+      
+      if (savedState.isRunning) {
+        final elapsed = DateTime.now().difference(savedState.sessionStartTime ?? DateTime.now());
+        if (elapsed >= savedState.remaining) {
+          _remaining = Duration.zero;
+          _isRunning = false;
+          _endTime = null;
+        } else {
+          _isRunning = true;
+          _endTime = DateTime.now().add(savedState.remaining - elapsed);
+        }
+      } else {
+        _isRunning = false;
+      }
+      
+      return FocusTimerState(
+        remaining: _remaining,
+        currentType: _currentType,
+        isRunning: _isRunning,
+        completedFocusSessions: _completedFocusSessions,
+      );
+    }
+    
     return const FocusTimerState(
       remaining: Duration.zero,
       currentType: SessionType.focus,
       isRunning: false,
       completedFocusSessions: 0,
     );
+  }
+  
+  Future<void> _saveTimerState() async {
+    final repo = ref.read(examRepositoryProvider);
+    final state = TimerState(
+      examId: _examId,
+      currentType: _currentType,
+      remainingSeconds: _remaining.inSeconds,
+      isRunning: _isRunning,
+      completedFocusSessions: _completedFocusSessions,
+      endTime: _endTime,
+      sessionStartTime: _sessionStartTime,
+    );
+    await repo.saveTimerState(state);
+  }
+  
+  Future<void> _clearTimerState() async {
+    final repo = ref.read(examRepositoryProvider);
+    await repo.clearTimerState();
   }
   
   void initialize({
@@ -45,6 +102,7 @@ class FocusTimer extends _$FocusTimer {
     _completedFocusSessions = completedFocusSessions;
     _examId = examId;
     _endTime = null;
+    _sessionStartTime = null;
     _isRunning = false;
     state = FocusTimerState(
       remaining: duration,
@@ -52,6 +110,7 @@ class FocusTimer extends _$FocusTimer {
       isRunning: false,
       completedFocusSessions: completedFocusSessions,
     );
+    _saveTimerState();
   }
   
   void start() {
@@ -60,16 +119,15 @@ class FocusTimer extends _$FocusTimer {
     final settings = ref.read(settingsProvider).value ?? Settings();
     _isRunning = true;
     _endTime = DateTime.now().add(_remaining);
+    _sessionStartTime = DateTime.now();
     
-    // Schedule notification
     _scheduleNotification(settings);
-    
-    // Keep screen awake
     _enableWakelock();
     
     _timer = Timer.periodic(const Duration(seconds: 1), _tick);
     
     state = state.copyWith(isRunning: true);
+    _saveTimerState();
   }
   
   void pause() {
@@ -89,6 +147,7 @@ class FocusTimer extends _$FocusTimer {
     _disableWakelock();
     
     state = state.copyWith(isRunning: false, remaining: _remaining);
+    _saveTimerState();
   }
   
   void reset() {
@@ -96,6 +155,7 @@ class FocusTimer extends _$FocusTimer {
     _timer = null;
     _isRunning = false;
     _endTime = null;
+    _sessionStartTime = null;
     
     final settings = ref.read(settingsProvider).value ?? Settings();
     Duration duration;
@@ -120,6 +180,7 @@ class FocusTimer extends _$FocusTimer {
       remaining: duration,
       currentType: _currentType,
     );
+    _saveTimerState();
   }
   
   void skip() {
@@ -127,6 +188,7 @@ class FocusTimer extends _$FocusTimer {
     _timer = null;
     _isRunning = false;
     _endTime = null;
+    _sessionStartTime = null;
     _cancelNotification();
     _disableWakelock();
     
@@ -144,37 +206,46 @@ class FocusTimer extends _$FocusTimer {
       _timer = null;
       _isRunning = false;
       _endTime = null;
+      _sessionStartTime = null;
       _completeSession();
       return;
     }
     
     state = state.copyWith(remaining: _remaining);
+    _saveTimerState();
   }
   
   void _completeSession() {
-    // Haptic feedback
+    if (_isCompleting) return;
+    _isCompleting = true;
+    
     _hapticFeedback();
     
-    // Save completed session
+    final actualElapsedMinutes = _sessionStartTime != null 
+        ? DateTime.now().difference(_sessionStartTime!).inMinutes
+        : _getSessionDuration(_currentType).inMinutes;
+    
     final repo = ref.read(examRepositoryProvider);
     final session = FocusSession(
       examId: _examId,
       type: _currentType,
-      startedAt: DateTime.now().subtract(_getSessionDuration(_currentType)),
-      durationMinutes: _getSessionDuration(_currentType).inMinutes,
+      startedAt: _sessionStartTime ?? DateTime.now().subtract(Duration(minutes: actualElapsedMinutes)),
+      durationMinutes: actualElapsedMinutes,
       completed: true,
       completedAt: DateTime.now(),
     );
     repo.addSession(session);
     
-    // Play sound if enabled
     final settings = ref.read(settingsProvider).value ?? Settings();
     if (settings.sound) {
       _playSound();
     }
     
-    // Advance to next session
+    _hapticFeedback();
+    
     _advanceSession(autoStart: settings.autoStartBreaks);
+    
+    _isCompleting = false;
   }
   
   Duration _getSessionDuration(SessionType type) {
@@ -215,6 +286,7 @@ class FocusTimer extends _$FocusTimer {
     _remaining = _getSessionDuration(nextType);
     _isRunning = false;
     _endTime = null;
+    _sessionStartTime = null;
     
     state = FocusTimerState(
       remaining: _remaining,
@@ -222,6 +294,7 @@ class FocusTimer extends _$FocusTimer {
       isRunning: false,
       completedFocusSessions: _completedFocusSessions,
     );
+    _saveTimerState();
     
     if (autoStart) {
       Future.delayed(const Duration(milliseconds: 500), start);
@@ -235,42 +308,32 @@ class FocusTimer extends _$FocusTimer {
     _currentType = type;
     _remaining = _getSessionDuration(type);
     _endTime = null;
+    _sessionStartTime = null;
     
     state = state.copyWith(
       currentType: type,
       remaining: _remaining,
       isRunning: false,
     );
+    _saveTimerState();
     
     if (wasRunning) {
       Future.delayed(const Duration(milliseconds: 100), start);
     }
   }
-  
-  Future<void> _scheduleNotification(Settings settings) async {
-    // TODO: Implement local notification scheduling
-  }
-  
-  void _cancelNotification() {
-    // TODO: Implement notification cancellation
-  }
-  
-  Future<void> _enableWakelock() async {
-    // TODO: Implement wakelock
-  }
-  
-  Future<void> _disableWakelock() async {
-    // TODO: Implement wakelock release
-  }
-  
-  void _hapticFeedback() {
-    // TODO: Implement haptic feedback
-  }
-  
-  void _playSound() {
-    // TODO: Implement sound playback
-  }
 }
+
+Future<void> _scheduleNotification(Settings settings) async {}
+  
+  void _cancelNotification() {}
+  
+  Future<void> _enableWakelock() async {}
+  
+  Future<void> _disableWakelock() async {}
+  
+  void _hapticFeedback() {}
+  
+  void _playSound() {}
 
 class FocusTimerState {
   final Duration remaining;
@@ -300,8 +363,6 @@ class FocusTimerState {
   }
 }
 
-// This won't work because we can't use ref in the model. Let's move progress calculation to a provider.
-
 @riverpod
 double focusProgress(FocusProgressRef ref) {
   final state = ref.watch(focusTimerProvider);
@@ -322,7 +383,6 @@ double focusProgress(FocusProgressRef ref) {
   return 1.0 - (state.remaining.inSeconds / total.inSeconds);
 }
 
-// Completed focus sessions today (for session dots)
 @riverpod
 int completedFocusSessionsToday(CompletedFocusSessionsTodayRef ref) {
   final exam = ref.watch(activeExamProvider).value;

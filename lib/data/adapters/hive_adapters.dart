@@ -5,6 +5,7 @@ import 'package:exam_prep/data/models/chapter.dart';
 import 'package:exam_prep/data/models/study_task.dart';
 import 'package:exam_prep/data/models/focus_session.dart';
 import 'package:exam_prep/data/models/settings.dart';
+import 'package:exam_prep/data/models/timer_state.dart';
 
 void registerHiveAdapters() {
   if (!Hive.isAdapterRegistered(0)) {
@@ -28,6 +29,9 @@ void registerHiveAdapters() {
   if (!Hive.isAdapterRegistered(6)) {
     Hive.registerAdapter(SettingsAdapter());
   }
+  if (!Hive.isAdapterRegistered(7)) {
+    Hive.registerAdapter(TimerStateAdapter());
+  }
 }
 
 const examBoxName = 'exams';
@@ -36,3 +40,4 @@ const chapterBoxName = 'chapters';
 const studyTaskBoxName = 'study_tasks';
 const focusSessionBoxName = 'focus_sessions';
 const settingsBoxName = 'settings';
+const timerStateBoxName = 'timer_state';

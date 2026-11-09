@@ -6,7 +6,7 @@ part of 'exam_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$examRepositoryHash() => r'adac5ed106a5523496e51dc1538938f43b43a698';
+String _$examRepositoryHash() => r'171a47afed6e9ae7a179e424f97aa84930496aad';
 
 /// See also [examRepository].
 @ProviderFor(examRepository)

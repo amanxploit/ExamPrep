@@ -9,6 +9,7 @@ import 'package:exam_prep/data/models/study_task.dart';
 import 'package:exam_prep/data/models/settings.dart';
 import 'package:exam_prep/data/repositories/exam_repository.dart';
 import 'package:exam_prep/core/utils/date_utils.dart';
+import 'package:exam_prep/core/extensions/extensions.dart';
 
 class MockExamRepository extends Mock implements ExamRepository {}
 
